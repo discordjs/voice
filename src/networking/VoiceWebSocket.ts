@@ -24,14 +24,17 @@ export class VoiceWebSocket extends WebSocket {
 	 */
 	private lastHeartbeatAck: number;
 
+	private readonly debug: null | ((message: string) => void);
+
 	/**
 	 * Creates a new VoiceWebSocket
 	 * @param address The address to connect to
 	 */
-	public constructor(address: string) {
+	public constructor(address: string, debug: boolean) {
 		super(address);
 		this.lastHeartbeatAck = 0;
 		this.onmessage = e => this.onMessage(e);
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 	}
 
 	/**
@@ -39,7 +42,7 @@ export class VoiceWebSocket extends WebSocket {
 	 */
 	public destroy() {
 		try {
-			this.emit('debug', 'destroyed');
+			this.debug?.('destroyed');
 			this.setHeartbeatInterval(-1);
 			this.close(1000);
 		} catch (error) {
@@ -56,7 +59,7 @@ export class VoiceWebSocket extends WebSocket {
 	public onMessage(event: MessageEvent) {
 		if (typeof event.data !== 'string') return;
 
-		this.emit('debug', `<< ${event.data}`);
+		this.debug?.(`<< ${event.data}`);
 
 		let packet: any;
 		try {
@@ -86,7 +89,7 @@ export class VoiceWebSocket extends WebSocket {
 	public sendPacket(packet: any) {
 		try {
 			const stringified = JSON.stringify(packet);
-			this.emit('debug', `>> ${stringified}`);
+			this.debug?.(`>> ${stringified}`);
 			return this.send(stringified);
 		} catch (error) {
 			this.emit('error', error);

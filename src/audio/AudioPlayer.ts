@@ -45,6 +45,7 @@ export enum AudioPlayerStatus {
  * Options that can be passed when creating an audio player, used to specify its behaviour.
  */
 interface CreateAudioPlayerOptions {
+	debug: boolean;
 	behaviours: {
 		noSubscriber: NoSubscriberBehaviour;
 	};
@@ -95,19 +96,19 @@ export class AudioPlayer extends EventEmitter {
 		noSubscriber: NoSubscriberBehaviour;
 	};
 
+	private readonly debug: null | ((message: string) => void);
+
 	/**
 	 * Creates a new AudioPlayer
 	 */
-	public constructor(options?: CreateAudioPlayerOptions) {
+	public constructor(options: CreateAudioPlayerOptions) {
 		super();
 		this.connections = [];
 		this._state = {
 			status: AudioPlayerStatus.Idle
 		};
-		this.behaviours = {
-			noSubscriber: NoSubscriberBehaviour.Pause,
-			...options?.behaviours
-		};
+		this.behaviours = options.behaviours;
+		this.debug = options.debug ? this.emit.bind(this, 'debug') : null;
 	}
 
 	/**
@@ -165,7 +166,7 @@ export class AudioPlayer extends EventEmitter {
 		 * @event AudioPlayer#debug
 		 * @type {string}
 		 */
-		this.emit('debug', `state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
+		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 
 	/**
@@ -363,5 +364,11 @@ function stringifyState(state: AudioPlayerState) {
  * Creates a new AudioPlayer to be used
  */
 export function createAudioPlayer(options?: CreateAudioPlayerOptions) {
-	return new AudioPlayer(options);
+	return new AudioPlayer({
+		behaviours: {
+			noSubscriber: NoSubscriberBehaviour.Pause,
+			...options?.behaviours
+		},
+		debug: options?.debug ?? true
+	});
 }

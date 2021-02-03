@@ -93,11 +93,12 @@ const nonce = Buffer.alloc(24);
  */
 export class Networking extends EventEmitter {
 	private _state: NetworkingState;
+	private readonly debug: null | ((message: string) => void);
 
 	/**
 	 * Creates a new Networking instance.
 	 */
-	public constructor(options: ConnectionOptions) {
+	public constructor(options: ConnectionOptions, debug: boolean) {
 		super();
 
 		this.onWsOpen = this.onWsOpen.bind(this);
@@ -111,6 +112,8 @@ export class Networking extends EventEmitter {
 			ws: this.createWebSocket(options.endpoint),
 			connectionOptions: options
 		};
+
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 	}
 
 	/**
@@ -164,16 +167,17 @@ export class Networking extends EventEmitter {
 		 * @event Networking#debug
 		 * @type {string}
 		 */
-		this.emit('debug', `state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
+		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 
 	/**
 	 * Creates a new WebSocket to a Discord Voice gateway.
 	 *
 	 * @param endpoint The endpoint to connect to
+	 * @param debug Whether to enable debug logging
 	 */
 	private createWebSocket(endpoint: string) {
-		const ws = new VoiceWebSocket(`wss://${endpoint}?v=4`);
+		const ws = new VoiceWebSocket(`wss://${endpoint}?v=4`, Boolean(this.debug));
 
 		ws.on('error', this.onChildError);
 		ws.once('open', this.onWsOpen);
@@ -319,7 +323,7 @@ export class Networking extends EventEmitter {
 	 * @param message The emitted debug message
 	 */
 	private onWsDebug(message: string) {
-		this.emit('debug', `[WS] ${message}`);
+		this.debug?.(`[WS] ${message}`);
 	}
 
 	/**

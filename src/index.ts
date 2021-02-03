@@ -4,9 +4,23 @@ import { JoinConfig } from './DataStore';
 import generateDependencyReport from './util/generateDependencyReport';
 
 /**
- * Creates a VoiceConnection to a Discord.js Voice Channel.
+ * The options that can be given when joining a voice channel
  */
-export function joinVoiceChannel(voiceChannel: VoiceChannel) {
+export interface JoinVoiceChannelOptions {
+	/**
+	 * If true, debug messages will be enabled for the voice connection and its
+	 * related components. Defaults to true.
+	 */
+	debug: boolean;
+}
+
+/**
+ * Creates a VoiceConnection to a Discord.js Voice Channel.
+ *
+ * @param voiceChannel - the voice channel to connect to
+ * @param options - the options for joining the voice channel
+ */
+export function joinVoiceChannel(voiceChannel: VoiceChannel, options?: JoinVoiceChannelOptions) {
 	const joinConfig: JoinConfig = {
 		channelId: voiceChannel.id,
 		guild: voiceChannel.guild,
@@ -14,7 +28,7 @@ export function joinVoiceChannel(voiceChannel: VoiceChannel) {
 		selfMute: false
 	};
 
-	return createVoiceConnection(joinConfig);
+	return createVoiceConnection(joinConfig, { debug: true, ...options });
 }
 
 export { generateDependencyReport };

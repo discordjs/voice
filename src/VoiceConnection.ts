@@ -1,5 +1,6 @@
 import { GatewayVoiceServerUpdateDispatch, GatewayVoiceStateUpdateDispatch } from 'discord-api-types/v8/gateway';
 import { EventEmitter } from 'events';
+import { JoinVoiceChannelOptions } from '.';
 import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection } from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
@@ -67,12 +68,14 @@ export class VoiceConnection extends EventEmitter {
 		state: GatewayVoiceStateUpdateDispatch|undefined;
 	};
 
+	private readonly debug: null|((message: string) => void);
+
 	/**
 	 * Creates a new voice connection.
 	 *
 	 * @param joinConfig The data required to establish the voice connection
 	 */
-	public constructor(joinConfig: JoinConfig) {
+	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
 		super();
 
 		this.reconnectAttempts = 0;
@@ -88,6 +91,8 @@ export class VoiceConnection extends EventEmitter {
 			server: undefined,
 			state: undefined
 		};
+
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 
 		this.joinConfig = joinConfig;
 	}
@@ -178,7 +183,7 @@ export class VoiceConnection extends EventEmitter {
 			token: server.d.token,
 			sessionID: state.d.session_id,
 			userID: state.d.user_id
-		});
+		}, Boolean(this.debug));
 
 		networking.once('close', this.onNetworkingClose);
 		networking.on('stateChange', this.onNetworkingStateChange);
@@ -253,7 +258,7 @@ export class VoiceConnection extends EventEmitter {
 	 * @param message The debug message to propagate
 	 */
 	private onNetworkingDebug(message: string) {
-		this.emit('debug', `[NW] ${message}`);
+		this.debug?.(`[NW] ${message}`);
 	}
 
 	/**
@@ -346,11 +351,11 @@ export class VoiceConnection extends EventEmitter {
  * Creates a new voice connection
  * @param joinConfig The data required to establish the voice connection
  */
-export function createVoiceConnection(joinConfig: JoinConfig) {
+export function createVoiceConnection(joinConfig: JoinConfig, { debug }: { debug: boolean }) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
 	if (existing) return existing;
 
-	const voiceConnection = new VoiceConnection(joinConfig);
+	const voiceConnection = new VoiceConnection(joinConfig, { debug });
 	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
 	trackClient(joinConfig.guild.client);
 	signalJoinVoiceChannel(joinConfig);
