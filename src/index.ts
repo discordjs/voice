@@ -28,7 +28,7 @@ export function joinVoiceChannel(voiceChannel: VoiceChannel, options?: JoinVoice
 		selfMute: false
 	};
 
-	return createVoiceConnection(joinConfig, { debug: true, ...options });
+	return createVoiceConnection(joinConfig, { debug: false, ...options });
 }
 
 export { generateDependencyReport };
