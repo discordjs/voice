@@ -358,7 +358,7 @@ export function createVoiceConnection(joinConfig: JoinConfig, options?: JoinVoic
 	const existing = getVoiceConnection(joinConfig.guild.id);
 	if (existing) return existing;
 
-	const voiceConnection = new VoiceConnection(joinConfig, { debug });
+	const voiceConnection = new VoiceConnection(joinConfig, options);
 	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
 	trackClient(joinConfig.guild.client);
 	signalJoinVoiceChannel(joinConfig);
