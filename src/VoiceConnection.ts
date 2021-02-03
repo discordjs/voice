@@ -71,7 +71,7 @@ export class VoiceConnection extends EventEmitter {
 	/**
 	 * The debug logger function, if debugging is enabled.
 	 */
-	private readonly debug: null|((message: string) => void);
+	private readonly debug: null | ((message: string) => void);
 
 	/**
 	 * Creates a new voice connection.
