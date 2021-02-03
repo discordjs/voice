@@ -80,6 +80,7 @@ export class VoiceConnection extends EventEmitter {
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
 		this.onNetworkingStateChange = this.onNetworkingStateChange.bind(this);
 		this.onNetworkingError = this.onNetworkingError.bind(this);
+		this.onNetworkingDebug = this.onNetworkingDebug.bind(this);
 
 		this._state = { status: VoiceConnectionStatus.Signalling };
 
@@ -107,6 +108,7 @@ export class VoiceConnection extends EventEmitter {
 		const newNetworking: Networking|undefined = (newState as any).networking;
 
 		if (oldNetworking && oldNetworking !== newNetworking) {
+			oldNetworking.off('debug', this.onNetworkingDebug);
 			oldNetworking.on('error', noop);
 			oldNetworking.off('error', this.onNetworkingError);
 			oldNetworking.off('close', this.onNetworkingClose);
@@ -181,6 +183,7 @@ export class VoiceConnection extends EventEmitter {
 		networking.once('close', this.onNetworkingClose);
 		networking.on('stateChange', this.onNetworkingStateChange);
 		networking.on('error', this.onNetworkingError);
+		networking.on('debug', this.onNetworkingDebug);
 
 		this.state = {
 			status: VoiceConnectionStatus.Connecting,
@@ -242,6 +245,15 @@ export class VoiceConnection extends EventEmitter {
 	 */
 	private onNetworkingError(error: Error) {
 		this.emit('error', error);
+	}
+
+	/**
+	 * Propagates debug messages from the underlying network instance.
+	 *
+	 * @param message The debug message to propagate
+	 */
+	private onNetworkingDebug(message: string) {
+		this.emit('debug', `[NW] ${message}`);
 	}
 
 	/**
