@@ -68,6 +68,9 @@ export class VoiceConnection extends EventEmitter {
 		state: GatewayVoiceStateUpdateDispatch|undefined;
 	};
 
+	/**
+	 * The debug logger function, if debugging is enabled.
+	 */
 	private readonly debug: null|((message: string) => void);
 
 	/**

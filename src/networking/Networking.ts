@@ -93,6 +93,10 @@ const nonce = Buffer.alloc(24);
  */
 export class Networking extends EventEmitter {
 	private _state: NetworkingState;
+
+	/**
+	 * The debug logger function, if debugging is enabled.
+	 */
 	private readonly debug: null | ((message: string) => void);
 
 	/**

@@ -96,6 +96,9 @@ export class AudioPlayer extends EventEmitter {
 		noSubscriber: NoSubscriberBehaviour;
 	};
 
+	/**
+	 * The debug logger function, if debugging is enabled.
+	 */
 	private readonly debug: null | ((message: string) => void);
 
 	/**

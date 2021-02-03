@@ -24,6 +24,9 @@ export class VoiceWebSocket extends WebSocket {
 	 */
 	private lastHeartbeatAck: number;
 
+	/**
+	 * The debug logger function, if debugging is enabled.
+	 */
 	private readonly debug: null | ((message: string) => void);
 
 	/**
