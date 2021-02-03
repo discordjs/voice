@@ -11,7 +11,7 @@ export interface JoinVoiceChannelOptions {
 	 * If true, debug messages will be enabled for the voice connection and its
 	 * related components. Defaults to true.
 	 */
-	debug: boolean;
+	debug?: boolean;
 }
 
 /**
