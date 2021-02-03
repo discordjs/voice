@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"target": "es2019",
+		"moduleResolution": "node",
+		"module": "commonjs",
+		"declaration": true,
+		"sourceMap": true,
+		"alwaysStrict": true,
+		"pretty": true,
+		"outDir": "dist",
+		"incremental": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true
+	},
+	"include": [
+		"src/**/*.ts"
+	],
+	"exclude": [
+		"examples/**/*.ts"
+	]
+}
