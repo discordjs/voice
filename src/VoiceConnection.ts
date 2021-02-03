@@ -112,8 +112,8 @@ export class VoiceConnection extends EventEmitter {
 	 */
 	public set state(newState: VoiceConnectionState) {
 		const oldState = this._state;
-		const oldNetworking: Networking|undefined = (oldState as any).networking;
-		const newNetworking: Networking|undefined = (newState as any).networking;
+		const oldNetworking: Networking|undefined = Reflect.get(oldState, 'networking');
+		const newNetworking: Networking|undefined = Reflect.get(newState, 'networking');
 
 		if (oldNetworking && oldNetworking !== newNetworking) {
 			oldNetworking.off('debug', this.onNetworkingDebug);

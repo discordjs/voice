@@ -140,8 +140,8 @@ export class Networking extends EventEmitter {
 	 * Sets a new state for the networking instance, performing clean-up operations where necessary.
 	 */
 	public set state(newState: NetworkingState) {
-		const oldWs = (this._state as any).ws as VoiceWebSocket|undefined;
-		const newWs = (newState as any).ws as VoiceWebSocket|undefined;
+		const oldWs = Reflect.get(this._state, 'ws') as VoiceWebSocket|undefined;
+		const newWs = Reflect.get(newState, 'ws') as VoiceWebSocket|undefined;
 		if (oldWs && oldWs !== newWs) {
 			// The old WebSocket is being freed - remove all handlers from it
 			oldWs.off('debug', this.onWsDebug);
@@ -153,8 +153,9 @@ export class Networking extends EventEmitter {
 			oldWs.destroy();
 		}
 
-		const oldUdp = (this._state as any).udp as VoiceUDPSocket|undefined;
-		const newUdp = (newState as any).udp as VoiceUDPSocket|undefined;
+		const oldUdp = Reflect.get(this._state, 'udp') as VoiceUDPSocket|undefined;
+		const newUdp = Reflect.get(newState, 'udp') as VoiceUDPSocket|undefined;
+
 		if (oldUdp && oldUdp !== newUdp) {
 			oldUdp.on('error', noop);
 			oldUdp.off('error', this.onChildError);
@@ -463,8 +464,8 @@ function randomNBit(n: number) {
 function stringifyState(state: NetworkingState) {
 	return JSON.stringify({
 		...state,
-		ws: Boolean((state as any).ws),
-		udp: Boolean((state as any).udp)
+		ws: Reflect.has(state, 'ws'),
+		udp: Reflect.has(state, 'udp')
 	});
 }
 

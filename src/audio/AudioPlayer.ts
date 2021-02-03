@@ -136,7 +136,7 @@ export class AudioPlayer extends EventEmitter {
 	 */
 	public set state(newState: AudioPlayerState) {
 		const oldState = this._state;
-		const newResource = (newState as any).resource as AudioResource|undefined;
+		const newResource = Reflect.get(newState, 'resource') as AudioResource|undefined;
 
 		if (oldState.status !== AudioPlayerStatus.Idle && oldState.resource !== newResource) {
 			oldState.resource.playStream.on('error', noop);
@@ -358,8 +358,8 @@ export class AudioPlayer extends EventEmitter {
 function stringifyState(state: AudioPlayerState) {
 	return JSON.stringify({
 		...state,
-		resource: Boolean((state as any).resource),
-		stepTimeout: Boolean((state as any).stepTimeout)
+		resource: Reflect.has(state, 'resource'),
+		stepTimeout: Reflect.has(state, 'stepTimeout')
 	});
 }
 
