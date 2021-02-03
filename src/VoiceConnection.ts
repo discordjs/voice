@@ -1,6 +1,6 @@
-import { GatewayVoiceServerUpdateDispatch, GatewayVoiceStateUpdateDispatch } from 'discord-api-types/v8/gateway';
+import { GatewayVoiceState } from 'discord-api-types/v8/payloads/voice';
 import { EventEmitter } from 'events';
-import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection } from './DataStore';
+import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection, GatewayVoiceServerUpdate } from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
 
@@ -63,8 +63,8 @@ export class VoiceConnection extends EventEmitter {
 	 * from the main Discord gateway after signalling to change the voice state.
 	 */
 	private readonly packets: {
-		server: GatewayVoiceServerUpdateDispatch|undefined;
-		state: GatewayVoiceStateUpdateDispatch|undefined;
+		server: GatewayVoiceServerUpdate|undefined;
+		state: GatewayVoiceState|undefined;
 	};
 
 	/**
@@ -132,7 +132,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param packet The received `VOICE_SERVER_UPDATE` packet
 	 */
-	public addServerPacket(packet: GatewayVoiceServerUpdateDispatch) {
+	public addServerPacket(packet: GatewayVoiceServerUpdate) {
 		this.packets.server = packet;
 		this.configureNetworking();
 	}
@@ -143,12 +143,12 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param packet The received `VOICE_STATE_UPDATE` packet
 	 */
-	public addStatePacket(packet: GatewayVoiceStateUpdateDispatch) {
+	public addStatePacket(packet: GatewayVoiceState) {
 		this.packets.state = packet;
 
-		if (typeof packet.d.self_deaf !== 'undefined') this.joinConfig.selfDeaf = packet.d.self_deaf;
-		if (typeof packet.d.self_mute !== 'undefined') this.joinConfig.selfMute = packet.d.self_mute;
-		if (packet.d.channel_id) this.joinConfig.channelId = packet.d.channel_id;
+		if (typeof packet.self_deaf !== 'undefined') this.joinConfig.selfDeaf = packet.self_deaf;
+		if (typeof packet.self_mute !== 'undefined') this.joinConfig.selfMute = packet.self_mute;
+		if (packet.channel_id) this.joinConfig.channelId = packet.channel_id;
 		/*
 			the channel_id being null doesn't necessarily mean it was intended for the client to leave the voice channel
 			as it may have disconnected due to network failure. This will be gracefully handled once the voice websocket
@@ -171,11 +171,11 @@ export class VoiceConnection extends EventEmitter {
 		if (!server || !state || this.state.status === VoiceConnectionStatus.Destroyed) return;
 
 		const networking = new Networking({
-			endpoint: server.d.endpoint,
-			serverID: server.d.guild_id,
-			token: server.d.token,
-			sessionID: state.d.session_id,
-			userID: state.d.user_id
+			endpoint: server.endpoint,
+			serverID: server.guild_id,
+			token: server.token,
+			sessionID: state.session_id,
+			userID: state.user_id
 		});
 
 		networking.once('close', this.onNetworkingClose);

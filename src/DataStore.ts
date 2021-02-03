@@ -1,6 +1,16 @@
-import { GatewayDispatchEvents, GatewayOPCodes, GatewayVoiceServerUpdateDispatch, GatewayVoiceStateUpdateDispatch } from 'discord-api-types/v8/gateway';
-import { Client, Constants, Guild } from 'discord.js';
+import { GatewayOPCodes } from 'discord-api-types/v8/gateway';
+import { GatewayVoiceState } from 'discord-api-types/v8/payloads/voice';
+import { Client, Guild } from 'discord.js';
 import { VoiceConnection } from './VoiceConnection';
+
+/**
+ * The inner payload of a VOICE_SERVER_UPDATE packet
+ */
+export interface GatewayVoiceServerUpdate {
+	token: string;
+	guild_id: string;
+	endpoint: string;
+}
 
 // Clients
 const clients: Set<Client> = new Set();
@@ -9,15 +19,14 @@ export function trackClient(client: Client) {
 		return;
 	}
 	clients.add(client);
-	client.on(Constants.Events.RAW, payload => {
-		if (payload.t === GatewayDispatchEvents.VoiceServerUpdate) {
-			const packet: GatewayVoiceServerUpdateDispatch = payload;
-			getVoiceConnection(packet.d.guild_id)?.addServerPacket(packet);
-		} else if (payload.t === GatewayDispatchEvents.VoiceStateUpdate) {
-			const packet: GatewayVoiceStateUpdateDispatch = payload;
-			if (packet.d.guild_id && packet.d.session_id && packet.d.user_id === client.user?.id) {
-				getVoiceConnection(packet.d.guild_id)?.addStatePacket(packet);
-			}
+
+	client.ws.on('VOICE_SERVER_UPDATE', (payload: GatewayVoiceServerUpdate) => {
+		getVoiceConnection(payload.guild_id)?.addServerPacket(payload);
+	});
+
+	client.ws.on('VOICE_STATE_UPDATE', (payload: GatewayVoiceState) => {
+		if (payload.guild_id && payload.session_id && payload.user_id === client.user?.id) {
+			getVoiceConnection(payload.guild_id)?.addStatePacket(payload);
 		}
 	});
 }
