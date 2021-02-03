@@ -104,6 +104,7 @@ export class Networking extends EventEmitter {
 		this.onChildError = this.onChildError.bind(this);
 		this.onWsPacket = this.onWsPacket.bind(this);
 		this.onWsClose = this.onWsClose.bind(this);
+		this.onWsDebug = this.onWsDebug.bind(this);
 
 		this._state = {
 			code: NetworkingStatusCode.OpeningWs,
@@ -136,6 +137,7 @@ export class Networking extends EventEmitter {
 		const newWs = (newState as any).ws as VoiceWebSocket|undefined;
 		if (oldWs && oldWs !== newWs) {
 			// The old WebSocket is being freed - remove all handlers from it
+			oldWs.off('debug', this.onWsDebug);
 			oldWs.on('error', noop);
 			oldWs.off('error', this.onChildError);
 			oldWs.off('open', this.onWsOpen);
@@ -162,7 +164,7 @@ export class Networking extends EventEmitter {
 		 * @event Networking#debug
 		 * @type {string}
 		 */
-		this.emit('debug', `state change:\nfrom ${JSON.stringify(oldState)}\nto ${JSON.stringify(newState)}`);
+		this.emit('debug', `state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 
 	/**
@@ -177,6 +179,7 @@ export class Networking extends EventEmitter {
 		ws.once('open', this.onWsOpen);
 		ws.on('packet', this.onWsPacket);
 		ws.once('close', this.onWsClose);
+		ws.on('debug', this.onWsDebug);
 
 		return ws;
 	}
@@ -311,6 +314,15 @@ export class Networking extends EventEmitter {
 	}
 
 	/**
+	 * Propagates debug messages from the child WebSocket.
+	 *
+	 * @param message The emitted debug message
+	 */
+	private onWsDebug(message: string) {
+		this.emit('debug', `[WS] ${message}`);
+	}
+
+	/**
 	 * Prepares an Opus packet for playback. This includes attaching metadata to it and encrypting it.
 	 * It will be stored within the instance, and can be played by dispatchAudio().
 	 *
@@ -433,6 +445,19 @@ export class Networking extends EventEmitter {
  */
 function randomNBit(n: number) {
 	return Math.floor(Math.random() * (2 ** n));
+}
+
+/**
+ * Stringifies a NetworkingState
+ *
+ * @param state The state to stringify
+ */
+function stringifyState(state: NetworkingState) {
+	return JSON.stringify({
+		...state,
+		ws: Boolean((state as any).ws),
+		udp: Boolean((state as any).udp)
+	});
 }
 
 /**
