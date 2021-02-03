@@ -42,6 +42,15 @@ export enum AudioPlayerStatus {
 }
 
 /**
+ * Options that can be passed when creating an audio player, used to specify its behaviour.
+ */
+interface CreateAudioPlayerOptions {
+	behaviours: {
+		noSubscriber: NoSubscriberBehaviour;
+	};
+}
+
+/**
  * The various states that the player can be in.
  */
 type AudioPlayerState = {
@@ -89,14 +98,15 @@ export class AudioPlayer extends EventEmitter {
 	/**
 	 * Creates a new AudioPlayer
 	 */
-	public constructor() {
+	public constructor(options?: CreateAudioPlayerOptions) {
 		super();
 		this.connections = [];
 		this._state = {
 			status: AudioPlayerStatus.Idle
 		};
 		this.behaviours = {
-			noSubscriber: NoSubscriberBehaviour.Pause
+			noSubscriber: NoSubscriberBehaviour.Pause,
+			...options?.behaviours
 		};
 	}
 
@@ -331,6 +341,6 @@ export class AudioPlayer extends EventEmitter {
 /**
  * Creates a new AudioPlayer to be used
  */
-export function createAudioPlayer() {
-	return new AudioPlayer();
+export function createAudioPlayer(options?: CreateAudioPlayerOptions) {
+	return new AudioPlayer(options);
 }
