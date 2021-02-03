@@ -158,6 +158,14 @@ export class AudioPlayer extends EventEmitter {
 		if (oldState.status !== newState.status || didChangeResources) {
 			this.emit(newState.status, oldState, this._state);
 		}
+
+		/**
+		 * Debug event for AudioPlayer.
+		 *
+		 * @event AudioPlayer#debug
+		 * @type {string}
+		 */
+		this.emit('debug', `state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 
 	/**
@@ -336,6 +344,19 @@ export class AudioPlayer extends EventEmitter {
 	private _preparePacket(packet: Buffer, receivers = this.connections) {
 		receivers.forEach(connection => connection.prepareAudioPacket(packet));
 	}
+}
+
+/**
+ * Stringifies an AudioPlayerState instance
+ *
+ * @param state The state to stringify
+ */
+function stringifyState(state: AudioPlayerState) {
+	return JSON.stringify({
+		...state,
+		resource: Boolean((state as any).resource),
+		stepTimeout: Boolean((state as any).stepTimeout)
+	});
 }
 
 /**
