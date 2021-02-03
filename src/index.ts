@@ -1,6 +1,7 @@
 import { VoiceChannel } from 'discord.js';
 import { createVoiceConnection } from './VoiceConnection';
 import { JoinConfig } from './DataStore';
+import generateDependencyReport from './util/generateDependencyReport';
 
 /**
  * Creates a VoiceConnection to a Discord.js Voice Channel.
@@ -15,3 +16,5 @@ export function joinVoiceChannel(voiceChannel: VoiceChannel) {
 
 	return createVoiceConnection(joinConfig);
 }
+
+export { generateDependencyReport };
