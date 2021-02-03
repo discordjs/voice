@@ -9,7 +9,7 @@ import generateDependencyReport from './util/generateDependencyReport';
 export interface JoinVoiceChannelOptions {
 	/**
 	 * If true, debug messages will be enabled for the voice connection and its
-	 * related components. Defaults to true.
+	 * related components. Defaults to false.
 	 */
 	debug?: boolean;
 }
