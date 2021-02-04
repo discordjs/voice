@@ -366,9 +366,10 @@ export class VoiceConnection extends EventEmitter {
 	 * Subscribes to an audio player, allowing the player to play audio on this voice connection.
 	 *
 	 * @param player The audio player to subscribe to
+	 * @returns The created subscription
 	 */
 	public subscribe(player: AudioPlayer) {
-		if (this.state.status === VoiceConnectionStatus.Destroyed) return false;
+		if (this.state.status === VoiceConnectionStatus.Destroyed) return;
 
 		const unsubscribe = () => {
 			if (this.state.status !== VoiceConnectionStatus.Destroyed && this.state.subscription === subscription) {
@@ -386,7 +387,7 @@ export class VoiceConnection extends EventEmitter {
 			subscription
 		};
 
-		return true;
+		return subscription;
 	}
 }
 
