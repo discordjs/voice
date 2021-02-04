@@ -11,7 +11,7 @@ import { once } from 'events';
 */
 
 /*
-  Create the audio player. We will use this for all of our connections.
+	Create the audio player. We will use this for all of our connections.
 */
 const player = createAudioPlayer();
 
@@ -38,7 +38,7 @@ function playSong() {
 	player.play(resource);
 
 	/*
-    If the audio player is immediately ready to start playing, then we can return here.
+		If the audio player is immediately ready to start playing, then we can return here.
 	 */
 	if (player.state.status === AudioPlayerStatus.Playing) {
 		return Promise.resolve();
@@ -109,15 +109,15 @@ client.on('ready', async () => {
 	console.log('Discord.js client is ready!');
 
 	/*
-    Try to get our song ready to play for when the bot joins a voice channel
-  */
+		Try to get our song ready to play for when the bot joins a voice channel
+	*/
 	try {
 		await playSong();
 		console.log('Song is ready to play!');
 	} catch (error) {
 		/*
-      The song isn't ready to play for some reason :(
-    */
+			The song isn't ready to play for some reason :(
+		*/
 		console.error(error);
 	}
 });
@@ -130,8 +130,8 @@ client.on('message', async message => {
 
 		if (channel) {
 			/*
-        The user is in a voice channel, try to connect
-      */
+				The user is in a voice channel, try to connect
+			*/
 			try {
 				const connection = await connectToChannel(channel);
 
@@ -144,14 +144,14 @@ client.on('message', async message => {
 				message.reply('Playing now!');
 			} catch (error) {
 				/*
-          Unable to connect to the voice channel within 30 seconds :(
-        */
+					Unable to connect to the voice channel within 30 seconds :(
+				*/
 				console.error(error);
 			}
 		} else {
 			/*
-        The user is not in a voice channel
-      */
+				The user is not in a voice channel
+			*/
 			message.reply('Join a voice channel then try again!');
 		}
 	}
