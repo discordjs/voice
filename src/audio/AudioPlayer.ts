@@ -122,7 +122,7 @@ export class AudioPlayer extends EventEmitter {
 	 *
 	 * @param connection The connection to play to
 	 */
-	public playTo(connection: VoiceConnection) {
+	public subscribe(connection: VoiceConnection) {
 		if (!this.connections.includes(connection)) {
 			this.connections.push(connection);
 		}
