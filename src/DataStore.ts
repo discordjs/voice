@@ -1,5 +1,5 @@
 import { GatewayOPCodes, GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8/gateway';
-import { Client, Guild } from 'discord.js';
+import { Client, Constants, Guild } from 'discord.js';
 import { VoiceConnection } from './VoiceConnection';
 
 // Clients
