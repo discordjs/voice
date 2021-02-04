@@ -107,9 +107,7 @@ export class AudioPlayer extends EventEmitter {
 	 */
 	public constructor(options: CreateAudioPlayerOptions) {
 		super();
-		this._state = {
-			status: AudioPlayerStatus.Idle
-		};
+		this._state = { status: AudioPlayerStatus.Idle };
 		this.behaviours = options.behaviours;
 		this.debug = options.debug ? this.emit.bind(this, 'debug') : null;
 	}
