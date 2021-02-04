@@ -37,13 +37,6 @@
     "prism-media": "^1.2.3",
     "ws": "^7.4.1"
   },
-  "peerDependencies": {
-    "@discordjs/opus": "^0.4.0",
-    "opusscript": "^0.0.7",
-    "sodium": "^3.0.2",
-    "tweetnacl": "^1.0.3",
-    "libsodium-wrappers": "^0.7.9"
-  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
