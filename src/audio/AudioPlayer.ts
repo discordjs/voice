@@ -306,10 +306,12 @@ export class AudioPlayer extends EventEmitter {
 		state.nextTime += FRAME_LENGTH;
 
 		// List of connections that can receive the packet
-		const playable = this.subscribers.filter(({ connection }) => connection.state.status === VoiceConnectionStatus.Ready);
+		const playable = this.subscribers
+			.map(({ connection }) => connection)
+			.filter(connection => connection.state.status === VoiceConnectionStatus.Ready);
 
 		// Dispatch any audio packets that were prepared in the previous cycle
-		playable.forEach(({ connection }) => connection.dispatchAudio());
+		playable.forEach(connection => connection.dispatchAudio());
 
 		/* If the player was previously in the AutoPaused state, check to see whether there are newly available
 		   connections, allowing us to transition out of the AutoPaused state back into the Playing state */
@@ -386,8 +388,8 @@ export class AudioPlayer extends EventEmitter {
 	 * @param packet The Opus packet to be prepared by each receiver
 	 * @param receivers The connections that should play this packet
 	 */
-	private _preparePacket(packet: Buffer, receivers = this.subscribers) {
-		receivers.forEach(({ connection }) => connection.prepareAudioPacket(packet));
+	private _preparePacket(packet: Buffer, receivers: VoiceConnection[]) {
+		receivers.forEach(connection => connection.prepareAudioPacket(packet));
 	}
 }
 
