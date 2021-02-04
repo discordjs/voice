@@ -95,21 +95,29 @@ export class Networking extends EventEmitter {
 	private _state: NetworkingState;
 
 	/**
+	 * The debug logger function, if debugging is enabled.
+	 */
+	private readonly debug: null | ((message: string) => void);
+
+	/**
 	 * Creates a new Networking instance.
 	 */
-	public constructor(options: ConnectionOptions) {
+	public constructor(options: ConnectionOptions, debug: boolean) {
 		super();
 
 		this.onWsOpen = this.onWsOpen.bind(this);
 		this.onChildError = this.onChildError.bind(this);
 		this.onWsPacket = this.onWsPacket.bind(this);
 		this.onWsClose = this.onWsClose.bind(this);
+		this.onWsDebug = this.onWsDebug.bind(this);
 
 		this._state = {
 			code: NetworkingStatusCode.OpeningWs,
 			ws: this.createWebSocket(options.endpoint),
 			connectionOptions: options
 		};
+
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 	}
 
 	/**
@@ -132,10 +140,11 @@ export class Networking extends EventEmitter {
 	 * Sets a new state for the networking instance, performing clean-up operations where necessary.
 	 */
 	public set state(newState: NetworkingState) {
-		const oldWs = (this._state as any).ws as VoiceWebSocket|undefined;
-		const newWs = (newState as any).ws as VoiceWebSocket|undefined;
+		const oldWs = Reflect.get(this._state, 'ws') as VoiceWebSocket|undefined;
+		const newWs = Reflect.get(newState, 'ws') as VoiceWebSocket|undefined;
 		if (oldWs && oldWs !== newWs) {
 			// The old WebSocket is being freed - remove all handlers from it
+			oldWs.off('debug', this.onWsDebug);
 			oldWs.on('error', noop);
 			oldWs.off('error', this.onChildError);
 			oldWs.off('open', this.onWsOpen);
@@ -144,8 +153,9 @@ export class Networking extends EventEmitter {
 			oldWs.destroy();
 		}
 
-		const oldUdp = (this._state as any).udp as VoiceUDPSocket|undefined;
-		const newUdp = (newState as any).udp as VoiceUDPSocket|undefined;
+		const oldUdp = Reflect.get(this._state, 'udp') as VoiceUDPSocket|undefined;
+		const newUdp = Reflect.get(newState, 'udp') as VoiceUDPSocket|undefined;
+
 		if (oldUdp && oldUdp !== newUdp) {
 			oldUdp.on('error', noop);
 			oldUdp.off('error', this.onChildError);
@@ -155,20 +165,30 @@ export class Networking extends EventEmitter {
 		const oldState = this._state;
 		this._state = newState;
 		this.emit('stateChange', oldState, newState);
+
+		/**
+		 * Debug event for Networking.
+		 *
+		 * @event Networking#debug
+		 * @type {string}
+		 */
+		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 
 	/**
 	 * Creates a new WebSocket to a Discord Voice gateway.
 	 *
 	 * @param endpoint The endpoint to connect to
+	 * @param debug Whether to enable debug logging
 	 */
 	private createWebSocket(endpoint: string) {
-		const ws = new VoiceWebSocket(`wss://${endpoint}?v=4`);
+		const ws = new VoiceWebSocket(`wss://${endpoint}?v=4`, Boolean(this.debug));
 
 		ws.on('error', this.onChildError);
 		ws.once('open', this.onWsOpen);
 		ws.on('packet', this.onWsPacket);
 		ws.once('close', this.onWsClose);
+		ws.on('debug', this.onWsDebug);
 
 		return ws;
 	}
@@ -303,6 +323,15 @@ export class Networking extends EventEmitter {
 	}
 
 	/**
+	 * Propagates debug messages from the child WebSocket.
+	 *
+	 * @param message The emitted debug message
+	 */
+	private onWsDebug(message: string) {
+		this.debug?.(`[WS] ${message}`);
+	}
+
+	/**
 	 * Prepares an Opus packet for playback. This includes attaching metadata to it and encrypting it.
 	 * It will be stored within the instance, and can be played by dispatchAudio().
 	 *
@@ -425,6 +454,19 @@ export class Networking extends EventEmitter {
  */
 function randomNBit(n: number) {
 	return Math.floor(Math.random() * (2 ** n));
+}
+
+/**
+ * Stringifies a NetworkingState
+ *
+ * @param state The state to stringify
+ */
+function stringifyState(state: NetworkingState) {
+	return JSON.stringify({
+		...state,
+		ws: Reflect.has(state, 'ws'),
+		udp: Reflect.has(state, 'udp')
+	});
 }
 
 /**

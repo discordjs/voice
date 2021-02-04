@@ -1,5 +1,6 @@
 import { GatewayVoiceServerUpdateDispatch, GatewayVoiceStateUpdateDispatch } from 'discord-api-types/v8/gateway';
 import { EventEmitter } from 'events';
+import { JoinVoiceChannelOptions } from '.';
 import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection } from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
@@ -68,11 +69,16 @@ export class VoiceConnection extends EventEmitter {
 	};
 
 	/**
+	 * The debug logger function, if debugging is enabled.
+	 */
+	private readonly debug: null | ((message: string) => void);
+
+	/**
 	 * Creates a new voice connection.
 	 *
 	 * @param joinConfig The data required to establish the voice connection
 	 */
-	public constructor(joinConfig: JoinConfig) {
+	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
 		super();
 
 		this.reconnectAttempts = 0;
@@ -80,6 +86,7 @@ export class VoiceConnection extends EventEmitter {
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
 		this.onNetworkingStateChange = this.onNetworkingStateChange.bind(this);
 		this.onNetworkingError = this.onNetworkingError.bind(this);
+		this.onNetworkingDebug = this.onNetworkingDebug.bind(this);
 
 		this._state = { status: VoiceConnectionStatus.Signalling };
 
@@ -87,6 +94,8 @@ export class VoiceConnection extends EventEmitter {
 			server: undefined,
 			state: undefined
 		};
+
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 
 		this.joinConfig = joinConfig;
 	}
@@ -103,10 +112,11 @@ export class VoiceConnection extends EventEmitter {
 	 */
 	public set state(newState: VoiceConnectionState) {
 		const oldState = this._state;
-		const oldNetworking: Networking|undefined = (oldState as any).networking;
-		const newNetworking: Networking|undefined = (newState as any).networking;
+		const oldNetworking: Networking|undefined = Reflect.get(oldState, 'networking');
+		const newNetworking: Networking|undefined = Reflect.get(newState, 'networking');
 
 		if (oldNetworking && oldNetworking !== newNetworking) {
+			oldNetworking.off('debug', this.onNetworkingDebug);
 			oldNetworking.on('error', noop);
 			oldNetworking.off('error', this.onNetworkingError);
 			oldNetworking.off('close', this.onNetworkingClose);
@@ -176,11 +186,12 @@ export class VoiceConnection extends EventEmitter {
 			token: server.d.token,
 			sessionID: state.d.session_id,
 			userID: state.d.user_id
-		});
+		}, Boolean(this.debug));
 
 		networking.once('close', this.onNetworkingClose);
 		networking.on('stateChange', this.onNetworkingStateChange);
 		networking.on('error', this.onNetworkingError);
+		networking.on('debug', this.onNetworkingDebug);
 
 		this.state = {
 			status: VoiceConnectionStatus.Connecting,
@@ -242,6 +253,15 @@ export class VoiceConnection extends EventEmitter {
 	 */
 	private onNetworkingError(error: Error) {
 		this.emit('error', error);
+	}
+
+	/**
+	 * Propagates debug messages from the underlying network instance.
+	 *
+	 * @param message The debug message to propagate
+	 */
+	private onNetworkingDebug(message: string) {
+		this.debug?.(`[NW] ${message}`);
 	}
 
 	/**
@@ -334,11 +354,11 @@ export class VoiceConnection extends EventEmitter {
  * Creates a new voice connection
  * @param joinConfig The data required to establish the voice connection
  */
-export function createVoiceConnection(joinConfig: JoinConfig) {
+export function createVoiceConnection(joinConfig: JoinConfig, options?: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
 	if (existing) return existing;
 
-	const voiceConnection = new VoiceConnection(joinConfig);
+	const voiceConnection = new VoiceConnection(joinConfig, options);
 	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
 	trackClient(joinConfig.guild.client);
 	signalJoinVoiceChannel(joinConfig);
