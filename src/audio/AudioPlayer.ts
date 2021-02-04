@@ -185,6 +185,10 @@ export class AudioPlayer extends EventEmitter {
 	 * @param resource The resource to play
 	 */
 	public play(resource: AudioResource) {
+		if (resource.playStream.readableEnded || resource.playStream.destroyed) {
+			throw new Error(`Cannot play a resource (${resource.name ?? 'unnamed'}) that has already ended.`);
+		}
+
 		this.state = {
 			status: AudioPlayerStatus.Playing,
 			missedFrames: 0,
