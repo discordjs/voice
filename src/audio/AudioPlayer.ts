@@ -139,12 +139,15 @@ export class AudioPlayer extends EventEmitter {
 	 * @param connection The connection to subscribe
 	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
 	 */
-	public subscribe(connection: VoiceConnection) {
+	public subscribe(connection: VoiceConnection, unsubscribeCallback: () => void) {
 		const existingSubscription = this.subscribers.find(subscription => subscription.connection === connection);
 		if (!existingSubscription) {
 			const subscription: PlayerSubscription = {
 				connection,
-				unsubscribe: () => this.unsubscribe(subscription)
+				unsubscribe: () => {
+					unsubscribeCallback();
+					this.unsubscribe(subscription);
+				}
 			};
 			this.subscribers.push(subscription);
 			return subscription;

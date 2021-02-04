@@ -369,16 +369,8 @@ export class VoiceConnection extends EventEmitter {
 	 */
 	public subscribe(player: AudioPlayer) {
 		if (this.state.status === VoiceConnectionStatus.Destroyed) return false;
-		const subscription = player.subscribe(this);
 
-		/*
-			The audio player returns a subscription with an unsubscribe function that will only remove the subscription
-			from the player's internal tracker. Below, the function is patched to additionally remove the subscription
-			from this voice connection to ensure consistency.
-		*/
-		const unsubscribe = subscription.unsubscribe;
-		subscription.unsubscribe = () => {
-			unsubscribe();
+		const unsubscribe = () => {
 			if (this.state.status !== VoiceConnectionStatus.Destroyed && this.state.subscription === subscription) {
 				this.state = {
 					...this.state,
@@ -387,10 +379,13 @@ export class VoiceConnection extends EventEmitter {
 			}
 		};
 
+		const subscription = player.subscribe(this, unsubscribe);
+
 		this.state = {
 			...this.state,
 			subscription
 		};
+
 		return true;
 	}
 }
