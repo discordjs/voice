@@ -73,7 +73,7 @@ type AudioPlayerState = {
 /**
  * Represents a subscription of a voice connection to an audio player.
  */
-interface PlayerSubscription {
+export interface PlayerSubscription {
 	/**
 	 * The connection part of the subscription. While subscribed, audio can be played to it.
 	 */
@@ -137,7 +137,7 @@ export class AudioPlayer extends EventEmitter {
 	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
 	 */
 	public subscribe(connection: VoiceConnection) {
-		const existingSubscription = this.subscribers.some(subscription => subscription.connection === connection);
+		const existingSubscription = this.subscribers.find(subscription => subscription.connection === connection);
 		if (!existingSubscription) {
 			const subscription: PlayerSubscription = {
 				connection,
@@ -157,8 +157,11 @@ export class AudioPlayer extends EventEmitter {
 	 */
 	public unsubscribe(subscription: PlayerSubscription) {
 		const index = this.subscribers.indexOf(subscription);
-		const exists = index === -1;
-		if (exists) this.subscribers.splice(index, 1);
+		const exists = index !== -1;
+		if (exists) {
+			this.subscribers.splice(index, 1);
+			subscription.connection.setSpeaking(false);
+		}
 		return exists;
 	}
 
