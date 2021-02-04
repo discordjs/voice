@@ -1,11 +1,7 @@
 // todo
 
 import { Client, VoiceChannel } from 'discord.js';
-import { joinVoiceChannel } from '../';
-import { getVoiceConnection } from '../dist/DataStore';
-import { createAudioPlayer } from '../dist/audio/AudioPlayer';
-import { createAudioResource } from '../dist/audio/AudioResource';
-import { StreamType } from '../dist/audio/TransformerGraph';
+import { joinVoiceChannel, getVoiceConnection, createAudioPlayer, createAudioResource, StreamType } from '../';
 
 const player = createAudioPlayer();
 const resource = createAudioResource('file.mp3', { inputType: StreamType.Arbitrary });
