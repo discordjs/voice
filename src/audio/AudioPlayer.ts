@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import { noop } from '../util/util';
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioResource } from './AudioResource';
+import { PlayerSubscription } from './PlayerSubscription';
 
 // Each audio packet is 20ms long
 const FRAME_LENGTH = 20;
@@ -71,21 +72,6 @@ type AudioPlayerState = {
 };
 
 /**
- * Represents a subscription of a voice connection to an audio player.
- */
-export interface PlayerSubscription {
-	/**
-	 * The connection part of the subscription. While subscribed, audio can be played to it.
-	 */
-	connection: VoiceConnection;
-
-	/**
-	 * A function that can be called to delete the subscription.
-	 */
-	unsubscribe: () => void;
-}
-
-/**
  * Used to play audio resources (i.e. tracks, streams) to voice connections.
  * It is designed to be re-used - even if a resource has finished playing, the player itself can still be used.
  *
@@ -135,20 +121,13 @@ export class AudioPlayer extends EventEmitter {
 	 *
 	 * This method should not be directly called. Instead, use VoiceConnection#subscribe.
 	 *
-	 * @private
 	 * @param connection The connection to subscribe
 	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
 	 */
-	private subscribe(connection: VoiceConnection, unsubscribeCallback: () => void) {
+	private subscribe(connection: VoiceConnection) {
 		const existingSubscription = this.subscribers.find(subscription => subscription.connection === connection);
 		if (!existingSubscription) {
-			const subscription: PlayerSubscription = {
-				connection,
-				unsubscribe: () => {
-					unsubscribeCallback();
-					this.unsubscribe(subscription);
-				}
-			};
+			const subscription = new PlayerSubscription(connection, this);
 			this.subscribers.push(subscription);
 
 			/**
@@ -169,7 +148,6 @@ export class AudioPlayer extends EventEmitter {
 	 *
 	 * This method should not be directly called. Instead, use PlayerSubscription#unsubscribe.
 	 *
-	 * @private
 	 * @param subscription The subscription to remove
 	 * @returns Whether or not the subscription existed on the player and was removed.
 	 */

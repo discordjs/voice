@@ -1,7 +1,8 @@
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
 import { JoinVoiceChannelOptions } from '.';
-import { AudioPlayer, PlayerSubscription } from './audio/AudioPlayer';
+import { AudioPlayer } from './audio/AudioPlayer';
+import { PlayerSubscription } from './audio/PlayerSubscription';
 import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection } from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
@@ -371,17 +372,8 @@ export class VoiceConnection extends EventEmitter {
 	public subscribe(player: AudioPlayer) {
 		if (this.state.status === VoiceConnectionStatus.Destroyed) return;
 
-		const unsubscribe = () => {
-			if (this.state.status !== VoiceConnectionStatus.Destroyed && this.state.subscription === subscription) {
-				this.state = {
-					...this.state,
-					subscription: undefined
-				};
-			}
-		};
-
 		// eslint-disable-next-line @typescript-eslint/dot-notation
-		const subscription = player['subscribe'](this, unsubscribe);
+		const subscription = player['subscribe'](this);
 
 		this.state = {
 			...this.state,
@@ -389,6 +381,20 @@ export class VoiceConnection extends EventEmitter {
 		};
 
 		return subscription;
+	}
+
+	/**
+	 * Called when a subscription of this voice connection to an audio player is removed.
+	 *
+	 * @param subscription The removed subscription
+	 */
+	private onSubscriptionRemoved(subscription: PlayerSubscription) {
+		if (this.state.status !== VoiceConnectionStatus.Destroyed && this.state.subscription === subscription) {
+			this.state = {
+				...this.state,
+				subscription: undefined
+			};
+		}
 	}
 }
 
