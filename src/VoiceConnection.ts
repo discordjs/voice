@@ -1,6 +1,8 @@
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
 import { JoinVoiceChannelOptions } from '.';
+import { AudioPlayer } from './audio/AudioPlayer';
+import { PlayerSubscription } from './audio/PlayerSubscription';
 import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection } from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
@@ -30,13 +32,18 @@ export enum VoiceConnectionStatus {
  * The various states that a voice connection can be in.
  */
 export type VoiceConnectionState = {
-	status: VoiceConnectionStatus.Signalling | VoiceConnectionStatus.Destroyed;
+	status: VoiceConnectionStatus.Signalling;
+	subscription?: PlayerSubscription;
 } | {
 	status: VoiceConnectionStatus.Disconnected;
 	closeCode: number;
+	subscription?: PlayerSubscription;
 } | {
 	status: VoiceConnectionStatus.Connecting | VoiceConnectionStatus.Ready;
 	networking: Networking;
+	subscription?: PlayerSubscription;
+} | {
+	status: VoiceConnectionStatus.Destroyed;
 };
 
 /**
@@ -115,6 +122,9 @@ export class VoiceConnection extends EventEmitter {
 		const oldNetworking: Networking|undefined = Reflect.get(oldState, 'networking');
 		const newNetworking: Networking|undefined = Reflect.get(newState, 'networking');
 
+		const oldSubscription: PlayerSubscription|undefined = Reflect.get(oldState, 'subscription');
+		const newSubscription: PlayerSubscription|undefined = Reflect.get(oldState, 'subscription');
+
 		if (oldNetworking && oldNetworking !== newNetworking) {
 			oldNetworking.off('debug', this.onNetworkingDebug);
 			oldNetworking.on('error', noop);
@@ -122,6 +132,10 @@ export class VoiceConnection extends EventEmitter {
 			oldNetworking.off('close', this.onNetworkingClose);
 			oldNetworking.off('stateChange', this.onNetworkingStateChange);
 			oldNetworking.destroy();
+		}
+
+		if (oldSubscription && oldSubscription !== newSubscription) {
+			oldSubscription.unsubscribe();
 		}
 
 		if (newState.status === VoiceConnectionStatus.Ready) {
@@ -347,6 +361,40 @@ export class VoiceConnection extends EventEmitter {
 	public setSpeaking(enabled: boolean) {
 		if (this.state.status !== VoiceConnectionStatus.Ready) return false;
 		this.state.networking.setSpeaking(enabled);
+	}
+
+	/**
+	 * Subscribes to an audio player, allowing the player to play audio on this voice connection.
+	 *
+	 * @param player The audio player to subscribe to
+	 * @returns The created subscription
+	 */
+	public subscribe(player: AudioPlayer) {
+		if (this.state.status === VoiceConnectionStatus.Destroyed) return;
+
+		// eslint-disable-next-line @typescript-eslint/dot-notation
+		const subscription = player['subscribe'](this);
+
+		this.state = {
+			...this.state,
+			subscription
+		};
+
+		return subscription;
+	}
+
+	/**
+	 * Called when a subscription of this voice connection to an audio player is removed.
+	 *
+	 * @param subscription The removed subscription
+	 */
+	private onSubscriptionRemoved(subscription: PlayerSubscription) {
+		if (this.state.status !== VoiceConnectionStatus.Destroyed && this.state.subscription === subscription) {
+			this.state = {
+				...this.state,
+				subscription: undefined
+			};
+		}
 	}
 }
 
