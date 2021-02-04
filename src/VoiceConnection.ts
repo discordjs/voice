@@ -1,6 +1,6 @@
-import { GatewayVoiceState } from 'discord-api-types/v8/payloads/voice';
+import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
-import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection, GatewayVoiceServerUpdate } from './DataStore';
+import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection } from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
 
@@ -63,8 +63,8 @@ export class VoiceConnection extends EventEmitter {
 	 * from the main Discord gateway after signalling to change the voice state.
 	 */
 	private readonly packets: {
-		server: GatewayVoiceServerUpdate|undefined;
-		state: GatewayVoiceState|undefined;
+		server: GatewayVoiceServerUpdateDispatchData|undefined;
+		state: GatewayVoiceStateUpdateDispatchData|undefined;
 	};
 
 	/**
@@ -132,7 +132,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param packet The received `VOICE_SERVER_UPDATE` packet
 	 */
-	public addServerPacket(packet: GatewayVoiceServerUpdate) {
+	public addServerPacket(packet: GatewayVoiceServerUpdateDispatchData) {
 		this.packets.server = packet;
 		this.configureNetworking();
 	}
@@ -143,7 +143,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param packet The received `VOICE_STATE_UPDATE` packet
 	 */
-	public addStatePacket(packet: GatewayVoiceState) {
+	public addStatePacket(packet: GatewayVoiceStateUpdateDispatchData) {
 		this.packets.state = packet;
 
 		if (typeof packet.self_deaf !== 'undefined') this.joinConfig.selfDeaf = packet.self_deaf;
