@@ -136,7 +136,7 @@ export class AudioPlayer extends EventEmitter {
 			 * @event AudioPlayer#subscribe
 			 * @type {PlayerSubscription}
 			 */
-			this.emit('subscribe', subscription);
+			setImmediate(() => this.emit('subscribe', subscription));
 
 			return subscription;
 		}
