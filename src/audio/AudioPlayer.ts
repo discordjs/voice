@@ -171,7 +171,7 @@ export class AudioPlayer extends EventEmitter {
 	 *
 	 * @private
 	 * @param subscription The subscription to remove
-	 * @returns true if the subscription exists on the player and was removed, false otherwise.
+	 * @returns Whether or not the subscription existed on the player and was removed.
 	 */
 	public unsubscribe(subscription: PlayerSubscription) {
 		const index = this.subscribers.indexOf(subscription);
