@@ -61,6 +61,7 @@ type AudioPlayerState = {
 	status: AudioPlayerStatus.Buffering;
 	resource: AudioResource;
 	onReadableCallback: () => void;
+	onCloseCallback: () => void;
 } | {
 	status: AudioPlayerStatus.Playing;
 	missedFrames: number;
@@ -152,6 +153,12 @@ export class AudioPlayer extends EventEmitter {
 			}
 		}
 
+		// When leaving the Buffering state (or buffering a new resource), then remove the event listeners from it
+		if (oldState.status === AudioPlayerStatus.Buffering && (newState.status !== AudioPlayerStatus.Buffering || newState.resource !== oldState.resource)) {
+			oldState.resource.playStream.off('close', oldState.onCloseCallback);
+			oldState.resource.playStream.off('readable', oldState.onReadableCallback);
+		}
+
 		// transitioning into an idle should ensure that connections stop speaking
 		if (newState.status === AudioPlayerStatus.Idle) {
 			this._signalStopSpeaking();
@@ -197,13 +204,45 @@ export class AudioPlayer extends EventEmitter {
 			throw new Error(`Cannot play a resource (${resource.name ?? 'unnamed'}) that has already ended.`);
 		}
 
-		this.state = {
-			status: AudioPlayerStatus.Playing,
-			missedFrames: 0,
-			resource,
-			nextTime: Date.now(),
-			stepTimeout: setTimeout(() => this._step(), 0)
-		};
+		if (resource.playStream.readable) {
+			this.state = {
+				status: AudioPlayerStatus.Playing,
+				missedFrames: 0,
+				resource,
+				nextTime: Date.now(),
+				stepTimeout: setTimeout(() => this._step(), 0)
+			};
+		} else {
+			const onReadableCallback = () => {
+				if (this.state.status === AudioPlayerStatus.Buffering && this.state.resource === resource) {
+					this.state = {
+						status: AudioPlayerStatus.Playing,
+						missedFrames: 0,
+						resource,
+						nextTime: Date.now(),
+						stepTimeout: setTimeout(() => this._step(), 0)
+					};
+				}
+			};
+
+			const onCloseCallback = () => {
+				if (this.state.status === AudioPlayerStatus.Buffering && this.state.resource === resource) {
+					this.state = {
+						status: AudioPlayerStatus.Idle
+					};
+				}
+			};
+
+			resource.playStream.once('readable', onReadableCallback);
+			resource.playStream.once('close', onCloseCallback);
+
+			this.state = {
+				status: AudioPlayerStatus.Buffering,
+				resource,
+				onReadableCallback,
+				onCloseCallback
+			};
+		}
 	}
 
 	/**
