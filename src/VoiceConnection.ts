@@ -380,7 +380,8 @@ export class VoiceConnection extends EventEmitter {
 			}
 		};
 
-		const subscription = player.subscribe(this, unsubscribe);
+		// eslint-disable-next-line @typescript-eslint/dot-notation
+		const subscription = player['subscribe'](this, unsubscribe);
 
 		this.state = {
 			...this.state,
