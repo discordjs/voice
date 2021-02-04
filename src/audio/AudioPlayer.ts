@@ -36,6 +36,7 @@ export enum NoSubscriberBehaviour {
  */
 export enum AudioPlayerStatus {
 	Idle = 'idle',
+	Buffering = 'buffering',
 	Paused = 'paused',
 	Playing = 'playing',
 	AutoPaused = 'autopaused'
@@ -56,6 +57,10 @@ interface CreateAudioPlayerOptions {
  */
 type AudioPlayerState = {
 	status: AudioPlayerStatus.Idle;
+} | {
+	status: AudioPlayerStatus.Buffering;
+	resource: AudioResource;
+	onReadableCallback: () => void;
 } | {
 	status: AudioPlayerStatus.Playing;
 	missedFrames: number;
@@ -142,7 +147,9 @@ export class AudioPlayer extends EventEmitter {
 			oldState.resource.playStream.on('error', noop);
 			oldState.resource.playStream.destroy();
 			oldState.resource.playStream.read(); // required to ensure buffered data is drained, prevents memory leak
-			clearTimeout(oldState.stepTimeout);
+			if (oldState.status !== AudioPlayerStatus.Buffering) {
+				clearTimeout(oldState.stepTimeout);
+			}
 		}
 
 		// transitioning into an idle should ensure that connections stop speaking
@@ -256,7 +263,7 @@ export class AudioPlayer extends EventEmitter {
 		const state = this.state;
 
 		// Guard against the Idle state
-		if (state.status === AudioPlayerStatus.Idle) return;
+		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return;
 
 		// If the stream has been destroyed or is no longer readable, then transition to the Idle state.
 		if (state.resource.playStream.readableEnded || state.resource.playStream.destroyed) {
