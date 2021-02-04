@@ -10,11 +10,11 @@ export function trackClient(client: Client) {
 	}
 	clients.add(client);
 
-	client.ws.on('VOICE_SERVER_UPDATE', (payload: GatewayVoiceServerUpdateDispatchData) => {
+	client.ws.on(Constants.WSEvents.VOICE_SERVER_UPDATE, (payload: GatewayVoiceServerUpdateDispatchData) => {
 		getVoiceConnection(payload.guild_id)?.addServerPacket(payload);
 	});
 
-	client.ws.on('VOICE_STATE_UPDATE', (payload: GatewayVoiceStateUpdateDispatchData) => {
+	client.ws.on(Constants.WSEvents.VOICE_STATE_UPDATE, (payload: GatewayVoiceStateUpdateDispatchData) => {
 		if (payload.guild_id && payload.session_id && payload.user_id === client.user?.id) {
 			getVoiceConnection(payload.guild_id)?.addStatePacket(payload);
 		}
