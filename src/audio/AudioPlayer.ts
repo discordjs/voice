@@ -71,6 +71,21 @@ type AudioPlayerState = {
 };
 
 /**
+ * Represents a subscription of a voice connection to an audio player.
+ */
+interface PlayerSubscription {
+	/**
+	 * The connection part of the subscription. While subscribed, audio can be played to it.
+	 */
+	connection: VoiceConnection;
+
+	/**
+	 * A function that can be called to delete the subscription.
+	 */
+	unsubscribe: () => void;
+}
+
+/**
  * Used to play audio resources (i.e. tracks, streams) to voice connections.
  * It is designed to be re-used - even if a resource has finished playing, the player itself can still be used.
  *
@@ -87,7 +102,7 @@ export class AudioPlayer extends EventEmitter {
 	 * A list of VoiceConnections that are registered to this AudioPlayer. The player will attempt to play audio
 	 * to the streams in this list.
 	 */
-	private readonly subscribers: VoiceConnection[];
+	private readonly subscribers: PlayerSubscription[];
 
 	/**
 	 * The behaviour that the player should follow when it enters certain situations.
@@ -115,28 +130,36 @@ export class AudioPlayer extends EventEmitter {
 	}
 
 	/**
-	 * Adds a VoiceConnection to this player's connection list. This subscribes the VoiceConnection to all resources
-	 * that this player will stream.
+	 * Subscribes a VoiceConnection to the audio player's play list. If the VoiceConnection is already subscribed,
+	 * then the existing subscription is used.
 	 *
-	 * If the connection is already in the play list, this method does nothing.
-	 *
-	 * @param connection The connection to play to
+	 * @param connection The connection to subscribe
+	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
 	 */
 	public subscribe(connection: VoiceConnection) {
-		if (!this.subscribers.includes(connection)) {
-			this.subscribers.push(connection);
+		const existingSubscription = this.subscribers.some(subscription => subscription.connection === connection);
+		if (!existingSubscription) {
+			const subscription: PlayerSubscription = {
+				connection,
+				unsubscribe: () => this.unsubscribe(subscription)
+			};
+			this.subscribers.push(subscription);
+			return subscription;
 		}
+		return existingSubscription;
 	}
 
 	/**
-	 * Removes a VoiceConnection from this player's connection list. This unsubscribes the VoiceConnection to all
-	 * resources that this player will stream.
+	 * Unsubscribes a subscription - i.e. removes a voice connection from the play list of the audio player.
 	 *
-	 * If the connection is not in the play list, this method does nothing.
+	 * @param subscription The subscription to remove
+	 * @returns true if the subscription exists on the player and was removed, false otherwise.
 	 */
-	public unsubscribe(connection: VoiceConnection) {
-		const index = this.subscribers.indexOf(connection);
-		if (index !== -1) this.subscribers.splice(index, 1);
+	public unsubscribe(subscription: PlayerSubscription) {
+		const index = this.subscribers.indexOf(subscription);
+		const exists = index === -1;
+		if (exists) this.subscribers.splice(index, 1);
+		return exists;
 	}
 
 	/**
@@ -280,10 +303,10 @@ export class AudioPlayer extends EventEmitter {
 		state.nextTime += FRAME_LENGTH;
 
 		// List of connections that can receive the packet
-		const playable = this.subscribers.filter(connection => connection.state.status === VoiceConnectionStatus.Ready);
+		const playable = this.subscribers.filter(({ connection }) => connection.state.status === VoiceConnectionStatus.Ready);
 
 		// Dispatch any audio packets that were prepared in the previous cycle
-		playable.forEach(connection => connection.dispatchAudio());
+		playable.forEach(({ connection }) => connection.dispatchAudio());
 
 		/* If the player was previously in the AutoPaused state, check to see whether there are newly available
 		   connections, allowing us to transition out of the AutoPaused state back into the Playing state */
@@ -350,7 +373,7 @@ export class AudioPlayer extends EventEmitter {
 	 * they are no longer speaking. Called once playback of a resource ends.
 	 */
 	private _signalStopSpeaking() {
-		return this.subscribers.forEach(connection => connection.setSpeaking(false));
+		return this.subscribers.forEach(({ connection }) => connection.setSpeaking(false));
 	}
 
 	/**
@@ -361,7 +384,7 @@ export class AudioPlayer extends EventEmitter {
 	 * @param receivers The connections that should play this packet
 	 */
 	private _preparePacket(packet: Buffer, receivers = this.subscribers) {
-		receivers.forEach(connection => connection.prepareAudioPacket(packet));
+		receivers.forEach(({ connection }) => connection.prepareAudioPacket(packet));
 	}
 }
 
