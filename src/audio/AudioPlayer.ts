@@ -183,6 +183,7 @@ export class AudioPlayer extends EventEmitter {
 	 * Idle state during the swap over.
 	 *
 	 * @param resource The resource to play
+	 * @throws Will throw if attempting to play an audio resource that has already ended.
 	 */
 	public play(resource: AudioResource) {
 		if (resource.playStream.readableEnded || resource.playStream.destroyed) {
