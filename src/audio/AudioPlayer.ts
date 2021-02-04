@@ -150,6 +150,15 @@ export class AudioPlayer extends EventEmitter {
 				}
 			};
 			this.subscribers.push(subscription);
+
+			/**
+			 * Emitted when a new subscriber is added to the audio player.
+			 *
+			 * @event AudioPlayer#subscribe
+			 * @type {PlayerSubscription}
+			 */
+			this.emit('subscribe', subscription);
+
 			return subscription;
 		}
 		return existingSubscription;
@@ -170,6 +179,14 @@ export class AudioPlayer extends EventEmitter {
 		if (exists) {
 			this.subscribers.splice(index, 1);
 			subscription.connection.setSpeaking(false);
+
+			/**
+			 * Emitted when a subscription is removed from the audio player.
+			 *
+			 * @event AudioPlayer#unsubscribe
+			 * @type {PlayerSubscription}
+			 */
+			this.emit('unsubscribe', subscription);
 		}
 		return exists;
 	}
