@@ -129,6 +129,17 @@ export class AudioPlayer extends EventEmitter {
 	}
 
 	/**
+	 * Removes a VoiceConnection from this player's connection list. This unsubscribes the VoiceConnection to all
+	 * resources that this player will stream.
+	 *
+	 * If the connection is not in the play list, this method does nothing.
+	 */
+	public unsubscribe(connection: VoiceConnection) {
+		const index = this.connections.indexOf(connection);
+		if (index !== -1) this.connections.splice(index, 1);
+	}
+
+	/**
 	 * The state that the player is in.
 	 */
 	public get state() {
