@@ -36,6 +36,6 @@ function connectToChannel(channel: VoiceChannel) {
 	const voiceConnection = joinVoiceChannel(channel);
 
 	voiceConnection.once('ready', () => {
-		player.subscribe(voiceConnection);
+		voiceConnection.subscribe(player);
 	});
 }
