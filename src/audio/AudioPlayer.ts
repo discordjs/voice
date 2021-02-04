@@ -118,10 +118,14 @@ export class AudioPlayer extends EventEmitter {
 	 * Adds a VoiceConnection to this player's connection list. This subscribes the VoiceConnection to all resources
 	 * that this player will stream.
 	 *
+	 * If the connection is already in the play list, this method does nothing.
+	 *
 	 * @param connection The connection to play to
 	 */
 	public playTo(connection: VoiceConnection) {
-		this.connections.push(connection);
+		if (!this.connections.includes(connection)) {
+			this.connections.push(connection);
+		}
 	}
 
 	/**

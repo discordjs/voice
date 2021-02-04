@@ -354,7 +354,7 @@ export class VoiceConnection extends EventEmitter {
  * Creates a new voice connection
  * @param joinConfig The data required to establish the voice connection
  */
-export function createVoiceConnection(joinConfig: JoinConfig, options?: JoinVoiceChannelOptions) {
+export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
 	if (existing) return existing;
 
