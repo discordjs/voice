@@ -11,3 +11,5 @@ export {
 } from './AudioResource';
 
 export { PlayerSubscription } from './PlayerSubscription';
+
+export { StreamType } from './TransformerGraph';
