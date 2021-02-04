@@ -133,6 +133,9 @@ export class AudioPlayer extends EventEmitter {
 	 * Subscribes a VoiceConnection to the audio player's play list. If the VoiceConnection is already subscribed,
 	 * then the existing subscription is used.
 	 *
+	 * This method should not be directly called. Instead, use VoiceConnection#subscribe.
+	 *
+	 * @private
 	 * @param connection The connection to subscribe
 	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
 	 */
@@ -152,6 +155,9 @@ export class AudioPlayer extends EventEmitter {
 	/**
 	 * Unsubscribes a subscription - i.e. removes a voice connection from the play list of the audio player.
 	 *
+	 * This method should not be directly called. Instead, use PlayerSubscription#unsubscribe.
+	 *
+	 * @private
 	 * @param subscription The subscription to remove
 	 * @returns true if the subscription exists on the player and was removed, false otherwise.
 	 */
