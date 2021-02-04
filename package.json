@@ -34,7 +34,7 @@
     "abort-controller": "^3.0.0",
     "discord-api-types": "^0.12.1",
     "discord.js": "^12.5.1",
-    "prism-media": "^1.2.3",
+    "prism-media": "^1.2.5",
     "ws": "^7.4.1"
   },
   "peerDependencies": {
