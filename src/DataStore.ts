@@ -1,4 +1,4 @@
-import { GatewayDispatchEvents, GatewayOPCodes, GatewayVoiceServerUpdateDispatch, GatewayVoiceStateUpdateDispatch } from 'discord-api-types/v8/gateway';
+import { GatewayOPCodes, GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8/gateway';
 import { Client, Constants, Guild } from 'discord.js';
 import { VoiceConnection } from './VoiceConnection';
 
@@ -9,15 +9,14 @@ export function trackClient(client: Client) {
 		return;
 	}
 	clients.add(client);
-	client.on(Constants.Events.RAW, payload => {
-		if (payload.t === GatewayDispatchEvents.VoiceServerUpdate) {
-			const packet: GatewayVoiceServerUpdateDispatch = payload;
-			getVoiceConnection(packet.d.guild_id)?.addServerPacket(packet);
-		} else if (payload.t === GatewayDispatchEvents.VoiceStateUpdate) {
-			const packet: GatewayVoiceStateUpdateDispatch = payload;
-			if (packet.d.guild_id && packet.d.session_id && packet.d.user_id === client.user?.id) {
-				getVoiceConnection(packet.d.guild_id)?.addStatePacket(packet);
-			}
+
+	client.ws.on(Constants.WSEvents.VOICE_SERVER_UPDATE, (payload: GatewayVoiceServerUpdateDispatchData) => {
+		getVoiceConnection(payload.guild_id)?.addServerPacket(payload);
+	});
+
+	client.ws.on(Constants.WSEvents.VOICE_STATE_UPDATE, (payload: GatewayVoiceStateUpdateDispatchData) => {
+		if (payload.guild_id && payload.session_id && payload.user_id === client.user?.id) {
+			getVoiceConnection(payload.guild_id)?.addStatePacket(payload);
 		}
 	});
 }
