@@ -88,7 +88,7 @@ export class AudioPlayer extends EventEmitter {
 	 * A list of VoiceConnections that are registered to this AudioPlayer. The player will attempt to play audio
 	 * to the streams in this list.
 	 */
-	private readonly subscribers: PlayerSubscription[];
+	private readonly subscribers: PlayerSubscription[] = [];
 
 	/**
 	 * The behaviour that the player should follow when it enters certain situations.
@@ -107,7 +107,6 @@ export class AudioPlayer extends EventEmitter {
 	 */
 	public constructor(options: CreateAudioPlayerOptions) {
 		super();
-		this.subscribers = [];
 		this._state = {
 			status: AudioPlayerStatus.Idle
 		};
