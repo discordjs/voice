@@ -333,8 +333,8 @@ export class AudioPlayer extends EventEmitter {
 
 		// List of connections that can receive the packet
 		const playable = this.subscribers
-			.map(({ connection }) => connection)
-			.filter(connection => connection.state.status === VoiceConnectionStatus.Ready);
+			.filter(({ connection }) => connection.state.status === VoiceConnectionStatus.Ready)
+			.map(({ connection }) => connection);
 
 		// Dispatch any audio packets that were prepared in the previous cycle
 		playable.forEach(connection => connection.dispatchAudio());
