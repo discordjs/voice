@@ -33,7 +33,7 @@
     "@types/ws": "^7.4.0",
     "discord-api-types": "^0.10.0",
     "discord.js": "^12.5.1",
-    "prism-media": "^1.2.3",
+    "prism-media": "^1.2.5",
     "ws": "^7.4.1"
   },
   "devDependencies": {
