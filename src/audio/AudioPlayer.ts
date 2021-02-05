@@ -67,13 +67,13 @@ type AudioPlayerState = {
 	status: AudioPlayerStatus.Playing;
 	missedFrames: number;
 	resource: AudioResource;
-	stepTimeout: NodeJS.Timeout;
+	stepTimeout?: NodeJS.Timeout;
 	nextTime: number;
 } | {
 	status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 	silencePacketsRemaining: number;
 	resource: AudioResource;
-	stepTimeout: NodeJS.Timeout;
+	stepTimeout?: NodeJS.Timeout;
 	nextTime: number;
 };
 
@@ -190,7 +190,7 @@ export class AudioPlayer extends EventEmitter {
 			oldState.resource.playStream.on('error', noop);
 			oldState.resource.playStream.destroy();
 			oldState.resource.playStream.read(); // required to ensure buffered data is drained, prevents memory leak
-			if (oldState.status !== AudioPlayerStatus.Buffering) {
+			if (oldState.status !== AudioPlayerStatus.Buffering && oldState.stepTimeout) {
 				clearTimeout(oldState.stepTimeout);
 			}
 		}
@@ -251,9 +251,9 @@ export class AudioPlayer extends EventEmitter {
 				status: AudioPlayerStatus.Playing,
 				missedFrames: 0,
 				resource,
-				nextTime: Date.now(),
-				stepTimeout: setTimeout(() => this._step(), 0)
+				nextTime: Date.now()
 			};
+			setImmediate(() => this._step());
 		} else {
 			const onReadableCallback = () => {
 				if (this.state.status === AudioPlayerStatus.Buffering && this.state.resource === resource) {
@@ -261,9 +261,9 @@ export class AudioPlayer extends EventEmitter {
 						status: AudioPlayerStatus.Playing,
 						missedFrames: 0,
 						resource,
-						nextTime: Date.now(),
-						stepTimeout: setTimeout(() => this._step(), 0)
+						nextTime: Date.now()
 					};
+					setImmediate(() => this._step());
 				}
 			};
 
