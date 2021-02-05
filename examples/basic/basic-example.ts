@@ -32,8 +32,8 @@ function playSong() {
 
 	/*
 		We will now play this to the audio player. By default, the audio player will not play until
-		at least one voice connection is subscribed to it, so we do not have to worry about attaching
-		our resource to the audio player so early.
+		at least one voice connection is subscribed to it, so it is fine to attach our resource to the
+		audio player this early.
 	*/
 	player.play(resource);
 
