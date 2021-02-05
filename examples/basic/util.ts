@@ -28,5 +28,5 @@ export function entersState<T extends VoiceConnection | AudioPlayer>(target: T, 
 		};
 	})
 		.then(() => target)
-		.finally(cleanup);
+		.finally(cleanup!);
 }
