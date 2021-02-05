@@ -1,6 +1,6 @@
 import { Client, VoiceChannel, Intents } from 'discord.js';
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
-import { errorAfter } from './util';
+import { entersState } from './util';
 import { once } from 'events';
 
 /*
@@ -37,21 +37,11 @@ function playSong() {
 	*/
 	player.play(resource);
 
-	/*
-		If the audio player is immediately ready to start playing, then we can return here.
+	/**
+	 * Here we are using a helper function. It will resolve if the player enters the Playing
+	 * state within 5 seconds, otherwise it will reject with an error.
 	 */
-	if (player.state.status === AudioPlayerStatus.Playing) {
-		return Promise.resolve();
-	}
-
-	/*
-		If the song isn't yet ready to play, we will allow it 5 seconds to become ready to play.
-		Otherwise, we will throw an error. This stops us waiting indefinitely.
-	 */
-	return Promise.race([
-		once(player, AudioPlayerStatus.Playing),
-		errorAfter(5e3, 'The stream was not ready after 5 seconds!')
-	]);
+	return entersState(player, AudioPlayerStatus.Playing, 5e3);
 }
 
 async function connectToChannel(channel: VoiceChannel) {
@@ -62,24 +52,18 @@ async function connectToChannel(channel: VoiceChannel) {
 	*/
 	const connection = joinVoiceChannel(channel);
 
-	/*
-		In case the connection already exists, we should check to see if that connection is
-		in the Ready state. If it is, then we can return it.
-	*/
-	if (connection.state.status === VoiceConnectionStatus.Ready) {
-		return connection;
-	}
 
-	/**
-	 * If we're dealing with a connection that isn't yet Ready, we can set a reasonable
-	 * time limit before giving up. In this example, we give the voice connection 30 seconds
-	 * to enter the ready state before giving up.
-	 */
+	/*
+		If we're dealing with a connection that isn't yet Ready, we can set a reasonable
+		time limit before giving up. In this example, we give the voice connection 30 seconds
+		to enter the ready state before giving up.
+	*/
 	try {
-		await Promise.race([
-			once(connection, VoiceConnectionStatus.Ready),
-			errorAfter(30e3, 'Voice connection was not ready after 30 seconds!')
-		]);
+		/*
+			Allow ourselves 30 seconds to join the voice channel. If we do not join within then,
+			an error is thrown.
+		*/
+		await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
 		/*
 			At this point, the voice connection is ready within 30 seconds! This means we can
 			start playing audio in the voice channel. We return the connection so it can be
@@ -102,7 +86,13 @@ async function connectToChannel(channel: VoiceChannel) {
 	=========
 	Here we will implement the helper functions that we have defined above
 */
-const client = new Client({ ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] } });
+
+const client = new Client({ ws: { intents: [
+	Intents.FLAGS.GUILDS,
+	Intents.FLAGS.GUILD_MESSAGES,
+	Intents.FLAGS.GUILD_VOICE_STATES
+] } });
+
 client.login('token here');
 
 client.on('ready', async () => {
