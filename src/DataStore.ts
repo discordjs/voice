@@ -5,6 +5,9 @@ import { VoiceConnection } from './VoiceConnection';
 // Clients
 const clients: Set<Client> = new Set();
 
+/**
+ * @param client - The connected client
+ */
 export function trackClient(client: Client) {
 	if (clients.has(client)) {
 		return;
@@ -33,6 +36,7 @@ export interface JoinConfig {
 /**
  * Sends a voice state update to the main websocket shard of a guild, to indicate joining/leaving/moving across
  * voice channels
+ *
  * @param config - The voice state data to send to Discord
  */
 export function signalJoinVoiceChannel(config: JoinConfig) {
@@ -50,14 +54,24 @@ export function signalJoinVoiceChannel(config: JoinConfig) {
 // Voice Connections
 const voiceConnections: Map<string, VoiceConnection> = new Map();
 
+/**
+ * @param guildId - The ID of the connected guild
+ */
 export function getVoiceConnection(guildId: string) {
 	return voiceConnections.get(guildId);
 }
 
+/**
+ * @param guildId - The ID of the connected guild
+ */
 export function untrackVoiceConnection(guildId: string) {
 	return voiceConnections.delete(guildId);
 }
 
+/**
+ * @param guildId - The ID of the connected guild
+ * @param voiceConnection - The current voice connection
+ */
 export function trackVoiceConnection(guildId: string, voiceConnection: VoiceConnection) {
 	return voiceConnections.set(guildId, voiceConnection);
 }

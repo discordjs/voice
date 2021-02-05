@@ -99,6 +99,7 @@ const GRAPH_LIST = [...GRAPH.entries()];
 
 /**
  * Returns all the outbound edges from a given node
+ *
  * @param node - The source node
  */
 function getOutboundEdges(node: StreamType) {
@@ -117,6 +118,7 @@ function getEdge(a: Node, b: Node) {
 
 /**
  * Finds the optimal path between the start and goal using the Transformer Graph.
+ *
  * @param start - The start node
  * @param goal - The goal node
  * @param edges - The edges of the graph

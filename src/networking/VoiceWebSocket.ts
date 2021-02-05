@@ -31,6 +31,7 @@ export class VoiceWebSocket extends WebSocket {
 
 	/**
 	 * Creates a new VoiceWebSocket
+	 *
 	 * @param address - The address to connect to
 	 * @param debug - Whether or not debug logs should be emitted
 	 */
@@ -88,6 +89,7 @@ export class VoiceWebSocket extends WebSocket {
 
 	/**
 	 * Sends a JSON-stringifiable packet over the WebSocket
+	 *
 	 * @param packet - The packet to send
 	 */
 	public sendPacket(packet: any) {
@@ -113,6 +115,7 @@ export class VoiceWebSocket extends WebSocket {
 
 	/**
 	 * Sets/clears an interval to send heartbeats over the WebSocket
+	 *
 	 * @param ms - The interval in milliseconds. If negative, the interval will be unset.
 	 */
 	public setHeartbeatInterval(ms: number) {

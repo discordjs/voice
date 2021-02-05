@@ -104,6 +104,8 @@ export class AudioPlayer extends EventEmitter {
 
 	/**
 	 * Creates a new AudioPlayer
+	 *
+	 * @param options - The player options
 	 */
 	public constructor(options: CreateAudioPlayerOptions) {
 		super();
@@ -414,6 +416,8 @@ function stringifyState(state: AudioPlayerState) {
 
 /**
  * Creates a new AudioPlayer to be used
+ *
+ * @param options - The player options
  */
 export function createAudioPlayer(options?: CreateAudioPlayerOptions) {
 	return new AudioPlayer({

@@ -42,15 +42,19 @@
     "discord-api-types": "^0.12.1",
     "eslint": "^7.15.0",
     "eslint-config-marine": "^7.2.0",
-    "eslint-plugin-tsdoc": "^0.2.11",
+    "eslint-plugin-jsdoc": "^31.6.0",
+    "typed-emitter": "^1.3.1",
     "typescript": "^4.2.0-dev.20210204"
   },
   "eslintConfig": {
-    "extends": "marine",
+    "extends": ["marine", "plugin:jsdoc/recommended"],
     "plugins": [
-      "tsdoc"
+      "jsdoc"
     ],
     "rules": {
+      "jsdoc/require-param-type": "off",
+      "jsdoc/require-returns": "off",
+      "jsdoc/require-returns-type": "off",
       "@typescript-eslint/naming-convention": [
         "error",
         {
@@ -59,8 +63,7 @@
             "PascalCase"
           ]
         }
-      ],
-      "tsdoc/syntax": "warn"
+      ]
     }
   }
 }

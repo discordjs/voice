@@ -105,6 +105,7 @@ export function createAudioResource(input: string|Readable, options: CreateAudio
 
 /**
  * Inserts a prism VolumeTransformer into a pipeline such that the volume of the audio can be altered on-the-fly.
+ *
  * @param transformerPipeline - The pipeline to insert into
  */
 function insertInlineVolumeTransformer(transformerPipeline: TransformerPathComponent[]) {

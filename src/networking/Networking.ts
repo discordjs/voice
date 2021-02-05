@@ -101,6 +101,9 @@ export class Networking extends EventEmitter {
 
 	/**
 	 * Creates a new Networking instance.
+	 *
+	 * @param options - Connection options
+	 * @param debug - Whether to emit debug messages
 	 */
 	public constructor(options: ConnectionOptions, debug: boolean) {
 		super();
@@ -257,6 +260,7 @@ export class Networking extends EventEmitter {
 
 	/**
 	 * Called when a packet is received on the connection's WebSocket
+	 *
 	 * @param packet - The received packet
 	 */
 	private onWsPacket(packet: any) {

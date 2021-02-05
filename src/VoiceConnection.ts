@@ -84,6 +84,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param joinConfig - The data required to establish the voice connection
 	 * @param options - The connection options
+	 * @param options.debug - Whether to emit debug messages or not
 	 */
 	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
 		super();
@@ -243,7 +244,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param oldState - The previous state
 	 * @param newState - The new state
-	*/
+	 */
 	private onNetworkingStateChange(oldState: NetworkingState, newState: NetworkingState) {
 		if (oldState.code === newState.code) return;
 		if (this.state.status !== VoiceConnectionStatus.Connecting && this.state.status !== VoiceConnectionStatus.Ready) return;
@@ -263,6 +264,7 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Propagates errors from the underlying network instance.
+	 *
 	 * @param error - The error to propagate
 	 */
 	private onNetworkingError(error: Error) {
@@ -280,6 +282,7 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Prepares an audio packet for dispatch
+	 *
 	 * @param buffer - The Opus packet to prepare
 	 */
 	public prepareAudioPacket(buffer: Buffer) {
@@ -299,6 +302,7 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Prepares an audio packet and dispatches it immediately
+	 *
 	 * @param buffer - The Opus packet to play
 	 */
 	public playOpusPacket(buffer: Buffer) {
@@ -400,6 +404,7 @@ export class VoiceConnection extends EventEmitter {
 
 /**
  * Creates a new voice connection
+ *
  * @param joinConfig - The data required to establish the voice connection
  * @param options - The connection options
  */
