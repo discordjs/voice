@@ -124,7 +124,7 @@ export class VoiceConnection extends EventEmitter {
 		const newNetworking: Networking|undefined = Reflect.get(newState, 'networking');
 
 		const oldSubscription: PlayerSubscription|undefined = Reflect.get(oldState, 'subscription');
-		const newSubscription: PlayerSubscription|undefined = Reflect.get(oldState, 'subscription');
+		const newSubscription: PlayerSubscription|undefined = Reflect.get(newState, 'subscription');
 
 		if (oldNetworking && oldNetworking !== newNetworking) {
 			oldNetworking.off('debug', this.onNetworkingDebug);
