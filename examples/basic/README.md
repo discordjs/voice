@@ -15,7 +15,6 @@ check the other files in this folder!
 import { Client, VoiceChannel, Intents } from 'discord.js';
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
 import { entersState } from './util';
-import { once } from 'events';
 
 /*
 	In this example, we are creating a single audio player that plays to a number of
