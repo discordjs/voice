@@ -252,10 +252,8 @@ export class AudioPlayer extends EventEmitter {
 			throw new Error(`Cannot play a resource (${resource.name ?? 'unnamed'}) that has already ended.`);
 		}
 
-		/*
-			Attach error listeners to the stream that will propagate the error and then return to the Idle
-			state if the resource is still being used.
-		*/
+		// Attach error listeners to the stream that will propagate the error and then return to the Idle
+		// state if the resource is still being used.
 		const onStreamError = (error: Error) => {
 			if (this.state.status !== AudioPlayerStatus.Idle) {
 				/**
