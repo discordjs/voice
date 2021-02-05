@@ -1,4 +1,8 @@
-import { GatewayOPCodes, GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8/gateway';
+import {
+	GatewayOPCodes,
+	GatewayVoiceServerUpdateDispatchData,
+	GatewayVoiceStateUpdateDispatchData,
+} from 'discord-api-types/v8/gateway';
 import { Client, Constants, Guild } from 'discord.js';
 import { VoiceConnection } from './VoiceConnection';
 
@@ -23,7 +27,7 @@ export function trackClient(client: Client) {
 
 export interface JoinConfig {
 	guild: Guild;
-	channelId: string|null;
+	channelId: string | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
 }
@@ -40,8 +44,8 @@ export function signalJoinVoiceChannel(config: JoinConfig) {
 			guild_id: config.guild.id,
 			channel_id: config.channelId,
 			self_deaf: config.selfDeaf,
-			self_mute: config.selfMute
-		}
+			self_mute: config.selfMute,
+		},
 	});
 }
 

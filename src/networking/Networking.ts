@@ -8,13 +8,9 @@ import { noop } from '../util/util';
 // The number of audio channels required by Discord
 const CHANNELS = 2;
 const TIMESTAMP_INC = (48000 / 100) * CHANNELS;
-const MAX_NONCE_SIZE = (2 ** 32) - 1;
+const MAX_NONCE_SIZE = 2 ** 32 - 1;
 
-const SUPPORTED_ENCRYPTION_MODES = [
-	'xsalsa20_poly1305_lite',
-	'xsalsa20_poly1305_suffix',
-	'xsalsa20_poly1305'
-];
+const SUPPORTED_ENCRYPTION_MODES = ['xsalsa20_poly1305_lite', 'xsalsa20_poly1305_suffix', 'xsalsa20_poly1305'];
 
 /**
  * The different statuses that a networking instance can hold. The order
@@ -28,32 +24,36 @@ export enum NetworkingStatusCode {
 	SelectingProtocol,
 	Ready,
 	Resuming,
-	Closed
+	Closed,
 }
 
 /**
  * The various states that a networking instance can be in.
  */
-export type NetworkingState = {
-	code: NetworkingStatusCode.OpeningWs | NetworkingStatusCode.Identifying;
-	ws: VoiceWebSocket;
-	connectionOptions: ConnectionOptions;
-} | {
-	code: NetworkingStatusCode.UdpHandshaking | NetworkingStatusCode.SelectingProtocol;
-	ws: VoiceWebSocket;
-	udp: VoiceUDPSocket;
-	connectionOptions: ConnectionOptions;
-	connectionData: Pick<ConnectionData, 'ssrc'>;
-} | {
-	code: NetworkingStatusCode.Ready | NetworkingStatusCode.Resuming;
-	ws: VoiceWebSocket;
-	udp: VoiceUDPSocket;
-	connectionOptions: ConnectionOptions;
-	connectionData: ConnectionData;
-	preparedPacket?: Buffer;
-} | {
-	code: NetworkingStatusCode.Closed;
-};
+export type NetworkingState =
+	| {
+			code: NetworkingStatusCode.OpeningWs | NetworkingStatusCode.Identifying;
+			ws: VoiceWebSocket;
+			connectionOptions: ConnectionOptions;
+	  }
+	| {
+			code: NetworkingStatusCode.UdpHandshaking | NetworkingStatusCode.SelectingProtocol;
+			ws: VoiceWebSocket;
+			udp: VoiceUDPSocket;
+			connectionOptions: ConnectionOptions;
+			connectionData: Pick<ConnectionData, 'ssrc'>;
+	  }
+	| {
+			code: NetworkingStatusCode.Ready | NetworkingStatusCode.Resuming;
+			ws: VoiceWebSocket;
+			udp: VoiceUDPSocket;
+			connectionOptions: ConnectionOptions;
+			connectionData: ConnectionData;
+			preparedPacket?: Buffer;
+	  }
+	| {
+			code: NetworkingStatusCode.Closed;
+	  };
 
 /**
  * Details required to connect to the Discord voice gateway. These details
@@ -116,7 +116,7 @@ export class Networking extends EventEmitter {
 		this._state = {
 			code: NetworkingStatusCode.OpeningWs,
 			ws: this.createWebSocket(options.endpoint),
-			connectionOptions: options
+			connectionOptions: options,
 		};
 	}
 
@@ -125,7 +125,7 @@ export class Networking extends EventEmitter {
 	 */
 	public destroy() {
 		this.state = {
-			code: NetworkingStatusCode.Closed
+			code: NetworkingStatusCode.Closed,
 		};
 	}
 
@@ -140,8 +140,8 @@ export class Networking extends EventEmitter {
 	 * Sets a new state for the networking instance, performing clean-up operations where necessary.
 	 */
 	public set state(newState: NetworkingState) {
-		const oldWs = Reflect.get(this._state, 'ws') as VoiceWebSocket|undefined;
-		const newWs = Reflect.get(newState, 'ws') as VoiceWebSocket|undefined;
+		const oldWs = Reflect.get(this._state, 'ws') as VoiceWebSocket | undefined;
+		const newWs = Reflect.get(newState, 'ws') as VoiceWebSocket | undefined;
 		if (oldWs && oldWs !== newWs) {
 			// The old WebSocket is being freed - remove all handlers from it
 			oldWs.off('debug', this.onWsDebug);
@@ -153,8 +153,8 @@ export class Networking extends EventEmitter {
 			oldWs.destroy();
 		}
 
-		const oldUdp = Reflect.get(this._state, 'udp') as VoiceUDPSocket|undefined;
-		const newUdp = Reflect.get(newState, 'udp') as VoiceUDPSocket|undefined;
+		const oldUdp = Reflect.get(this._state, 'udp') as VoiceUDPSocket | undefined;
+		const newUdp = Reflect.get(newState, 'udp') as VoiceUDPSocket | undefined;
 
 		if (oldUdp && oldUdp !== newUdp) {
 			oldUdp.on('error', noop);
@@ -214,13 +214,13 @@ export class Networking extends EventEmitter {
 					server_id: this.state.connectionOptions.serverID,
 					user_id: this.state.connectionOptions.userID,
 					session_id: this.state.connectionOptions.sessionID,
-					token: this.state.connectionOptions.token
-				}
+					token: this.state.connectionOptions.token,
+				},
 			};
 			this.state.ws.sendPacket(packet);
 			this.state = {
 				...this.state,
-				code: NetworkingStatusCode.Identifying
+				code: NetworkingStatusCode.Identifying,
 			};
 		} else if (this.state.code === NetworkingStatusCode.Resuming) {
 			const packet = {
@@ -228,8 +228,8 @@ export class Networking extends EventEmitter {
 				d: {
 					server_id: this.state.connectionOptions.serverID,
 					session_id: this.state.connectionOptions.sessionID,
-					token: this.state.connectionOptions.token
-				}
+					token: this.state.connectionOptions.token,
+				},
 			};
 			this.state.ws.sendPacket(packet);
 		}
@@ -248,7 +248,7 @@ export class Networking extends EventEmitter {
 			this.state = {
 				...this.state,
 				code: NetworkingStatusCode.Resuming,
-				ws: this.createWebSocket(this.state.connectionOptions.endpoint)
+				ws: this.createWebSocket(this.state.connectionOptions.endpoint),
 			};
 		} else if (this.state.code !== NetworkingStatusCode.Closed) {
 			this.destroy();
@@ -268,8 +268,9 @@ export class Networking extends EventEmitter {
 
 			const udp = new VoiceUDPSocket({ ip, port });
 			udp.on('error', this.onChildError);
-			udp.performIPDiscovery(ssrc)
-				.then(localConfig => {
+			udp
+				.performIPDiscovery(ssrc)
+				.then((localConfig) => {
 					if (this.state.code !== NetworkingStatusCode.UdpHandshaking) return;
 					this.state.ws.sendPacket({
 						op: VoiceOPCodes.SelectProtocol,
@@ -278,26 +279,29 @@ export class Networking extends EventEmitter {
 							data: {
 								address: localConfig.ip,
 								port: localConfig.port,
-								mode: chooseEncryptionMode(modes)
-							}
-						}
+								mode: chooseEncryptionMode(modes),
+							},
+						},
 					});
 					this.state = {
 						...this.state,
-						code: NetworkingStatusCode.SelectingProtocol
+						code: NetworkingStatusCode.SelectingProtocol,
 					};
 				})
-				.catch(error => this.emit('error', error));
+				.catch((error) => this.emit('error', error));
 
 			this.state = {
 				...this.state,
 				code: NetworkingStatusCode.UdpHandshaking,
 				udp,
 				connectionData: {
-					ssrc
-				}
+					ssrc,
+				},
 			};
-		} else if (packet.op === VoiceOPCodes.SessionDescription && this.state.code === NetworkingStatusCode.SelectingProtocol) {
+		} else if (
+			packet.op === VoiceOPCodes.SessionDescription &&
+			this.state.code === NetworkingStatusCode.SelectingProtocol
+		) {
 			const { mode: encryptionMode, secret_key: secretKey } = packet.d;
 			this.state = {
 				...this.state,
@@ -310,13 +314,13 @@ export class Networking extends EventEmitter {
 					timestamp: randomNBit(32),
 					nonce: 0,
 					nonceBuffer: Buffer.alloc(24),
-					speaking: false
-				}
+					speaking: false,
+				},
 			};
 		} else if (packet.op === VoiceOPCodes.Resumed && this.state.code === NetworkingStatusCode.Resuming) {
 			this.state = {
 				...this.state,
-				code: NetworkingStatusCode.Ready
+				code: NetworkingStatusCode.Ready,
 			};
 			this.state.connectionData.speaking = false;
 		}
@@ -392,15 +396,14 @@ export class Networking extends EventEmitter {
 		if (state.code !== NetworkingStatusCode.Ready) return;
 		if (state.connectionData.speaking === speaking) return;
 		state.connectionData.speaking = speaking;
-		state.ws
-			.sendPacket({
-				op: VoiceOPCodes.Speaking,
-				d: {
-					speaking: speaking ? 1 : 0,
-					delay: 0,
-					ssrc: state.connectionData.ssrc
-				}
-			});
+		state.ws.sendPacket({
+			op: VoiceOPCodes.Speaking,
+			d: {
+				speaking: speaking ? 1 : 0,
+				delay: 0,
+				ssrc: state.connectionData.ssrc,
+			},
+		});
 	}
 
 	/**
@@ -438,7 +441,10 @@ export class Networking extends EventEmitter {
 			connectionData.nonce++;
 			if (connectionData.nonce > MAX_NONCE_SIZE) connectionData.nonce = 0;
 			connectionData.nonceBuffer.writeUInt32BE(connectionData.nonce, 0);
-			return [secretbox.methods.close(opusPacket, connectionData.nonceBuffer, secretKey), connectionData.nonceBuffer.slice(0, 4)];
+			return [
+				secretbox.methods.close(opusPacket, connectionData.nonceBuffer, secretKey),
+				connectionData.nonceBuffer.slice(0, 4),
+			];
 		} else if (encryptionMode === 'xsalsa20_poly1305_suffix') {
 			const random = secretbox.methods.random(24, connectionData.nonceBuffer);
 			return [secretbox.methods.close(opusPacket, random, secretKey), random];
@@ -453,7 +459,7 @@ export class Networking extends EventEmitter {
  * @param n The number of bits
  */
 function randomNBit(n: number) {
-	return Math.floor(Math.random() * (2 ** n));
+	return Math.floor(Math.random() * 2 ** n);
 }
 
 /**
@@ -465,7 +471,7 @@ function stringifyState(state: NetworkingState) {
 	return JSON.stringify({
 		...state,
 		ws: Reflect.has(state, 'ws'),
-		udp: Reflect.has(state, 'udp')
+		udp: Reflect.has(state, 'udp'),
 	});
 }
 
@@ -475,7 +481,7 @@ function stringifyState(state: NetworkingState) {
  * @param options The available encryption options
  */
 function chooseEncryptionMode(options: string[]): string {
-	const option = options.find(option => SUPPORTED_ENCRYPTION_MODES.includes(option));
+	const option = options.find((option) => SUPPORTED_ENCRYPTION_MODES.includes(option));
 	if (!option) {
 		throw new Error(`No compatible encryption modes. Available include: ${options.join(', ')}`);
 	}

@@ -1,5 +1,14 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+
 import { Client, VoiceChannel, Intents } from 'discord.js';
-import { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
+import {
+	joinVoiceChannel,
+	createAudioPlayer,
+	createAudioResource,
+	StreamType,
+	AudioPlayerStatus,
+	VoiceConnectionStatus,
+} from '@discordjs/voice';
 import { entersState } from './util';
 
 /*
@@ -24,10 +33,9 @@ function playSong() {
 		were using an Ogg or WebM source, then we could change this value. However, for now we
 		will leave this as arbitrary.
 	*/
-	const resource = createAudioResource(
-		'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-		{ inputType: StreamType.Arbitrary }
-	);
+	const resource = createAudioResource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', {
+		inputType: StreamType.Arbitrary,
+	});
 
 	/*
 		We will now play this to the audio player. By default, the audio player will not play until
@@ -50,7 +58,6 @@ async function connectToChannel(channel: VoiceChannel) {
 		us!
 	*/
 	const connection = joinVoiceChannel(channel);
-
 
 	/*
 		If we're dealing with a connection that isn't yet Ready, we can set a reasonable
@@ -86,13 +93,11 @@ async function connectToChannel(channel: VoiceChannel) {
 	Here we will implement the helper functions that we have defined above
 */
 
-const client = new Client({ ws: { intents: [
-	Intents.FLAGS.GUILDS,
-	Intents.FLAGS.GUILD_MESSAGES,
-	Intents.FLAGS.GUILD_VOICE_STATES
-] } });
+const client = new Client({
+	ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] },
+});
 
-client.login('token here');
+void client.login('token here');
 
 client.on('ready', async () => {
 	console.log('Discord.js client is ready!');
@@ -111,7 +116,7 @@ client.on('ready', async () => {
 	}
 });
 
-client.on('message', async message => {
+client.on('message', async (message) => {
 	if (!message.guild) return;
 
 	if (message.content === '-join') {
@@ -130,7 +135,7 @@ client.on('message', async message => {
 					voice channel.
 				*/
 				connection.subscribe(player);
-				message.reply('Playing now!');
+				await message.reply('Playing now!');
 			} catch (error) {
 				/*
 					Unable to connect to the voice channel within 30 seconds :(
@@ -141,7 +146,7 @@ client.on('message', async message => {
 			/*
 				The user is not in a voice channel
 			*/
-			message.reply('Join a voice channel then try again!');
+			void message.reply('Join a voice channel then try again!');
 		}
 	}
 });

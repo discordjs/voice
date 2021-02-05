@@ -65,7 +65,7 @@ export interface AudioResource {
  * @param input The resource to play.
  * @param options Configurable options for creating the resource.
  */
-export function createAudioResource(input: string|Readable, options: CreateAudioResourceOptions): AudioResource {
+export function createAudioResource(input: string | Readable, options: CreateAudioResourceOptions): AudioResource {
 	// string inputs can only be used with FFmpeg
 	if (typeof input === 'string') {
 		options.inputType = StreamType.Arbitrary;
@@ -76,7 +76,7 @@ export function createAudioResource(input: string|Readable, options: CreateAudio
 		throw new Error(`Cannot create transcoder pipeline for stream type '${options.inputType}'`);
 	}
 
-	let volumeTransformer: VolumeTransformer|undefined;
+	let volumeTransformer: VolumeTransformer | undefined;
 	if (options.inlineVolume) {
 		volumeTransformer = insertInlineVolumeTransformer(transformerPipeline);
 	}
@@ -86,10 +86,10 @@ export function createAudioResource(input: string|Readable, options: CreateAudio
 		// No adjustments required
 		return {
 			playStream: input,
-			pipeline: []
+			pipeline: [],
 		};
 	}
-	const streams = [...transformerPipeline.map(pipe => pipe.transformer(input))];
+	const streams = [...transformerPipeline.map((pipe) => pipe.transformer(input))];
 	if (typeof input !== 'string') streams.unshift(input);
 
 	// the callback is called once the stream ends
@@ -99,7 +99,7 @@ export function createAudioResource(input: string|Readable, options: CreateAudio
 		playStream: (playStream as any) as Readable,
 		pipeline: transformerPipeline,
 		name: options.name,
-		volume: volumeTransformer
+		volume: volumeTransformer,
 	};
 }
 
@@ -113,7 +113,7 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 		from: StreamType.Raw,
 		to: StreamType.Raw,
 		cost: 0.5,
-		transformer: () => volumeTransformer
+		transformer: () => volumeTransformer,
 	};
 
 	// The best insertion would be immediately after a Raw phase in the pipeline
@@ -130,7 +130,7 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 		cost: 0.5,
 		from: StreamType.Opus,
 		to: StreamType.Raw,
-		transformer: () => new opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 })
+		transformer: () => new opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 }),
 	});
 
 	transformerPipeline.push(transformer);
@@ -139,7 +139,7 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 		cost: 0.5,
 		from: StreamType.Raw,
 		to: StreamType.Opus,
-		transformer: () => new opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 })
+		transformer: () => new opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 }),
 	});
 	return volumeTransformer;
 }
