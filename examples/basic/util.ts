@@ -10,31 +10,28 @@ export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxT
  * @param status The status that the target should be in
  * @param maxTime The maximum time we are allowing for this to occur
  */
-export function entersState<T extends VoiceConnection | AudioPlayer>(target: T, status: VoiceConnectionStatus | AudioPlayerStatus, maxTime: number) {
-	return new Promise((resolve, reject) => {
-		if (target.state.status === status) {
-			return resolve(target);
-		}
+export async function entersState<T extends VoiceConnection | AudioPlayer>(target: T, status: VoiceConnectionStatus | AudioPlayerStatus, maxTime: number) {
+	if (target.state.status === status) {
+		return target;
+	}
+	let cleanup: () => void;
+	try {
+		await new Promise((resolve, reject) => {
+			const timeout = setTimeout(() => reject(new Error(`Did not enter state ${status} within ${maxTime}ms`)), maxTime);
 
-		const timeout = setTimeout(() => {
-			cleanup();
-			reject(new Error(`Did not enter state ${status} within ${maxTime}ms`))
-		}, maxTime);
+			target.once(status, resolve);
+			target.once('error', reject);
 
-		target.once(status, () => {
-			cleanup();
-			resolve(target);
+			cleanup = () => {
+				clearTimeout(timeout);
+				target.off(status, resolve);
+				target.off('error', reject);
+			};
 		});
-
-		target.once('error', error => {
-			cleanup();
-			reject(error);
-		});
-	
-		const cleanup = () => {
-			clearTimeout(timeout);
-			target.off(status, resolve);
-			target.off('error', reject);
-		};
-	});
+		cleanup();
+		return target;
+	} catch (error) {
+		cleanup();
+		throw error;
+	}
 }
