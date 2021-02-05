@@ -1,5 +1,4 @@
 import { AudioPlayer, AudioPlayerStatus, VoiceConnection, VoiceConnectionStatus } from '@discordjs/voice';
-import { once } from 'events';
 
 export function entersState(target: VoiceConnection, status: VoiceConnectionStatus, maxTime: number): Promise<VoiceConnection>;
 export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxTime: number): Promise<AudioPlayer>;
@@ -12,13 +11,30 @@ export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxT
  * @param maxTime The maximum time we are allowing for this to occur
  */
 export function entersState<T extends VoiceConnection | AudioPlayer>(target: T, status: VoiceConnectionStatus | AudioPlayerStatus, maxTime: number) {
-	if (target.state.status === status) {
-		return Promise.resolve(target);
-	}
+	return new Promise((resolve, reject) => {
+		if (target.state.status === status) {
+			return resolve(target);
+		}
 
-	const timeout = setTimeout(() => Promise.reject(new Error(`Did not enter state ${status} within ${maxTime}ms`)), maxTime);
+		const timeout = setTimeout(() => {
+			cleanup();
+			reject(new Error(`Did not enter state ${status} within ${maxTime}ms`))
+		}, maxTime);
 
-	return Promise.race([once(target, status), timeout])
-		.then(() => Promise.resolve(target))
-		.finally(() => clearTimeout(timeout));
+		target.once(status, () => {
+			cleanup();
+			resolve(target);
+		});
+
+		target.once('error', error => {
+			cleanup();
+			reject(error);
+		});
+	
+		const cleanup = () => {
+			clearTimeout(timeout);
+			target.off(status, resolve);
+			target.off('error', reject);
+		};
+	});
 }
