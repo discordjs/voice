@@ -62,7 +62,7 @@ type AudioPlayerState = {
 	status: AudioPlayerStatus.Buffering;
 	resource: AudioResource;
 	onReadableCallback: () => void;
-	failureCallback: () => void;
+	onFailureCallback: () => void;
 } | {
 	status: AudioPlayerStatus.Playing;
 	missedFrames: number;
@@ -197,9 +197,9 @@ export class AudioPlayer extends EventEmitter {
 
 		// When leaving the Buffering state (or buffering a new resource), then remove the event listeners from it
 		if (oldState.status === AudioPlayerStatus.Buffering && (newState.status !== AudioPlayerStatus.Buffering || newState.resource !== oldState.resource)) {
-			oldState.resource.playStream.off('end', oldState.failureCallback);
-			oldState.resource.playStream.off('close', oldState.failureCallback);
-			oldState.resource.playStream.off('finish', oldState.failureCallback);
+			oldState.resource.playStream.off('end', oldState.onFailureCallback);
+			oldState.resource.playStream.off('close', oldState.onFailureCallback);
+			oldState.resource.playStream.off('finish', oldState.onFailureCallback);
 			oldState.resource.playStream.off('readable', oldState.onReadableCallback);
 		}
 
@@ -269,7 +269,7 @@ export class AudioPlayer extends EventEmitter {
 				}
 			};
 
-			const failureCallback = () => {
+			const onFailureCallback = () => {
 				if (this.state.status === AudioPlayerStatus.Buffering && this.state.resource === resource) {
 					this.state = {
 						status: AudioPlayerStatus.Idle
@@ -279,15 +279,15 @@ export class AudioPlayer extends EventEmitter {
 
 			resource.playStream.once('readable', onReadableCallback);
 
-			resource.playStream.once('end', failureCallback);
-			resource.playStream.once('close', failureCallback);
-			resource.playStream.once('finish', failureCallback);
+			resource.playStream.once('end', onFailureCallback);
+			resource.playStream.once('close', onFailureCallback);
+			resource.playStream.once('finish', onFailureCallback);
 
 			this.state = {
 				status: AudioPlayerStatus.Buffering,
 				resource,
 				onReadableCallback,
-				failureCallback
+				onFailureCallback
 			};
 		}
 	}
