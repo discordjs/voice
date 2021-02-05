@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src",
-    "build": "tsc"
+    "build": "tsc",
+    "typecheck": "tsc --noEmit --incremental false"
   },
   "repository": {
     "type": "git",
@@ -47,7 +48,7 @@
   "eslintConfig": {
     "extends": "marine",
     "plugins": [
-      "eslint-plugin-tsdoc"
+      "tsdoc"
     ],
     "rules": {
       "@typescript-eslint/naming-convention": [
@@ -58,7 +59,8 @@
             "PascalCase"
           ]
         }
-      ]
+      ],
+      "tsdoc/syntax": "warn"
     }
   }
 }

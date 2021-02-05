@@ -4,6 +4,7 @@ import { VoiceConnection } from './VoiceConnection';
 
 // Clients
 const clients: Set<Client> = new Set();
+
 export function trackClient(client: Client) {
 	if (clients.has(client)) {
 		return;
@@ -24,7 +25,7 @@ export function trackClient(client: Client) {
 
 export interface JoinConfig {
 	guild: Guild;
-	channelId: string|null;
+	channelId: string | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
 }
@@ -32,7 +33,7 @@ export interface JoinConfig {
 /**
  * Sends a voice state update to the main websocket shard of a guild, to indicate joining/leaving/moving across
  * voice channels
- * @param config
+ * @param config - Config object todo change this
  */
 export function signalJoinVoiceChannel(config: JoinConfig) {
 	return config.guild.shard.send({
