@@ -37,6 +37,7 @@ export enum NoSubscriberBehaviour {
  */
 export enum AudioPlayerStatus {
 	Idle = 'idle',
+	Buffering = 'buffering',
 	Paused = 'paused',
 	Playing = 'playing',
 	AutoPaused = 'autopaused'
@@ -58,16 +59,21 @@ interface CreateAudioPlayerOptions {
 type AudioPlayerState = {
 	status: AudioPlayerStatus.Idle;
 } | {
+	status: AudioPlayerStatus.Buffering;
+	resource: AudioResource;
+	onReadableCallback: () => void;
+	onFailureCallback: () => void;
+} | {
 	status: AudioPlayerStatus.Playing;
 	missedFrames: number;
 	resource: AudioResource;
-	stepTimeout: NodeJS.Timeout;
+	stepTimeout?: NodeJS.Timeout;
 	nextTime: number;
 } | {
 	status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 	silencePacketsRemaining: number;
 	resource: AudioResource;
-	stepTimeout: NodeJS.Timeout;
+	stepTimeout?: NodeJS.Timeout;
 	nextTime: number;
 };
 
@@ -184,7 +190,17 @@ export class AudioPlayer extends EventEmitter {
 			oldState.resource.playStream.on('error', noop);
 			oldState.resource.playStream.destroy();
 			oldState.resource.playStream.read(); // required to ensure buffered data is drained, prevents memory leak
-			clearTimeout(oldState.stepTimeout);
+			if (oldState.status !== AudioPlayerStatus.Buffering && oldState.stepTimeout) {
+				clearTimeout(oldState.stepTimeout);
+			}
+		}
+
+		// When leaving the Buffering state (or buffering a new resource), then remove the event listeners from it
+		if (oldState.status === AudioPlayerStatus.Buffering && (newState.status !== AudioPlayerStatus.Buffering || newState.resource !== oldState.resource)) {
+			oldState.resource.playStream.off('end', oldState.onFailureCallback);
+			oldState.resource.playStream.off('close', oldState.onFailureCallback);
+			oldState.resource.playStream.off('finish', oldState.onFailureCallback);
+			oldState.resource.playStream.off('readable', oldState.onReadableCallback);
 		}
 
 		// transitioning into an idle should ensure that connections stop speaking
@@ -232,13 +248,48 @@ export class AudioPlayer extends EventEmitter {
 			throw new Error(`Cannot play a resource (${resource.name ?? 'unnamed'}) that has already ended.`);
 		}
 
-		this.state = {
-			status: AudioPlayerStatus.Playing,
-			missedFrames: 0,
-			resource,
-			nextTime: Date.now(),
-			stepTimeout: setTimeout(() => this._step(), 0)
-		};
+		if (resource.playStream.readable) {
+			this.state = {
+				status: AudioPlayerStatus.Playing,
+				missedFrames: 0,
+				resource,
+				nextTime: Date.now()
+			};
+			setImmediate(() => this._step());
+		} else {
+			const onReadableCallback = () => {
+				if (this.state.status === AudioPlayerStatus.Buffering && this.state.resource === resource) {
+					this.state = {
+						status: AudioPlayerStatus.Playing,
+						missedFrames: 0,
+						resource,
+						nextTime: Date.now()
+					};
+					setImmediate(() => this._step());
+				}
+			};
+
+			const onFailureCallback = () => {
+				if (this.state.status === AudioPlayerStatus.Buffering && this.state.resource === resource) {
+					this.state = {
+						status: AudioPlayerStatus.Idle
+					};
+				}
+			};
+
+			resource.playStream.once('readable', onReadableCallback);
+
+			resource.playStream.once('end', onFailureCallback);
+			resource.playStream.once('close', onFailureCallback);
+			resource.playStream.once('finish', onFailureCallback);
+
+			this.state = {
+				status: AudioPlayerStatus.Buffering,
+				resource,
+				onReadableCallback,
+				onFailureCallback
+			};
+		}
 	}
 
 	/**
@@ -298,7 +349,7 @@ export class AudioPlayer extends EventEmitter {
 		const state = this.state;
 
 		// Guard against the Idle state
-		if (state.status === AudioPlayerStatus.Idle) return;
+		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return;
 
 		// If the stream has been destroyed or is no longer readable, then transition to the Idle state.
 		if (state.resource.playStream.readableEnded || state.resource.playStream.destroyed) {
