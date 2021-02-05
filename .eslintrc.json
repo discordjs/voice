@@ -1,0 +1,16 @@
+{
+	"root": true,
+	"extends": "marine/prettier/node",
+	"parserOptions": {
+		"project": "./tsconfig.eslint.json"
+	},
+	"rules": {
+		"@typescript-eslint/naming-convention": [
+			"error",
+			{
+				"selector": "enumMember",
+				"format": ["PascalCase"]
+			}
+		]
+	}
+}

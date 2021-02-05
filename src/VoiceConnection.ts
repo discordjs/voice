@@ -3,7 +3,14 @@ import { EventEmitter } from 'events';
 import { JoinVoiceChannelOptions } from '.';
 import { AudioPlayer } from './audio/AudioPlayer';
 import { PlayerSubscription } from './audio/PlayerSubscription';
-import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection } from './DataStore';
+import {
+	getVoiceConnection,
+	signalJoinVoiceChannel,
+	trackClient,
+	trackVoiceConnection,
+	JoinConfig,
+	untrackVoiceConnection,
+} from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
 
@@ -25,26 +32,30 @@ export enum VoiceConnectionStatus {
 	Connecting = 'connecting',
 	Ready = 'ready',
 	Disconnected = 'disconnected',
-	Destroyed = 'destroyed'
+	Destroyed = 'destroyed',
 }
 
 /**
  * The various states that a voice connection can be in.
  */
-export type VoiceConnectionState = {
-	status: VoiceConnectionStatus.Signalling;
-	subscription?: PlayerSubscription;
-} | {
-	status: VoiceConnectionStatus.Disconnected;
-	closeCode: number;
-	subscription?: PlayerSubscription;
-} | {
-	status: VoiceConnectionStatus.Connecting | VoiceConnectionStatus.Ready;
-	networking: Networking;
-	subscription?: PlayerSubscription;
-} | {
-	status: VoiceConnectionStatus.Destroyed;
-};
+export type VoiceConnectionState =
+	| {
+			status: VoiceConnectionStatus.Signalling;
+			subscription?: PlayerSubscription;
+	  }
+	| {
+			status: VoiceConnectionStatus.Disconnected;
+			closeCode: number;
+			subscription?: PlayerSubscription;
+	  }
+	| {
+			status: VoiceConnectionStatus.Connecting | VoiceConnectionStatus.Ready;
+			networking: Networking;
+			subscription?: PlayerSubscription;
+	  }
+	| {
+			status: VoiceConnectionStatus.Destroyed;
+	  };
 
 /**
  * A connection to the voice server of a Guild, can be used to play audio in voice channels.
@@ -71,8 +82,8 @@ export class VoiceConnection extends EventEmitter {
 	 * from the main Discord gateway after signalling to change the voice state.
 	 */
 	private readonly packets: {
-		server: GatewayVoiceServerUpdateDispatchData|undefined;
-		state: GatewayVoiceStateUpdateDispatchData|undefined;
+		server: GatewayVoiceServerUpdateDispatchData | undefined;
+		state: GatewayVoiceStateUpdateDispatchData | undefined;
 	};
 
 	/**
@@ -99,7 +110,7 @@ export class VoiceConnection extends EventEmitter {
 
 		this.packets = {
 			server: undefined,
-			state: undefined
+			state: undefined,
 		};
 
 		this.debug = debug ? this.emit.bind(this, 'debug') : null;
@@ -119,11 +130,11 @@ export class VoiceConnection extends EventEmitter {
 	 */
 	public set state(newState: VoiceConnectionState) {
 		const oldState = this._state;
-		const oldNetworking: Networking|undefined = Reflect.get(oldState, 'networking');
-		const newNetworking: Networking|undefined = Reflect.get(newState, 'networking');
+		const oldNetworking: Networking | undefined = Reflect.get(oldState, 'networking');
+		const newNetworking: Networking | undefined = Reflect.get(newState, 'networking');
 
-		const oldSubscription: PlayerSubscription|undefined = Reflect.get(oldState, 'subscription');
-		const newSubscription: PlayerSubscription|undefined = Reflect.get(newState, 'subscription');
+		const oldSubscription: PlayerSubscription | undefined = Reflect.get(oldState, 'subscription');
+		const newSubscription: PlayerSubscription | undefined = Reflect.get(newState, 'subscription');
 
 		if (oldNetworking && oldNetworking !== newNetworking) {
 			oldNetworking.off('debug', this.onNetworkingDebug);
@@ -194,13 +205,16 @@ export class VoiceConnection extends EventEmitter {
 		const { server, state } = this.packets;
 		if (!server || !state || this.state.status === VoiceConnectionStatus.Destroyed) return;
 
-		const networking = new Networking({
-			endpoint: server.endpoint,
-			serverID: server.guild_id,
-			token: server.token,
-			sessionID: state.session_id,
-			userID: state.user_id
-		}, Boolean(this.debug));
+		const networking = new Networking(
+			{
+				endpoint: server.endpoint,
+				serverID: server.guild_id,
+				token: server.token,
+				sessionID: state.session_id,
+				userID: state.user_id,
+			},
+			Boolean(this.debug),
+		);
 
 		networking.once('close', this.onNetworkingClose);
 		networking.on('stateChange', this.onNetworkingStateChange);
@@ -209,7 +223,7 @@ export class VoiceConnection extends EventEmitter {
 
 		this.state = {
 			status: VoiceConnectionStatus.Connecting,
-			networking
+			networking,
 		};
 	}
 
@@ -230,7 +244,7 @@ export class VoiceConnection extends EventEmitter {
 			// Disconnected - networking is already destroyed here
 			this.state = {
 				status: VoiceConnectionStatus.Disconnected,
-				closeCode: code
+				closeCode: code,
 			};
 		} else {
 			this.state = { status: VoiceConnectionStatus.Signalling };
@@ -243,20 +257,21 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param oldState The previous state
 	 * @param newState The new state
-	*/
+	 */
 	private onNetworkingStateChange(oldState: NetworkingState, newState: NetworkingState) {
 		if (oldState.code === newState.code) return;
-		if (this.state.status !== VoiceConnectionStatus.Connecting && this.state.status !== VoiceConnectionStatus.Ready) return;
+		if (this.state.status !== VoiceConnectionStatus.Connecting && this.state.status !== VoiceConnectionStatus.Ready)
+			return;
 
 		if (newState.code === NetworkingStatusCode.Ready) {
 			this.state = {
 				...this.state,
-				status: VoiceConnectionStatus.Ready
+				status: VoiceConnectionStatus.Ready,
 			};
 		} else if (newState.code !== NetworkingStatusCode.Closed) {
 			this.state = {
 				...this.state,
-				status: VoiceConnectionStatus.Connecting
+				status: VoiceConnectionStatus.Connecting,
 			};
 		}
 	}
@@ -322,10 +337,10 @@ export class VoiceConnection extends EventEmitter {
 		}
 		signalJoinVoiceChannel({
 			...this.joinConfig,
-			channelId: null
+			channelId: null,
 		});
 		this.state = {
-			status: VoiceConnectionStatus.Destroyed
+			status: VoiceConnectionStatus.Destroyed,
 		};
 	}
 
@@ -347,7 +362,7 @@ export class VoiceConnection extends EventEmitter {
 		this.reconnectAttempts++;
 
 		this.state = {
-			status: VoiceConnectionStatus.Signalling
+			status: VoiceConnectionStatus.Signalling,
 		};
 		return true;
 	}
@@ -377,7 +392,7 @@ export class VoiceConnection extends EventEmitter {
 
 		this.state = {
 			...this.state,
-			subscription
+			subscription,
 		};
 
 		return subscription;
@@ -392,7 +407,7 @@ export class VoiceConnection extends EventEmitter {
 		if (this.state.status !== VoiceConnectionStatus.Destroyed && this.state.subscription === subscription) {
 			this.state = {
 				...this.state,
-				subscription: undefined
+				subscription: undefined,
 			};
 		}
 	}
