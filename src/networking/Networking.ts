@@ -111,13 +111,13 @@ export class Networking extends EventEmitter {
 		this.onWsClose = this.onWsClose.bind(this);
 		this.onWsDebug = this.onWsDebug.bind(this);
 
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+
 		this._state = {
 			code: NetworkingStatusCode.OpeningWs,
 			ws: this.createWebSocket(options.endpoint),
 			connectionOptions: options
 		};
-
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 	}
 
 	/**
