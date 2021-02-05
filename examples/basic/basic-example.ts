@@ -36,10 +36,10 @@ function playSong() {
 	*/
 	player.play(resource);
 
-	/**
-	 * Here we are using a helper function. It will resolve if the player enters the Playing
-	 * state within 5 seconds, otherwise it will reject with an error.
-	 */
+	/*
+		Here we are using a helper function. It will resolve if the player enters the Playing
+		state within 5 seconds, otherwise it will reject with an error.
+	*/
 	return entersState(player, AudioPlayerStatus.Playing, 5e3);
 }
 
