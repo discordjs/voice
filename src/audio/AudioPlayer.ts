@@ -62,7 +62,7 @@ type AudioPlayerState = {
 	status: AudioPlayerStatus.Buffering;
 	resource: AudioResource;
 	onReadableCallback: () => void;
-	onCloseCallback: () => void;
+	failureCallback: () => void;
 } | {
 	status: AudioPlayerStatus.Playing;
 	missedFrames: number;
@@ -197,7 +197,9 @@ export class AudioPlayer extends EventEmitter {
 
 		// When leaving the Buffering state (or buffering a new resource), then remove the event listeners from it
 		if (oldState.status === AudioPlayerStatus.Buffering && (newState.status !== AudioPlayerStatus.Buffering || newState.resource !== oldState.resource)) {
-			oldState.resource.playStream.off('close', oldState.onCloseCallback);
+			oldState.resource.playStream.off('end', oldState.failureCallback);
+			oldState.resource.playStream.off('close', oldState.failureCallback);
+			oldState.resource.playStream.off('finish', oldState.failureCallback);
 			oldState.resource.playStream.off('readable', oldState.onReadableCallback);
 		}
 
@@ -267,7 +269,7 @@ export class AudioPlayer extends EventEmitter {
 				}
 			};
 
-			const onCloseCallback = () => {
+			const failureCallback = () => {
 				if (this.state.status === AudioPlayerStatus.Buffering && this.state.resource === resource) {
 					this.state = {
 						status: AudioPlayerStatus.Idle
@@ -276,13 +278,16 @@ export class AudioPlayer extends EventEmitter {
 			};
 
 			resource.playStream.once('readable', onReadableCallback);
-			resource.playStream.once('close', onCloseCallback);
+
+			resource.playStream.once('end', failureCallback);
+			resource.playStream.once('close', failureCallback);
+			resource.playStream.once('finish', failureCallback);
 
 			this.state = {
 				status: AudioPlayerStatus.Buffering,
 				resource,
 				onReadableCallback,
-				onCloseCallback
+				failureCallback
 			};
 		}
 	}
