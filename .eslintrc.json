@@ -1,10 +1,14 @@
 {
 	"root": true,
-	"extends": "marine/prettier/node",
+	"extends": ["marine/prettier/node", "plugin:jsdoc/recommended"],
+	"plugins": ["jsdoc"],
 	"parserOptions": {
 		"project": "./tsconfig.eslint.json"
 	},
 	"rules": {
+		"jsdoc/require-param-type": "off",
+		"jsdoc/require-returns": "off",
+		"jsdoc/require-returns-type": "off",
 		"@typescript-eslint/naming-convention": [
 			"error",
 			{

@@ -1,8 +1,7 @@
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
 import { JoinVoiceChannelOptions } from '.';
-import { AudioPlayer } from './audio/AudioPlayer';
-import { PlayerSubscription } from './audio/PlayerSubscription';
+import { AudioPlayer, PlayerSubscription } from './audio';
 import {
 	getVoiceConnection,
 	signalJoinVoiceChannel,
@@ -94,7 +93,9 @@ export class VoiceConnection extends EventEmitter {
 	/**
 	 * Creates a new voice connection.
 	 *
-	 * @param joinConfig The data required to establish the voice connection
+	 * @param joinConfig - The data required to establish the voice connection
+	 * @param options - The connection options
+	 * @param options.debug - Whether to emit debug messages or not
 	 */
 	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
 		super();
@@ -278,7 +279,8 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Propagates errors from the underlying network instance.
-	 * @param error The error to propagate
+	 *
+	 * @param error - The error to propagate
 	 */
 	private onNetworkingError(error: Error) {
 		this.emit('error', error);
@@ -295,7 +297,8 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Prepares an audio packet for dispatch
-	 * @param buffer The Opus packet to prepare
+	 *
+	 * @param buffer - The Opus packet to prepare
 	 */
 	public prepareAudioPacket(buffer: Buffer) {
 		const state = this.state;
@@ -314,7 +317,8 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Prepares an audio packet and dispatches it immediately
-	 * @param buffer The Opus packet to play
+	 *
+	 * @param buffer - The Opus packet to play
 	 */
 	public playOpusPacket(buffer: Buffer) {
 		const state = this.state;
@@ -415,7 +419,9 @@ export class VoiceConnection extends EventEmitter {
 
 /**
  * Creates a new voice connection
- * @param joinConfig The data required to establish the voice connection
+ *
+ * @param joinConfig - The data required to establish the voice connection
+ * @param options - The connection options
  */
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
