@@ -16,16 +16,6 @@ import { Client, VoiceChannel, Intents } from 'discord.js';
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
 import { entersState } from './util';
 
-/*
-	In this example, we are creating a single audio player that plays to a number of
-	voice channels.
-
-	The audio player will play a single track.
-*/
-
-/*
-	Create the audio player. We will use this for all of our connections.
-*/
 const player = createAudioPlayer();
 
 function playSong() {
