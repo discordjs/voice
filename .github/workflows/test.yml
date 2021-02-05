@@ -1,8 +1,8 @@
 name: Testing
 on: [push, pull_request]
 jobs:
-  lint:
-    name: ESLint
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -17,7 +17,7 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        uses: icrawl/action-eslint@v1
+        run: npm run lint
 
-      - name: Typecheck
-        run: npm run typecheck
+      - name: Run TSC
+        run: npm run build:check

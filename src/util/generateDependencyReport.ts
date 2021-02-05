@@ -50,7 +50,11 @@ export default function generateDependencyReport() {
  * @param packageName - The name of the package to look for
  * @param depth - The maximum recursion depth
  */
-function findPackageJSON(dir: string, packageName: string, depth: number): { name: string; version: string } | undefined {
+function findPackageJSON(
+	dir: string,
+	packageName: string,
+	depth: number,
+): { name: string; version: string } | undefined {
 	if (depth === 0) return undefined;
 	const attemptedPath = resolve(dir, './package.json');
 	try {
@@ -69,9 +73,10 @@ function findPackageJSON(dir: string, packageName: string, depth: number): { nam
  */
 function version(name: string): string {
 	try {
-		const pkg = name === '@discordjs/voice'
-			? require('../../package.json')
-			: findPackageJSON(dirname(require.resolve(name)), name, 2);
+		const pkg =
+			name === '@discordjs/voice'
+				? require('../../package.json')
+				: findPackageJSON(dirname(require.resolve(name)), name, 2);
 		return pkg?.version ?? 'not found';
 	} catch (err) {
 		return 'not found';

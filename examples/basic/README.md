@@ -13,16 +13,22 @@ check the other files in this folder!
 
 ```ts
 import { Client, VoiceChannel, Intents } from 'discord.js';
-import { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
+import {
+	joinVoiceChannel,
+	createAudioPlayer,
+	createAudioResource,
+	StreamType,
+	AudioPlayerStatus,
+	VoiceConnectionStatus,
+} from '@discordjs/voice';
 import { entersState } from './util';
 
 const player = createAudioPlayer();
 
 function playSong() {
-	const resource = createAudioResource(
-		'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-		{ inputType: StreamType.Arbitrary }
-	);
+	const resource = createAudioResource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', {
+		inputType: StreamType.Arbitrary,
+	});
 
 	player.play(resource);
 
@@ -41,11 +47,9 @@ async function connectToChannel(channel: VoiceChannel) {
 	}
 }
 
-const client = new Client({ ws: { intents: [
-	Intents.FLAGS.GUILDS,
-	Intents.FLAGS.GUILD_MESSAGES,
-	Intents.FLAGS.GUILD_VOICE_STATES
-] } });
+const client = new Client({
+	ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] },
+});
 
 client.login('token here');
 
@@ -60,12 +64,12 @@ client.on('ready', async () => {
 	}
 });
 
-client.on('message', async message => {
+client.on('message', async (message) => {
 	if (!message.guild) return;
 
 	if (message.content === '-join') {
 		const channel = message.member?.voice.channel;
-	
+
 		if (channel) {
 			try {
 				const connection = await connectToChannel(channel);

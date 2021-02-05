@@ -26,7 +26,7 @@ export enum StreamType {
 	Raw = 'raw',
 	OggOpus = 'ogg/opus',
 	WebmOpus = 'webm/opus',
-	Opus = 'opus'
+	Opus = 'opus',
 }
 
 /**
@@ -50,7 +50,7 @@ export interface TransformerPathComponent {
 	 * For example, a section that goes from Raw to Opus may have the transformer
 	 * as a function that returns an Opus encoder.
 	 */
-	transformer: (input: string|Readable) => Readable;
+	transformer: (input: string | Readable) => Readable;
 
 	/**
 	 * The arbitrary cost assigned to this component. More computationally expensive
@@ -62,36 +62,40 @@ export interface TransformerPathComponent {
 type Node = StreamType;
 type Edge = [Node, Node];
 
-const GRAPH: Map<Edge, {
-	fn: (input: string|Readable) => Readable;
-	cost: number;
-}> = new Map();
+const GRAPH: Map<
+	Edge,
+	{
+		fn: (input: string | Readable) => Readable;
+		cost: number;
+	}
+> = new Map();
 
 GRAPH.set([StreamType.Raw, StreamType.Opus], {
 	fn: () => new prism.opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 }),
-	cost: 1
+	cost: 1,
 });
 
 GRAPH.set([StreamType.Opus, StreamType.Raw], {
 	fn: () => new prism.opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 }),
-	cost: 1
+	cost: 1,
 });
 
 GRAPH.set([StreamType.OggOpus, StreamType.Opus], {
 	fn: () => new prism.opus.OggDemuxer(),
-	cost: 0.5
+	cost: 0.5,
 });
 
 GRAPH.set([StreamType.WebmOpus, StreamType.Opus], {
 	fn: () => new prism.opus.WebmDemuxer(),
-	cost: 0.5
+	cost: 0.5,
 });
 
 GRAPH.set([StreamType.Arbitrary, StreamType.Raw], {
-	fn: input => new prism.FFmpeg({
-		args: typeof input === 'string' ? ['-i', input, ...FFMPEG_ARGUMENTS] : FFMPEG_ARGUMENTS
-	}),
-	cost: 2
+	fn: (input) =>
+		new prism.FFmpeg({
+			args: typeof input === 'string' ? ['-i', input, ...FFMPEG_ARGUMENTS] : FFMPEG_ARGUMENTS,
+		}),
+	cost: 2,
 });
 
 const EDGES_LIST = [...GRAPH.keys()];
@@ -156,7 +160,7 @@ export function findTransformerPipeline(start: Node, goal = StreamType.Opus, edg
 	}
 
 	const path = [];
-	let current: StreamType|undefined = goal;
+	let current: StreamType | undefined = goal;
 	while (current) {
 		path.unshift(current);
 		current = prev.get(current);
@@ -174,7 +178,7 @@ export function findTransformerPipeline(start: Node, goal = StreamType.Opus, edg
 			from: path[i],
 			to: path[i + 1],
 			transformer: edge[1].fn,
-			cost: edge[1].cost
+			cost: edge[1].cost,
 		});
 	}
 

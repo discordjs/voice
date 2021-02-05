@@ -1,22 +1,20 @@
 {
 	"compilerOptions": {
 		"strict": true,
-		"target": "es2019",
 		"moduleResolution": "node",
-		"module": "commonjs",
-		"declaration": true,
-		"sourceMap": true,
+		"removeComments": false,
 		"alwaysStrict": true,
 		"pretty": true,
+		"target": "es2019",
+		"lib": ["ESNext"],
+		"sourceMap": true,
+		"inlineSources": true,
+		"module": "commonjs",
+		"declaration": true,
 		"outDir": "dist",
 		"incremental": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true
 	},
-	"include": [
-		"src/**/*.ts"
-	],
-	"exclude": [
-		"examples/**/*.ts"
-	]
+	"include": ["src/**/*.ts"]
 }

@@ -24,7 +24,7 @@ export function joinVoiceChannel(voiceChannel: VoiceChannel, options?: JoinVoice
 		channelId: voiceChannel.id,
 		guild: voiceChannel.guild,
 		selfDeaf: true,
-		selfMute: false
+		selfMute: false,
 	};
 
 	return createVoiceConnection(joinConfig, { debug: false, ...options });

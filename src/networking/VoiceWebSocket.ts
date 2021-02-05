@@ -38,7 +38,7 @@ export class VoiceWebSocket extends WebSocket {
 	public constructor(address: string, debug: boolean) {
 		super(address);
 		this.lastHeartbeatAck = 0;
-		this.onmessage = e => this.onMessage(e);
+		this.onmessage = (e) => this.onMessage(e);
 		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 	}
 
@@ -109,7 +109,7 @@ export class VoiceWebSocket extends WebSocket {
 		const nonce = Date.now();
 		return this.sendPacket({
 			op: VoiceOPCodes.Heartbeat,
-			d: nonce
+			d: nonce,
 		});
 	}
 
