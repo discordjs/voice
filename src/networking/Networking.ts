@@ -179,7 +179,6 @@ export class Networking extends EventEmitter {
 	 * Creates a new WebSocket to a Discord Voice gateway.
 	 *
 	 * @param endpoint The endpoint to connect to
-	 * @param debug Whether to enable debug logging
 	 */
 	private createWebSocket(endpoint: string) {
 		const ws = new VoiceWebSocket(`wss://${endpoint}?v=4`, Boolean(this.debug));
@@ -345,7 +344,7 @@ export class Networking extends EventEmitter {
 	public prepareAudioPacket(opusPacket: Buffer) {
 		const state = this.state;
 		if (state.code !== NetworkingStatusCode.Ready) return;
-		state.preparedPacket = this.createAudioPacket(opusPacket, state.connectionData);
+		state.preparedPacket = Networking.createAudioPacket(opusPacket, state.connectionData);
 		return state.preparedPacket;
 	}
 
@@ -410,7 +409,7 @@ export class Networking extends EventEmitter {
 	 * @param opusPacket The Opus packet to prepare
 	 * @param connectionData The current connection data of the instance
 	 */
-	private createAudioPacket(opusPacket: Buffer, connectionData: ConnectionData) {
+	private static createAudioPacket(opusPacket: Buffer, connectionData: ConnectionData) {
 		const packetBuffer = Buffer.alloc(12);
 		packetBuffer[0] = 0x80;
 		packetBuffer[1] = 0x78;
@@ -422,7 +421,7 @@ export class Networking extends EventEmitter {
 		packetBuffer.writeUIntBE(ssrc, 8, 4);
 
 		packetBuffer.copy(nonce, 0, 0, 12);
-		return Buffer.concat([packetBuffer, ...this.encryptOpusPacket(opusPacket, connectionData)]);
+		return Buffer.concat([packetBuffer, ...Networking.encryptOpusPacket(opusPacket, connectionData)]);
 	}
 
 	/**
@@ -431,7 +430,7 @@ export class Networking extends EventEmitter {
 	 * @param opusPacket The Opus packet to encrypt
 	 * @param connectionData The current connection data of the instance
 	 */
-	private encryptOpusPacket(opusPacket: Buffer, connectionData: ConnectionData) {
+	private static encryptOpusPacket(opusPacket: Buffer, connectionData: ConnectionData) {
 		const { secretKey, encryptionMode } = connectionData;
 
 		if (encryptionMode === 'xsalsa20_poly1305_lite') {

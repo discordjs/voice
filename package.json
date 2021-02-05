@@ -41,10 +41,14 @@
     "discord-api-types": "^0.12.1",
     "eslint": "^7.15.0",
     "eslint-config-marine": "^7.2.0",
+    "eslint-plugin-tsdoc": "^0.2.11",
     "typescript": "^4.2.0-dev.20210204"
   },
   "eslintConfig": {
     "extends": "marine",
+    "plugins": [
+      "eslint-plugin-tsdoc"
+    ],
     "rules": {
       "@typescript-eslint/naming-convention": [
         "error",

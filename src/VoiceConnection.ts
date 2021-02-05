@@ -1,8 +1,7 @@
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
 import { JoinVoiceChannelOptions } from '.';
-import { AudioPlayer } from './audio/AudioPlayer';
-import { PlayerSubscription } from './audio/PlayerSubscription';
+import { AudioPlayer, PlayerSubscription } from './audio';
 import { getVoiceConnection, signalJoinVoiceChannel, trackClient, trackVoiceConnection, JoinConfig, untrackVoiceConnection } from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
@@ -84,6 +83,7 @@ export class VoiceConnection extends EventEmitter {
 	 * Creates a new voice connection.
 	 *
 	 * @param joinConfig The data required to establish the voice connection
+	 * @param options Options to create a connection
 	 */
 	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
 		super();
@@ -401,6 +401,7 @@ export class VoiceConnection extends EventEmitter {
 /**
  * Creates a new voice connection
  * @param joinConfig The data required to establish the voice connection
+ * @param options Options to create a connection
  */
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);

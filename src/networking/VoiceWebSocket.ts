@@ -32,6 +32,7 @@ export class VoiceWebSocket extends WebSocket {
 	/**
 	 * Creates a new VoiceWebSocket
 	 * @param address The address to connect to
+	 * @param debug Whether or not we should print debug logs
 	 */
 	public constructor(address: string, debug: boolean) {
 		super(address);

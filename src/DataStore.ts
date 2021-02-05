@@ -8,6 +8,7 @@ export function trackClient(client: Client) {
 	if (clients.has(client)) {
 		return;
 	}
+
 	clients.add(client);
 
 	client.ws.on(Constants.WSEvents.VOICE_SERVER_UPDATE, (payload: GatewayVoiceServerUpdateDispatchData) => {
@@ -31,7 +32,7 @@ export interface JoinConfig {
 /**
  * Sends a voice state update to the main websocket shard of a guild, to indicate joining/leaving/moving across
  * voice channels
- * @param voiceChannel The voice channel to move to
+ * @param config
  */
 export function signalJoinVoiceChannel(config: JoinConfig) {
 	return config.guild.shard.send({
