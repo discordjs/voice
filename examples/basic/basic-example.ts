@@ -1,4 +1,4 @@
-import { Client, VoiceChannel } from 'discord.js';
+import { Client, VoiceChannel, Intents } from 'discord.js';
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
 import { errorAfter } from './util';
 import { once } from 'events';
@@ -102,7 +102,7 @@ async function connectToChannel(channel: VoiceChannel) {
 	=========
 	Here we will implement the helper functions that we have defined above
 */
-const client = new Client();
+const client = new Client({ ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] } });
 client.login('token here');
 
 client.on('ready', async () => {

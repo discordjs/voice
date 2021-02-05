@@ -12,7 +12,7 @@ This code snippet doesn't include any comments for brevity. If you want to see t
 check the other files in this folder!
 
 ```ts
-import { Client, VoiceChannel } from 'discord.js';
+import { Client, VoiceChannel, Intents } from 'discord.js';
 import { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType, AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
 import { errorAfter } from './util';
 import { once } from 'events';
@@ -56,7 +56,7 @@ async function connectToChannel(channel: VoiceChannel) {
 	}
 }
 
-const client = new Client();
+const client = new Client({ ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] } });
 client.login('token here');
 
 client.on('ready', async () => {
