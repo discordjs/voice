@@ -166,6 +166,12 @@ export class Networking extends EventEmitter {
 		this._state = newState;
 		this.emit('stateChange', oldState, newState);
 
+		/**
+		 * Debug event for Networking.
+		 *
+		 * @event Networking#debug
+		 * @type {string}
+		 */
 		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 

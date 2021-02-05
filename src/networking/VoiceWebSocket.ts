@@ -2,6 +2,13 @@ import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
 import WebSocket, { MessageEvent } from 'ws';
 
 /**
+ * Debug event for VoiceWebSocket.
+ *
+ * @event VoiceWebSocket#debug
+ * @type {string}
+ */
+
+/**
  * An extension of the WebSocket class to provide helper functionality when interacting
  * with the Discord Voice gateway.
  */
@@ -70,6 +77,12 @@ export class VoiceWebSocket extends WebSocket {
 			this.lastHeartbeatAck = Date.now();
 		}
 
+		/**
+		 * Packet event.
+		 *
+		 * @event VoiceWebSocket#packet
+		 * @type {any}
+		 */
 		this.emit('packet', packet);
 	}
 

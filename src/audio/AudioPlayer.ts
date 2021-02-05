@@ -127,6 +127,12 @@ export class AudioPlayer extends EventEmitter {
 			const subscription = new PlayerSubscription(connection, this);
 			this.subscribers.push(subscription);
 
+			/**
+			 * Emitted when a new subscriber is added to the audio player.
+			 *
+			 * @event AudioPlayer#subscribe
+			 * @type {PlayerSubscription}
+			 */
 			setImmediate(() => this.emit('subscribe', subscription));
 
 			return subscription;
@@ -149,6 +155,12 @@ export class AudioPlayer extends EventEmitter {
 			this.subscribers.splice(index, 1);
 			subscription.connection.setSpeaking(false);
 
+			/**
+			 * Emitted when a subscription is removed from the audio player.
+			 *
+			 * @event AudioPlayer#unsubscribe
+			 * @type {PlayerSubscription}
+			 */
 			this.emit('unsubscribe', subscription);
 		}
 		return exists;
@@ -193,6 +205,12 @@ export class AudioPlayer extends EventEmitter {
 			this.emit(newState.status, oldState, this._state);
 		}
 
+		/**
+		 * Debug event for AudioPlayer.
+		 *
+		 * @event AudioPlayer#debug
+		 * @type {string}
+		 */
 		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 
