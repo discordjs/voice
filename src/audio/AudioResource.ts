@@ -62,8 +62,8 @@ export interface AudioResource {
  * to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
  * Opus transcoders, and Ogg/WebM demuxers.
  *
- * @param input The resource to play.
- * @param options Configurable options for creating the resource.
+ * @param input - The resource to play.
+ * @param options - Configurable options for creating the resource.
  */
 export function createAudioResource(input: string|Readable, options: CreateAudioResourceOptions): AudioResource {
 	// string inputs can only be used with FFmpeg
@@ -105,7 +105,7 @@ export function createAudioResource(input: string|Readable, options: CreateAudio
 
 /**
  * Inserts a prism VolumeTransformer into a pipeline such that the volume of the audio can be altered on-the-fly.
- * @param transformerPipeline The pipeline to insert into
+ * @param transformerPipeline - The pipeline to insert into
  */
 function insertInlineVolumeTransformer(transformerPipeline: TransformerPathComponent[]) {
 	const volumeTransformer = new VolumeTransformer({ type: 's16le', volume: 1 });

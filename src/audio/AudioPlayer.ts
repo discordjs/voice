@@ -118,7 +118,7 @@ export class AudioPlayer extends EventEmitter {
 	 *
 	 * This method should not be directly called. Instead, use VoiceConnection#subscribe.
 	 *
-	 * @param connection The connection to subscribe
+	 * @param connection - The connection to subscribe
 	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
 	 */
 	private subscribe(connection: VoiceConnection) {
@@ -127,12 +127,6 @@ export class AudioPlayer extends EventEmitter {
 			const subscription = new PlayerSubscription(connection, this);
 			this.subscribers.push(subscription);
 
-			/**
-			 * Emitted when a new subscriber is added to the audio player.
-			 *
-			 * @event AudioPlayer#subscribe
-			 * @type {PlayerSubscription}
-			 */
 			setImmediate(() => this.emit('subscribe', subscription));
 
 			return subscription;
@@ -145,7 +139,7 @@ export class AudioPlayer extends EventEmitter {
 	 *
 	 * This method should not be directly called. Instead, use PlayerSubscription#unsubscribe.
 	 *
-	 * @param subscription The subscription to remove
+	 * @param subscription - The subscription to remove
 	 * @returns Whether or not the subscription existed on the player and was removed.
 	 */
 	private unsubscribe(subscription: PlayerSubscription) {
@@ -155,12 +149,6 @@ export class AudioPlayer extends EventEmitter {
 			this.subscribers.splice(index, 1);
 			subscription.connection.setSpeaking(false);
 
-			/**
-			 * Emitted when a subscription is removed from the audio player.
-			 *
-			 * @event AudioPlayer#unsubscribe
-			 * @type {PlayerSubscription}
-			 */
 			this.emit('unsubscribe', subscription);
 		}
 		return exists;
@@ -205,12 +193,6 @@ export class AudioPlayer extends EventEmitter {
 			this.emit(newState.status, oldState, this._state);
 		}
 
-		/**
-		 * Debug event for AudioPlayer.
-		 *
-		 * @event AudioPlayer#debug
-		 * @type {string}
-		 */
 		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 
@@ -224,7 +206,7 @@ export class AudioPlayer extends EventEmitter {
 	 * If the player was previously playing a resource and this method is called, the player will not transition to the
 	 * Idle state during the swap over.
 	 *
-	 * @param resource The resource to play
+	 * @param resource - The resource to play
 	 * @throws Will throw if attempting to play an audio resource that has already ended.
 	 */
 	public play(resource: AudioResource) {
@@ -244,7 +226,7 @@ export class AudioPlayer extends EventEmitter {
 	/**
 	 * Pauses playback of the current resource, if any.
 	 *
-	 * @param interpolateSilence If true, the player will play 5 packets of silence after pausing to prevent audio glitches.
+	 * @param interpolateSilence - If true, the player will play 5 packets of silence after pausing to prevent audio glitches.
 	 * @returns true if the player was successfully paused, otherwise false.
 	 */
 	public pause(interpolateSilence = true) {
@@ -391,8 +373,8 @@ export class AudioPlayer extends EventEmitter {
 	 * Instructs the given connections to each prepare this packet to be played at the start of the
 	 * next cycle.
 	 *
-	 * @param packet The Opus packet to be prepared by each receiver
-	 * @param receivers The connections that should play this packet
+	 * @param packet - The Opus packet to be prepared by each receiver
+	 * @param receivers - The connections that should play this packet
 	 */
 	private _preparePacket(packet: Buffer, receivers: VoiceConnection[]) {
 		receivers.forEach(connection => connection.prepareAudioPacket(packet));
@@ -402,7 +384,7 @@ export class AudioPlayer extends EventEmitter {
 /**
  * Stringifies an AudioPlayerState instance
  *
- * @param state The state to stringify
+ * @param state - The state to stringify
  */
 function stringifyState(state: AudioPlayerState) {
 	return JSON.stringify({

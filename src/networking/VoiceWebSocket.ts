@@ -2,13 +2,6 @@ import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
 import WebSocket, { MessageEvent } from 'ws';
 
 /**
- * Debug event for VoiceWebSocket.
- *
- * @event VoiceWebSocket#debug
- * @type {string}
- */
-
-/**
  * An extension of the WebSocket class to provide helper functionality when interacting
  * with the Discord Voice gateway.
  */
@@ -31,8 +24,8 @@ export class VoiceWebSocket extends WebSocket {
 
 	/**
 	 * Creates a new VoiceWebSocket
-	 * @param address The address to connect to
-	 * @param debug Whether or not we should print debug logs
+	 * @param address - The address to connect to
+	 * @param debug - Whether or not debug logs should be emitted
 	 */
 	public constructor(address: string, debug: boolean) {
 		super(address);
@@ -58,7 +51,7 @@ export class VoiceWebSocket extends WebSocket {
 	 * Handles message events on the WebSocket. Attempts to JSON parse the messages and emit them
 	 * as packets.
 	 *
-	 * @param event The message event
+	 * @param event - The message event
 	 */
 	public onMessage(event: MessageEvent) {
 		if (typeof event.data !== 'string') return;
@@ -77,18 +70,12 @@ export class VoiceWebSocket extends WebSocket {
 			this.lastHeartbeatAck = Date.now();
 		}
 
-		/**
-		 * Packet event.
-		 *
-		 * @event VoiceWebSocket#packet
-		 * @type {any}
-		 */
 		this.emit('packet', packet);
 	}
 
 	/**
 	 * Sends a JSON-stringifiable packet over the WebSocket
-	 * @param packet The packet to send
+	 * @param packet - The packet to send
 	 */
 	public sendPacket(packet: any) {
 		try {
@@ -113,7 +100,7 @@ export class VoiceWebSocket extends WebSocket {
 
 	/**
 	 * Sets/clears an interval to send heartbeats over the WebSocket
-	 * @param ms The interval in milliseconds. If negative, the interval will be unset.
+	 * @param ms - The interval in milliseconds. If negative, the interval will be unset.
 	 */
 	public setHeartbeatInterval(ms: number) {
 		if (typeof this.heartbeatInterval !== 'undefined') clearInterval(this.heartbeatInterval);

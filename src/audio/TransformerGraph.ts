@@ -99,7 +99,7 @@ const GRAPH_LIST = [...GRAPH.entries()];
 
 /**
  * Returns all the outbound edges from a given node
- * @param node The source node
+ * @param node - The source node
  */
 function getOutboundEdges(node: StreamType) {
 	return GRAPH_LIST.filter(([edge]) => edge[0] === node);
@@ -108,8 +108,8 @@ function getOutboundEdges(node: StreamType) {
 /**
  * Finds an edge in the transformer graph that directly connects a to b.
  *
- * @param a The source node
- * @param b The target node
+ * @param a - The source node
+ * @param b - The target node
  */
 function getEdge(a: Node, b: Node) {
 	return GRAPH_LIST.find(([edge]) => a === edge[0] && b === edge[1]);
@@ -117,9 +117,9 @@ function getEdge(a: Node, b: Node) {
 
 /**
  * Finds the optimal path between the start and goal using the Transformer Graph.
- * @param start The start node
- * @param goal The goal node
- * @param edges The edges of the graph
+ * @param start - The start node
+ * @param goal - The goal node
+ * @param edges - The edges of the graph
  */
 export function findTransformerPipeline(start: Node, goal = StreamType.Opus, edges = EDGES_LIST) {
 	const Q: Set<Node> = new Set(edges.reduce((acc, edge) => acc.concat(edge), [] as Node[]));
@@ -134,6 +134,7 @@ export function findTransformerPipeline(start: Node, goal = StreamType.Opus, edg
 	for (const node of Q) {
 		dist.set(node, Infinity);
 	}
+
 	dist.set(start, 0);
 
 	while (Q.size > 0) {
