@@ -352,7 +352,7 @@ export class AudioPlayer extends EventEmitter {
 		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return;
 
 		// If the stream has been destroyed or is no longer readable, then transition to the Idle state.
-		if (state.resource.playStream.readableEnded || state.resource.playStream.destroyed) {
+		if (!state.resource.playStream.readable) {
 			this.state = {
 				status: AudioPlayerStatus.Idle
 			};
