@@ -145,15 +145,15 @@ export class VoiceConnection extends EventEmitter {
 			oldNetworking.destroy();
 		}
 
-		if (oldSubscription && oldSubscription !== newSubscription) {
-			oldSubscription.unsubscribe();
-		}
-
 		if (newState.status === VoiceConnectionStatus.Ready) {
 			this.reconnectAttempts = 0;
 		}
 
 		this._state = newState;
+
+		if (oldSubscription && oldSubscription !== newSubscription) {
+			oldSubscription.unsubscribe();
+		}
 
 		this.emit('stateChange', oldState, newState);
 		if (oldState.status !== newState.status) {
