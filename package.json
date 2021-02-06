@@ -32,8 +32,7 @@
 	},
 	"homepage": "https://github.com/discordjs/voice#readme",
 	"files": [
-		"dist/*",
-		"!**/*.ts"
+		"dist/*"
 	],
 	"dependencies": {
 		"prism-media": "^1.2.5",
