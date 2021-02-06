@@ -5,11 +5,11 @@ import {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
+	entersState,
 	StreamType,
 	AudioPlayerStatus,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
-import { entersState } from './util';
 
 /*
 	In this example, we are creating a single audio player that plays to a number of
