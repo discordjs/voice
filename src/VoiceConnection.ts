@@ -419,7 +419,14 @@ export class VoiceConnection extends EventEmitter {
  */
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
-	if (existing) return existing;
+	if (existing) {
+		existing.state = {
+			...existing.state,
+			status: VoiceConnectionStatus.Signalling,
+		};
+		signalJoinVoiceChannel(joinConfig);
+		return existing;
+	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
 	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
