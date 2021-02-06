@@ -31,6 +31,7 @@
 		"url": "https://github.com/discordjs/voice/issues"
 	},
 	"homepage": "https://github.com/discordjs/voice#readme",
+	
 	"dependencies": {
 		"prism-media": "^1.2.5",
 		"ws": "^7.4.3"
