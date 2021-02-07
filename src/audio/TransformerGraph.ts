@@ -30,9 +30,29 @@ export enum StreamType {
 }
 
 /**
+ * The different types of transformers that can exist within the pipeline
+ */
+export enum TransformerType {
+	FFmpegPCM = 'ffmpeg pcm',
+	OpusEncoder = 'opus encoder',
+	OpusDecoder = 'opus decoder',
+	OggOpusDemuxer = 'ogg opus demuxer',
+	WebmOpusDemuxer = 'webm opus demuxer',
+}
+
+/**
+ * Represents a transformer within the transformer pipeline.
+ */
+interface TransformerComponent {
+	transformer: (input: string | Readable) => Readable;
+	cost: number;
+	type: TransformerType;
+}
+
+/**
  * Represents a section of the transformer pipeline.
  */
-export interface TransformerPathComponent {
+export interface TransformerPathComponent extends TransformerComponent {
 	/**
 	 * The StreamType that comes into this transformer (its input)
 	 */
@@ -62,40 +82,39 @@ export interface TransformerPathComponent {
 type Node = StreamType;
 type Edge = [Node, Node];
 
-const GRAPH: Map<
-	Edge,
-	{
-		fn: (input: string | Readable) => Readable;
-		cost: number;
-	}
-> = new Map();
+const GRAPH: Map<Edge, TransformerComponent> = new Map();
 
 GRAPH.set([StreamType.Raw, StreamType.Opus], {
-	fn: () => new prism.opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 }),
+	transformer: () => new prism.opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 }),
 	cost: 1,
+	type: TransformerType.OpusEncoder,
 });
 
 GRAPH.set([StreamType.Opus, StreamType.Raw], {
-	fn: () => new prism.opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 }),
+	transformer: () => new prism.opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 }),
 	cost: 1,
+	type: TransformerType.OpusDecoder,
 });
 
 GRAPH.set([StreamType.OggOpus, StreamType.Opus], {
-	fn: () => new prism.opus.OggDemuxer(),
+	transformer: () => new prism.opus.OggDemuxer(),
 	cost: 0.5,
+	type: TransformerType.OggOpusDemuxer,
 });
 
 GRAPH.set([StreamType.WebmOpus, StreamType.Opus], {
-	fn: () => new prism.opus.WebmDemuxer(),
+	transformer: () => new prism.opus.WebmDemuxer(),
 	cost: 0.5,
+	type: TransformerType.WebmOpusDemuxer,
 });
 
 GRAPH.set([StreamType.Arbitrary, StreamType.Raw], {
-	fn: (input) =>
+	transformer: (input) =>
 		new prism.FFmpeg({
 			args: typeof input === 'string' ? ['-i', input, ...FFMPEG_ARGUMENTS] : FFMPEG_ARGUMENTS,
 		}),
 	cost: 2,
+	type: TransformerType.FFmpegPCM,
 });
 
 const EDGES_LIST = [...GRAPH.keys()];
@@ -174,8 +193,7 @@ export function findTransformerPipeline(start: Node, goal = StreamType.Opus, edg
 		transformerPath.push({
 			from: path[i],
 			to: path[i + 1],
-			transformer: edge[1].fn,
-			cost: edge[1].cost,
+			...edge[1],
 		});
 	}
 
