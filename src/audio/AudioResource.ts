@@ -53,6 +53,11 @@ export interface AudioResource {
 	volume?: VolumeTransformer;
 }
 
+/**
+ * Ensures that a path contains at least one volume transforming component
+ *
+ * @param path The path to validate constraints on
+ */
 const VOLUME_CONSTRAINT = (path: Edge[]) => path.some((edge) => edge.type === TransformerType.InlineVolume);
 
 /**
@@ -85,13 +90,13 @@ export function createAudioResource(input: string | Readable, options: CreateAud
 			pipeline: [],
 		};
 	}
-	const streams = [...transformerPipeline.map((pipe) => pipe.transformer(input))];
+	const streams = transformerPipeline.map((pipe) => pipe.transformer(input));
 	if (typeof input !== 'string') streams.unshift(input);
 
 	// the callback is called once the stream ends
 	const playStream = pipeline(streams, noop);
-	// @types/node seems to be incorrect here - the output can still implement Readable
 
+	// attempt to find the volume transformer in the pipeline (if one exists)
 	const volume = streams.find((stream) => stream instanceof VolumeTransformer) as VolumeTransformer | undefined;
 
 	return {
