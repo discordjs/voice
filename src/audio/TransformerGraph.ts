@@ -80,7 +80,7 @@ export class Node {
 }
 
 // Create a node for each stream type
-const NODES: Map<StreamType, Node> = new Map();
+const NODES = new Map<StreamType, Node>();
 for (const streamType of Object.values(StreamType)) {
 	NODES.set(streamType, new Node(streamType));
 }
