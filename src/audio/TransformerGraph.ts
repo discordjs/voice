@@ -117,6 +117,13 @@ getNode(StreamType.Arbitrary).addEdge({
 		}),
 });
 
+getNode(StreamType.Raw).addEdge({
+	type: TransformerType.InlineVolume,
+	to: getNode(StreamType.Raw),
+	cost: 0.25,
+	transformer: () => new prism.VolumeTransformer({ type: 's16le', volume: 1 }),
+});
+
 /**
  * Returns all the outbound edges from a given node
  * @param node The source node
@@ -193,4 +200,4 @@ export function findTransformerPipeline(start: Node, goal = getNode(StreamType.O
 	return transformerPath;
 }
 
-// console.log(findTransformerPipeline(getNode(StreamType.OggOpus)));
+console.log(findTransformerPipeline(getNode(StreamType.Arbitrary)));
