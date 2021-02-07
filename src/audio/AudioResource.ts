@@ -1,4 +1,4 @@
-import { findTransformerPipeline, StreamType, TransformerPathComponent, TransformerType } from './TransformerGraph';
+import { Edge, findTransformerPipeline, getNode, StreamType, TransformerType } from './TransformerGraph';
 import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer, opus } from 'prism-media';
@@ -39,7 +39,7 @@ export interface AudioResource {
 	 * contain an FFmpeg component for arbitrary inputs, and it may contain a VolumeTransformer component
 	 * for resources with inline volume transformation enabled.
 	 */
-	pipeline: TransformerPathComponent[];
+	pipeline: Edge[];
 
 	/**
 	 * An optional name that can be used to identify the resource.
@@ -73,7 +73,7 @@ export function createAudioResource(input: string | Readable, options: CreateAud
 		inputType = StreamType.Arbitrary;
 	}
 
-	const transformerPipeline = findTransformerPipeline(inputType);
+	const transformerPipeline = findTransformerPipeline(getNode(inputType));
 	if (!transformerPipeline) {
 		throw new Error(`Cannot create transcoder pipeline for stream type '${inputType}'`);
 	}
@@ -109,11 +109,11 @@ export function createAudioResource(input: string | Readable, options: CreateAud
  * Inserts a prism VolumeTransformer into a pipeline such that the volume of the audio can be altered on-the-fly.
  * @param transformerPipeline The pipeline to insert into
  */
-function insertInlineVolumeTransformer(transformerPipeline: TransformerPathComponent[]) {
+function insertInlineVolumeTransformer(transformerPipeline: Edge[]) {
 	const volumeTransformer = new VolumeTransformer({ type: 's16le', volume: 1 });
 	const transformer = {
-		from: StreamType.Raw,
-		to: StreamType.Raw,
+		from: getNode(StreamType.Raw),
+		to: getNode(StreamType.Raw),
 		cost: 0.5,
 		transformer: () => volumeTransformer,
 		type: TransformerType.InlineVolume,
@@ -122,7 +122,7 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 	// The best insertion would be immediately after a Raw phase in the pipeline
 	for (let i = 0; i < transformerPipeline.length; i++) {
 		const component = transformerPipeline[i];
-		if (component.to === StreamType.Raw) {
+		if (component.to === getNode(StreamType.Raw)) {
 			transformerPipeline.splice(i + 1, 0, transformer);
 			return volumeTransformer;
 		}
@@ -131,8 +131,8 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 	// There is no Raw phase in the pipeline - need to decode final Opus phase, add VolumeTransformer, then reinsert an Opus encoder
 	transformerPipeline.push({
 		cost: 0.5,
-		from: StreamType.Opus,
-		to: StreamType.Raw,
+		from: getNode(StreamType.Opus),
+		to: getNode(StreamType.Raw),
 		transformer: () => new opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 }),
 		type: TransformerType.OpusDecoder,
 	});
@@ -141,8 +141,8 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 
 	transformerPipeline.push({
 		cost: 0.5,
-		from: StreamType.Raw,
-		to: StreamType.Opus,
+		from: getNode(StreamType.Raw),
+		to: getNode(StreamType.Opus),
 		transformer: () => new opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 }),
 		type: TransformerType.OpusEncoder,
 	});
