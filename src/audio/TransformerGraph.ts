@@ -36,11 +36,14 @@ export enum TransformerType {
 	FFmpegPCM = 'ffmpeg pcm',
 	OpusEncoder = 'opus encoder',
 	OpusDecoder = 'opus decoder',
-	OggOpusDemuxer = 'ogg opus demuxer',
-	WebmOpusDemuxer = 'webm opus demuxer',
-	InlineVolume = 'inline volume',
+	OggOpusDemuxer = 'ogg/opus demuxer',
+	WebmOpusDemuxer = 'webm/opus demuxer',
+	InlineVolume = 'volume transformer',
 }
 
+/**
+ * Represents a pathway from one stream type to another using a transformer
+ */
 export interface Edge {
 	from: Node;
 	to: Node;
@@ -49,30 +52,45 @@ export interface Edge {
 	type: TransformerType;
 }
 
+/**
+ * Represents a type of stream within the graph, e.g. an Opus stream, or a stream of raw audio.
+ */
 export class Node {
+	/**
+	 * The outbound edges from this node
+	 */
 	public readonly edges: Edge[] = [];
+
+	/**
+	 * The type of stream for this node
+	 */
 	public readonly type: StreamType;
 
 	public constructor(type: StreamType) {
 		this.type = type;
 	}
 
+	/**
+	 * Creates an outbound edge from this node
+	 * @param edge The edge to create
+	 */
 	public addEdge(edge: Omit<Edge, 'from'>) {
 		this.edges.push({ ...edge, from: this });
 	}
-
-	public toString() {
-		return this.type;
-	}
 }
 
-const GRAPH: Map<StreamType, Node> = new Map();
+// Create a node for each stream type
+const NODES: Map<StreamType, Node> = new Map();
 for (const streamType of Object.values(StreamType)) {
-	GRAPH.set(streamType, new Node(streamType));
+	NODES.set(streamType, new Node(streamType));
 }
 
+/**
+ * Gets a node from its stream type
+ * @param type The stream type of the target node
+ */
 export function getNode(type: StreamType) {
-	const node = GRAPH.get(type);
+	const node = NODES.get(type);
 	if (!node) throw new Error(`Node type '${type}' does not exist!`);
 	return node;
 }
@@ -126,12 +144,35 @@ getNode(StreamType.Raw).addEdge({
 	transformer: () => new prism.VolumeTransformer({ type: 's16le' }),
 });
 
+/**
+ * Represents a step in the path from node A to node B.
+ */
 interface Step {
+	/**
+	 * The next step
+	 */
 	next?: Step;
+
+	/**
+	 * The cost of the steps after this step
+	 */
 	cost: number;
+
+	/**
+	 * The edge associated with this step
+	 */
 	edge?: Edge;
 }
 
+/**
+ * Finds the shortest cost path from node A to node B.
+ *
+ * @param from The start node
+ * @param constraints Extra validation for a potential solution. Takes a path, returns true if the path is valid.
+ * @param goal The target node
+ * @param path The running path
+ * @param depth The number of remaining recursions
+ */
 function findPath(
 	from: Node,
 	constraints: (path: Edge[]) => boolean,
@@ -157,6 +198,11 @@ function findPath(
 	return currentBest ?? { cost: Infinity };
 }
 
+/**
+ * Takes the solution from findPath and assembles it into a list of edges
+ *
+ * @param step The first step of the path
+ */
 function constructPipeline(step: Step) {
 	const edges = [];
 	let current: Step | undefined = step;
@@ -167,6 +213,12 @@ function constructPipeline(step: Step) {
 	return edges;
 }
 
-export function findPipeline(from: StreamType, constraint: (path: Edge[]) => boolean = () => true) {
+/**
+ * Finds the lowest-cost pipeline to convert the input stream type into an Opus stream
+ *
+ * @param from The stream type to start from
+ * @param constraint Extra constraints that may be imposed on potential solution
+ */
+export function findPipeline(from: StreamType, constraint: (path: Edge[]) => boolean) {
 	return constructPipeline(findPath(getNode(from), constraint));
 }
