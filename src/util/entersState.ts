@@ -1,10 +1,12 @@
-import { AudioPlayer, AudioPlayerStatus, VoiceConnection, VoiceConnectionStatus } from '@discordjs/voice';
+import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
+import { AudioPlayer, AudioPlayerStatus } from '../audio/AudioPlayer';
 
 export function entersState(
 	target: VoiceConnection,
 	status: VoiceConnectionStatus,
 	maxTime: number,
 ): Promise<VoiceConnection>;
+
 export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxTime: number): Promise<AudioPlayer>;
 
 /**

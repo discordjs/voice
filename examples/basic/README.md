@@ -17,11 +17,11 @@ import {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
+	entersState,
 	StreamType,
 	AudioPlayerStatus,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
-import { entersState } from './util';
 
 const player = createAudioPlayer();
 
