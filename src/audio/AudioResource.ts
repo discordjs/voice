@@ -1,4 +1,4 @@
-import { findTransformerPipeline, StreamType, TransformerPathComponent } from './TransformerGraph';
+import { findTransformerPipeline, StreamType, TransformerPathComponent, TransformerType } from './TransformerGraph';
 import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer, opus } from 'prism-media';
@@ -116,6 +116,7 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 		to: StreamType.Raw,
 		cost: 0.5,
 		transformer: () => volumeTransformer,
+		type: TransformerType.InlineVolume,
 	};
 
 	// The best insertion would be immediately after a Raw phase in the pipeline
@@ -133,6 +134,7 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 		from: StreamType.Opus,
 		to: StreamType.Raw,
 		transformer: () => new opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 }),
+		type: TransformerType.OpusDecoder,
 	});
 
 	transformerPipeline.push(transformer);
@@ -142,6 +144,7 @@ function insertInlineVolumeTransformer(transformerPipeline: TransformerPathCompo
 		from: StreamType.Raw,
 		to: StreamType.Opus,
 		transformer: () => new opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 }),
+		type: TransformerType.OpusEncoder,
 	});
 	return volumeTransformer;
 }

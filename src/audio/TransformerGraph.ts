@@ -38,21 +38,13 @@ export enum TransformerType {
 	OpusDecoder = 'opus decoder',
 	OggOpusDemuxer = 'ogg opus demuxer',
 	WebmOpusDemuxer = 'webm opus demuxer',
-}
-
-/**
- * Represents a transformer within the transformer pipeline.
- */
-interface TransformerComponent {
-	transformer: (input: string | Readable) => Readable;
-	cost: number;
-	type: TransformerType;
+	InlineVolume = 'inline volume',
 }
 
 /**
  * Represents a section of the transformer pipeline.
  */
-export interface TransformerPathComponent extends TransformerComponent {
+export interface TransformerPathComponent {
 	/**
 	 * The StreamType that comes into this transformer (its input)
 	 */
@@ -77,12 +69,17 @@ export interface TransformerPathComponent extends TransformerComponent {
 	 * transformer components will have higher costs.
 	 */
 	cost: number;
+
+	/**
+	 * The type of this transformer component
+	 */
+	type: TransformerType;
 }
 
 type Node = StreamType;
 type Edge = [Node, Node];
 
-const GRAPH: Map<Edge, TransformerComponent> = new Map();
+const GRAPH: Map<Edge, Omit<TransformerPathComponent, 'from' | 'to'>> = new Map();
 
 GRAPH.set([StreamType.Raw, StreamType.Opus], {
 	transformer: () => new prism.opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 }),
