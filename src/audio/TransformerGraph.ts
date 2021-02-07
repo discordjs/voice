@@ -73,41 +73,39 @@ for (const streamType of Object.values(StreamType)) {
 
 export function getNode(type: StreamType) {
 	const node = GRAPH.get(type);
-	if (!node) {
-		throw new Error(`Node type '${type}' does not exist!`);
-	}
+	if (!node) throw new Error(`Node type '${type}' does not exist!`);
 	return node;
 }
 
 getNode(StreamType.Raw).addEdge({
 	type: TransformerType.OpusEncoder,
 	to: getNode(StreamType.Opus),
-	cost: 1,
+	cost: 1.5,
 	transformer: () => new prism.opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 }),
 });
 
 getNode(StreamType.Opus).addEdge({
 	type: TransformerType.OpusDecoder,
 	to: getNode(StreamType.Raw),
-	cost: 1,
+	cost: 1.5,
 	transformer: () => new prism.opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 }),
 });
 
 getNode(StreamType.OggOpus).addEdge({
 	type: TransformerType.OggOpusDemuxer,
 	to: getNode(StreamType.Opus),
-	cost: 0.5,
+	cost: 1,
 	transformer: () => new prism.opus.OggDemuxer(),
 });
 
 getNode(StreamType.WebmOpus).addEdge({
 	type: TransformerType.WebmOpusDemuxer,
 	to: getNode(StreamType.Opus),
-	cost: 0.5,
+	cost: 1,
 	transformer: () => new prism.opus.WebmDemuxer(),
 });
 
-getNode(StreamType.Arbitrary).addEdge({
+const FFMPEG_PCM_EDGE: Omit<Edge, 'from'> = {
 	type: TransformerType.FFmpegPCM,
 	to: getNode(StreamType.Raw),
 	cost: 2,
@@ -115,89 +113,60 @@ getNode(StreamType.Arbitrary).addEdge({
 		new prism.FFmpeg({
 			args: typeof input === 'string' ? ['-i', input, ...FFMPEG_ARGUMENTS] : FFMPEG_ARGUMENTS,
 		}),
-});
+};
+
+getNode(StreamType.Arbitrary).addEdge(FFMPEG_PCM_EDGE);
+getNode(StreamType.OggOpus).addEdge(FFMPEG_PCM_EDGE);
+getNode(StreamType.WebmOpus).addEdge(FFMPEG_PCM_EDGE);
 
 getNode(StreamType.Raw).addEdge({
 	type: TransformerType.InlineVolume,
 	to: getNode(StreamType.Raw),
-	cost: 0.25,
-	transformer: () => new prism.VolumeTransformer({ type: 's16le', volume: 1 }),
+	cost: 0.5,
+	transformer: () => new prism.VolumeTransformer({ type: 's16le' }),
 });
 
-/**
- * Returns all the outbound edges from a given node
- * @param node The source node
- */
-function getOutboundEdges(node: Node) {
-	return node.edges;
+interface Step {
+	next?: Step;
+	cost: number;
+	edge?: Edge;
 }
 
-/**
- * Finds an edge in the transformer graph that directly connects a to b.
- *
- * @param a The source node
- * @param b The target node
- */
-function getEdge(a: Node, b: Node) {
-	return a.edges.find((edge) => edge.to === b);
-}
-
-/**
- * Finds the optimal path between the start and goal using the Transformer Graph.
- * @param start The start node
- * @param goal The goal node
- * @param edges The edges of the graph
- */
-export function findTransformerPipeline(start: Node, goal = getNode(StreamType.Opus)) {
-	const Q: Set<Node> = new Set(GRAPH.values());
-
-	if (start === goal) {
-		return [];
+function findPath(
+	from: Node,
+	constraints: (path: Edge[]) => boolean,
+	goal = getNode(StreamType.Opus),
+	path: Edge[] = [],
+	depth = 5,
+): Step {
+	if (from === goal && constraints(path)) {
+		return { cost: 0 };
+	} else if (depth === 0) {
+		return { cost: Infinity };
 	}
 
-	const dist: Map<Node, number> = new Map();
-	const prev: Map<Node, Node> = new Map();
-
-	for (const node of Q) {
-		dist.set(node, Infinity);
-	}
-	dist.set(start, 0);
-
-	while (Q.size > 0) {
-		const u = [...Q.values()].sort((a, b) => dist.get(a)! - dist.get(b)!)[0];
-		Q.delete(u);
-		const neighbourEdges = getOutboundEdges(u);
-		for (const edge of neighbourEdges) {
-			const v = edge.to;
-			if (!Q.has(v)) continue;
-
-			const alt = dist.get(u)! + edge.cost;
-			if (alt < dist.get(v)!) {
-				dist.set(v, alt);
-				prev.set(v, u);
-			}
+	let currentBest: Step | undefined = undefined;
+	for (const edge of from.edges) {
+		if (currentBest && edge.cost > currentBest.cost) continue;
+		const next = findPath(edge.to, constraints, goal, [...path, edge], depth - 1);
+		const cost = edge.cost + next.cost;
+		if (!currentBest || cost < currentBest.cost) {
+			currentBest = { cost, edge, next };
 		}
 	}
-
-	const path = [];
-	let current: Node | undefined = goal;
-	while (current) {
-		path.unshift(current);
-		current = prev.get(current);
-	}
-
-	// If the path is not connected, return null
-	if (path[0] !== start) {
-		return null;
-	}
-
-	const transformerPath: Edge[] = [];
-	for (let i = 0; i < path.length - 1; i++) {
-		const edge = getEdge(path[i], path[i + 1])!;
-		transformerPath.push(edge);
-	}
-
-	return transformerPath;
+	return currentBest ?? { cost: Infinity };
 }
 
-console.log(findTransformerPipeline(getNode(StreamType.Arbitrary)));
+function constructPipeline(step: Step) {
+	const edges = [];
+	let current: Step | undefined = step;
+	while (current?.edge) {
+		edges.push(current.edge);
+		current = current.next;
+	}
+	return edges;
+}
+
+export function findPipeline(from: StreamType, constraint: (path: Edge[]) => boolean = () => true) {
+	return constructPipeline(findPath(getNode(from), constraint));
+}
