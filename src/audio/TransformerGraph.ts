@@ -251,7 +251,6 @@ function constructPipeline(step: Step) {
 		edges.push(current.edge);
 		current = current.next;
 	}
-	console.log(edges);
 	return edges;
 }
 
