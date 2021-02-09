@@ -6,7 +6,21 @@ import * as prism from 'prism-media';
 	of transforming the input stream into something playable would be.
 */
 
-const FFMPEG_ARGUMENTS = ['-analyzeduration', '0', '-loglevel', '0', '-f', 's16le', '-ar', '48000', '-ac', '2'];
+const FFMPEG_PCM_ARGUMENTS = ['-analyzeduration', '0', '-loglevel', '0', '-f', 's16le', '-ar', '48000', '-ac', '2'];
+const FFMPEG_OPUS_ARGUMENTS = [
+	'-analyzeduration',
+	'0',
+	'-loglevel',
+	'0',
+	'-acodec',
+	'libopus',
+	'-f',
+	'opus',
+	'-ar',
+	'48000',
+	'-ac',
+	'2',
+];
 
 /**
  * The different types of stream that can exist within the pipeline
@@ -34,6 +48,7 @@ export enum StreamType {
  */
 export enum TransformerType {
 	FFmpegPCM = 'ffmpeg pcm',
+	FFmpegOgg = 'ffmpeg ogg',
 	OpusEncoder = 'opus encoder',
 	OpusDecoder = 'opus decoder',
 	OggOpusDemuxer = 'ogg/opus demuxer',
@@ -129,7 +144,7 @@ const FFMPEG_PCM_EDGE: Omit<Edge, 'from'> = {
 	cost: 2,
 	transformer: (input) =>
 		new prism.FFmpeg({
-			args: typeof input === 'string' ? ['-i', input, ...FFMPEG_ARGUMENTS] : FFMPEG_ARGUMENTS,
+			args: typeof input === 'string' ? ['-i', input, ...FFMPEG_PCM_ARGUMENTS] : FFMPEG_PCM_ARGUMENTS,
 		}),
 };
 
@@ -143,6 +158,33 @@ getNode(StreamType.Raw).addEdge({
 	cost: 0.5,
 	transformer: () => new prism.VolumeTransformer({ type: 's16le' }),
 });
+
+// Try to enable FFmpeg Ogg optimisations
+function canEnableFFmpegOptimisations(): boolean {
+	try {
+		const info = prism.FFmpeg.getInfo();
+		return info.output.includes('--enable-libopus');
+	} catch (err) {}
+	return false;
+}
+
+if (canEnableFFmpegOptimisations()) {
+	const FFMPEG_OGG_EDGE: Omit<Edge, 'from'> = {
+		type: TransformerType.FFmpegOgg,
+		to: getNode(StreamType.OggOpus),
+		cost: 2,
+		transformer: (input) =>
+			new prism.FFmpeg({
+				args: typeof input === 'string' ? ['-i', input, ...FFMPEG_OPUS_ARGUMENTS] : FFMPEG_OPUS_ARGUMENTS,
+			}),
+	};
+	getNode(StreamType.Arbitrary).addEdge(FFMPEG_OGG_EDGE);
+	// Include Ogg and WebM as well in case they have different sampling rates or are mono instead of stereo
+	// at the moment, this will not do anything. However, if/when detection for correct Opus headers is
+	// implemented, this will help inform the voice engine that it is able to transcode the audio.
+	getNode(StreamType.OggOpus).addEdge(FFMPEG_OGG_EDGE);
+	getNode(StreamType.WebmOpus).addEdge(FFMPEG_OGG_EDGE);
+}
 
 /**
  * Represents a step in the path from node A to node B.
@@ -210,6 +252,7 @@ function constructPipeline(step: Step) {
 		edges.push(current.edge);
 		current = current.next;
 	}
+	console.log(edges);
 	return edges;
 }
 
