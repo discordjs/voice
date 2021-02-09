@@ -162,8 +162,7 @@ getNode(StreamType.Raw).addEdge({
 // Try to enable FFmpeg Ogg optimisations
 function canEnableFFmpegOptimisations(): boolean {
 	try {
-		const info = prism.FFmpeg.getInfo();
-		return info.output.includes('--enable-libopus');
+		return prism.FFmpeg.getInfo().output.includes('--enable-libopus');
 	} catch (err) {}
 	return false;
 }
