@@ -163,7 +163,7 @@ getNode(StreamType.Raw).addEdge({
 function canEnableFFmpegOptimisations(): boolean {
 	try {
 		return prism.FFmpeg.getInfo().output.includes('--enable-libopus');
-	} catch (err) {}
+	} catch {}
 	return false;
 }
 
