@@ -2,7 +2,7 @@ import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGr
 import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer } from 'prism-media';
-import { AudioPlayer } from './AudioPlayer';
+import type { AudioPlayer } from './AudioPlayer';
 
 /**
  * Options that are set when creating a new audio resource.
