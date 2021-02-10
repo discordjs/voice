@@ -199,6 +199,7 @@ export class AudioPlayer extends EventEmitter {
 		if (oldState.status !== AudioPlayerStatus.Idle && oldState.resource !== newResource) {
 			oldState.resource.playStream.on('error', noop);
 			oldState.resource.playStream.off('error', oldState.onStreamError);
+			oldState.resource.audioPlayer = undefined;
 			oldState.resource.playStream.destroy();
 			oldState.resource.playStream.read(); // required to ensure buffered data is drained, prevents memory leak
 			if (oldState.status !== AudioPlayerStatus.Buffering && oldState.stepTimeout) {
@@ -255,12 +256,17 @@ export class AudioPlayer extends EventEmitter {
 	 * Idle state during the swap over.
 	 *
 	 * @param resource The resource to play
-	 * @throws Will throw if attempting to play an audio resource that has already ended.
+	 * @throws Will throw if attempting to play an audio resource that has already ended, or is being played by another player.
 	 */
 	public play(resource: AudioResource) {
 		if (resource.playStream.readableEnded || resource.playStream.destroyed) {
 			throw new Error(`Cannot play a resource (${resource.name ?? 'unnamed'}) that has already ended.`);
 		}
+
+		if (resource.audioPlayer && resource.audioPlayer !== this) {
+			throw new Error(`Resource (${resource.name ?? 'unnamed'}) is already being played by another audio player.`);
+		}
+		resource.audioPlayer = this;
 
 		// Attach error listeners to the stream that will propagate the error and then return to the Idle
 		// state if the resource is still being used.
