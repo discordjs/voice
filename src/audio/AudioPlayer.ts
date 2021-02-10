@@ -263,7 +263,10 @@ export class AudioPlayer extends EventEmitter {
 			throw new Error(`Cannot play a resource (${resource.name ?? 'unnamed'}) that has already ended.`);
 		}
 
-		if (resource.audioPlayer && resource.audioPlayer !== this) {
+		if (resource.audioPlayer) {
+			if (resource.audioPlayer === this) {
+				return;
+			}
 			throw new Error(`Resource (${resource.name ?? 'unnamed'}) is already being played by another audio player.`);
 		}
 		resource.audioPlayer = this;
