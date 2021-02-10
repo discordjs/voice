@@ -2,6 +2,7 @@ import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGr
 import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer } from 'prism-media';
+import type { AudioPlayer } from './AudioPlayer';
 
 /**
  * Options that are set when creating a new audio resource.
@@ -28,29 +29,41 @@ interface CreateAudioResourceOptions {
 /**
  * Represents an audio resource that can be played by an audio player.
  */
-export interface AudioResource {
+export class AudioResource {
 	/**
 	 * An object-mode Readable stream that emits Opus packets. This is what is played by audio players.
 	 */
-	playStream: Readable;
+	public readonly playStream: Readable;
 
 	/**
 	 * The pipeline used to convert the input stream into a playable format. For example, this may
 	 * contain an FFmpeg component for arbitrary inputs, and it may contain a VolumeTransformer component
 	 * for resources with inline volume transformation enabled.
 	 */
-	pipeline: Edge[];
+	public readonly pipeline: Edge[];
 
 	/**
 	 * An optional name that can be used to identify the resource.
 	 */
-	name?: string;
+	public name?: string;
 
 	/**
 	 * If the resource was created with inline volume transformation enabled, then this will be a
 	 * prism-media VolumeTransformer. You can use this to alter the volume of the stream.
 	 */
-	volume?: VolumeTransformer;
+	public readonly volume?: VolumeTransformer;
+
+	/**
+	 * The audio player that the resource is subscribed to, if any.
+	 */
+	public audioPlayer?: AudioPlayer;
+
+	public constructor(pipeline: Edge[], playStream: Readable, name?: string, volume?: VolumeTransformer) {
+		this.pipeline = pipeline;
+		this.playStream = playStream;
+		this.name = name;
+		this.volume = volume;
+	}
 }
 
 /**
