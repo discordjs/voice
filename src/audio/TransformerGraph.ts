@@ -160,14 +160,14 @@ getNode(StreamType.Raw).addEdge({
 });
 
 // Try to enable FFmpeg Ogg optimisations
-function canEnableFFmpegOptimisations(): boolean {
+function canEnableFFmpegOptimizations(): boolean {
 	try {
 		return prism.FFmpeg.getInfo().output.includes('--enable-libopus');
 	} catch {}
 	return false;
 }
 
-if (canEnableFFmpegOptimisations()) {
+if (canEnableFFmpegOptimizations()) {
 	const FFMPEG_OGG_EDGE: Omit<Edge, 'from'> = {
 		type: TransformerType.FFmpegOgg,
 		to: getNode(StreamType.OggOpus),
