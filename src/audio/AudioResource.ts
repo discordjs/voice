@@ -2,6 +2,7 @@ import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGr
 import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer } from 'prism-media';
+import { AudioPlayer } from './AudioPlayer';
 
 /**
  * Options that are set when creating a new audio resource.
@@ -51,6 +52,11 @@ export class AudioResource {
 	 * prism-media VolumeTransformer. You can use this to alter the volume of the stream.
 	 */
 	public readonly volume?: VolumeTransformer;
+
+	/**
+	 * The audio player that the resource is subscribed to, if any.
+	 */
+	public audioPlayer?: AudioPlayer;
 
 	public constructor(pipeline: Edge[], playStream: Readable, name?: string, volume?: VolumeTransformer) {
 		this.pipeline = pipeline;
