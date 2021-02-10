@@ -15,5 +15,8 @@ pids
 *.pid
 *.seed
 
+# Docs
+docs/docs.json
+
 # Miscellaneous
 .tmp/
