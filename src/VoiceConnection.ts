@@ -146,15 +146,15 @@ export class VoiceConnection extends EventEmitter {
 			oldNetworking.destroy();
 		}
 
-		if (oldSubscription && oldSubscription !== newSubscription) {
-			oldSubscription.unsubscribe();
-		}
-
 		if (newState.status === VoiceConnectionStatus.Ready) {
 			this.reconnectAttempts = 0;
 		}
 
 		this._state = newState;
+
+		if (oldSubscription && oldSubscription !== newSubscription) {
+			oldSubscription.unsubscribe();
+		}
 
 		this.emit('stateChange', oldState, newState);
 		if (oldState.status !== newState.status) {
@@ -425,7 +425,14 @@ export class VoiceConnection extends EventEmitter {
  */
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
-	if (existing) return existing;
+	if (existing) {
+		existing.state = {
+			...existing.state,
+			status: VoiceConnectionStatus.Signalling,
+		};
+		signalJoinVoiceChannel(joinConfig);
+		return existing;
+	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
 	trackVoiceConnection(joinConfig.guild.id, voiceConnection);

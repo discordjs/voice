@@ -8,9 +8,9 @@ import { VolumeTransformer, opus } from 'prism-media';
  */
 interface CreateAudioResourceOptions {
 	/**
-	 * The type of the input stream.
+	 * The type of the input stream. Defaults to `StreamType.Arbitrary`.
 	 */
-	inputType: StreamType;
+	inputType?: StreamType;
 
 	/**
 	 * An optional name that can be attached to the resource. This could be a track title, song name etc.
@@ -20,7 +20,7 @@ interface CreateAudioResourceOptions {
 
 	/**
 	 * Whether or not inline volume should be enabled. If enabled, you will be able to change the volume
-	 * of the stream on-the-fly. However, this also increases the performance cost of playback.
+	 * of the stream on-the-fly. However, this also increases the performance cost of playback. Defaults to `false`.
 	 */
 	inlineVolume?: boolean;
 }
@@ -65,15 +65,17 @@ export interface AudioResource {
  * @param input - The resource to play.
  * @param options - Configurable options for creating the resource.
  */
-export function createAudioResource(input: string | Readable, options: CreateAudioResourceOptions): AudioResource {
+export function createAudioResource(input: string | Readable, options: CreateAudioResourceOptions = {}): AudioResource {
+	let inputType = options.inputType ?? StreamType.Arbitrary;
+
 	// string inputs can only be used with FFmpeg
 	if (typeof input === 'string') {
-		options.inputType = StreamType.Arbitrary;
+		inputType = StreamType.Arbitrary;
 	}
 
-	const transformerPipeline = findTransformerPipeline(options.inputType);
+	const transformerPipeline = findTransformerPipeline(inputType);
 	if (!transformerPipeline) {
-		throw new Error(`Cannot create transcoder pipeline for stream type '${options.inputType}'`);
+		throw new Error(`Cannot create transcoder pipeline for stream type '${inputType}'`);
 	}
 
 	let volumeTransformer: VolumeTransformer | undefined;
