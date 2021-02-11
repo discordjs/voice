@@ -5,11 +5,11 @@ import {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
+	entersState,
 	StreamType,
 	AudioPlayerStatus,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
-import { entersState } from './util';
 
 /*
 	In this example, we are creating a single audio player that plays to a number of
@@ -23,6 +23,9 @@ import { entersState } from './util';
 */
 const player = createAudioPlayer();
 
+/**
+ *
+ */
 function playSong() {
 	/*
 		Here we are creating an audio resource using a sample song freely available online
@@ -51,6 +54,9 @@ function playSong() {
 	return entersState(player, AudioPlayerStatus.Playing, 5e3);
 }
 
+/**
+ * @param channel
+ */
 async function connectToChannel(channel: VoiceChannel) {
 	/*
 		Here, we try to establish a connection to a voice channel. If we're already connected
