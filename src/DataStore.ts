@@ -99,8 +99,10 @@ function audioCycleStep() {
 function prepareNextAudioFrame(players: AudioPlayer[]) {
 	const nextPlayer = players.shift();
 
-	if (!nextPlayer && nextTime !== -1) {
-		audioCycleInterval = setTimeout(() => audioCycleStep(), nextTime - Date.now());
+	if (!nextPlayer) {
+		if (nextTime !== -1) {
+			audioCycleInterval = setTimeout(() => audioCycleStep(), nextTime - Date.now());
+		}
 		return;
 	}
 
