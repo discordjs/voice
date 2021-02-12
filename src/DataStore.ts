@@ -80,9 +80,23 @@ function audioCycleStep() {
 
 	// eslint-disable-next-line @typescript-eslint/dot-notation
 	available.forEach((player) => player['_dispatchAll']());
+
+	prepareAudioPlayers(available);
+}
+
+function prepareAudioPlayers(players: AudioPlayer[]) {
+	const nextPlayer = players.shift();
+
+	if (!nextPlayer && nextTime !== -1) {
+		audioCycleInterval = setTimeout(() => audioCycleStep(), nextTime - Date.now());
+		return;
+	}
+
 	// eslint-disable-next-line @typescript-eslint/dot-notation
-	available.forEach((player) => player['_prepareAll']());
-	audioCycleInterval = setTimeout(() => audioCycleStep(), nextTime - Date.now());
+	nextPlayer['_prepareAll']();
+
+	// setImmediate to avoid long audio player chains blocking other scheduled tasks
+	setImmediate(() => prepareAudioPlayers(players));
 }
 
 export function hasAudioPlayer(target: AudioPlayer) {
@@ -106,6 +120,7 @@ export function deleteAudioPlayer(player: AudioPlayer) {
 		}
 	}
 	if (audioPlayers.length === 0 && typeof audioCycleInterval !== 'undefined') {
+		nextTime = -1;
 		clearTimeout(audioCycleInterval);
 	}
 }
