@@ -120,7 +120,7 @@ function prepareNextAudioFrame(players: AudioPlayer[]) {
  * @returns true if it is being tracked, false otherwise
  */
 export function hasAudioPlayer(target: AudioPlayer) {
-	return audioPlayers.some((player) => player === target);
+	return audioPlayers.includes(target);
 }
 
 /**
@@ -141,12 +141,10 @@ export function addAudioPlayer(player: AudioPlayer) {
  * Removes an audio player from the data store tracking list, if it is present there.
  */
 export function deleteAudioPlayer(player: AudioPlayer) {
-	for (let i = 0; i < audioPlayers.length; i++) {
-		if (audioPlayers[i] === player) {
-			audioPlayers.splice(i, 1);
-			break;
-		}
-	}
+	const index = audioPlayers.indexOf(player);
+	if (index === -1) return;
+	
+	audioPlayers.splice(index, 1);
 	if (audioPlayers.length === 0 && typeof audioCycleInterval !== 'undefined') {
 		nextTime = -1;
 		clearTimeout(audioCycleInterval);
