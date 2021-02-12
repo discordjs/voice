@@ -54,34 +54,42 @@ interface CreateAudioPlayerOptions {
 	};
 }
 
+interface IdleAudioPlayerState {
+	status: AudioPlayerStatus.Idle;
+}
+
+interface BufferingAudioPlayerState {
+	status: AudioPlayerStatus.Buffering;
+	resource: AudioResource;
+	onReadableCallback: () => void;
+	onFailureCallback: () => void;
+	onStreamError: (error: Error) => void;
+}
+
+interface PlayingAudioPlayerState {
+	status: AudioPlayerStatus.Playing;
+	missedFrames: number;
+	resource: AudioResource;
+	nextTime: number;
+	onStreamError: (error: Error) => void;
+}
+
+interface PausedAudioPlayerState {
+	status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
+	silencePacketsRemaining: number;
+	resource: AudioResource;
+	nextTime: number;
+	onStreamError: (error: Error) => void;
+}
+
 /**
  * The various states that the player can be in.
  */
 type AudioPlayerState =
-	| {
-			status: AudioPlayerStatus.Idle;
-	  }
-	| {
-			status: AudioPlayerStatus.Buffering;
-			resource: AudioResource;
-			onReadableCallback: () => void;
-			onFailureCallback: () => void;
-			onStreamError: (error: Error) => void;
-	  }
-	| {
-			status: AudioPlayerStatus.Playing;
-			missedFrames: number;
-			resource: AudioResource;
-			nextTime: number;
-			onStreamError: (error: Error) => void;
-	  }
-	| {
-			status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
-			silencePacketsRemaining: number;
-			resource: AudioResource;
-			nextTime: number;
-			onStreamError: (error: Error) => void;
-	  };
+	| IdleAudioPlayerState
+	| BufferingAudioPlayerState
+	| PlayingAudioPlayerState
+	| PausedAudioPlayerState;
 
 /**
  * Used to play audio resources (i.e. tracks, streams) to voice connections.
