@@ -2,9 +2,9 @@
 
 > Provides audio streaming functionality to Discord.js
 
-## Status: pre-alpha
+## Status: alpha
 
-> This library is still in development - it is not ready for production!
+> This library is still in development - the API is subject to change!
 
 ## Dependencies
 
