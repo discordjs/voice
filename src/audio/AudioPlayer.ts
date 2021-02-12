@@ -394,6 +394,11 @@ export class AudioPlayer extends EventEmitter {
 		return true;
 	}
 
+	/**
+	 * Checks whether the underlying resource (if any) is playable (readable).
+	 *
+	 * @returns true if the resource is playable, false otherwise.
+	 */
 	public checkPlayable() {
 		const state = this._state;
 		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return false;
@@ -408,7 +413,11 @@ export class AudioPlayer extends EventEmitter {
 		return true;
 	}
 
-	private _dispatchAll() {
+	/**
+	 * Called roughly every 20ms by the global audio player timer. Dispatches any audio packets that are buffered
+	 * by the active connections of this audio player.
+	 */
+	private _stepDispatch() {
 		const state = this._state;
 
 		// Guard against the Idle state
@@ -418,7 +427,12 @@ export class AudioPlayer extends EventEmitter {
 		this.playable.forEach((connection) => connection.dispatchAudio());
 	}
 
-	private _prepareAll() {
+	/**
+	 * Called roughly every 20ms by the global audio player timer. Attempts to read an audio packet from the
+	 * underlying resource of the stream, and then has all the active connections of the audio player prepare it
+	 * (encrypt it, append header data) so that it is ready to play at the start of the next cycle.
+	 */
+	private _stepPrepare() {
 		const state = this._state;
 
 		// Guard against the Idle state
