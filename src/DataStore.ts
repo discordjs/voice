@@ -35,7 +35,7 @@ export interface JoinConfig {
 
 /**
  * Sends a voice state update to the main websocket shard of a guild, to indicate joining/leaving/moving across
- * voice channels
+ * voice channels.
  * @param voiceChannel The voice channel to move to
  */
 export function signalJoinVoiceChannel(config: JoinConfig) {
@@ -72,19 +72,31 @@ const FRAME_LENGTH = 20;
 
 let audioCycleInterval: NodeJS.Timeout | undefined;
 let nextTime = -1;
+
+/**
+ * A list of created audio players that are still active and haven't been destroyed.
+ */
 const audioPlayers: AudioPlayer[] = [];
 
+/**
+ * Called roughly every 20 milliseconds. Dispatches audio from all players, and then gets the players to prepare
+ * the next audio frame.
+ */
 function audioCycleStep() {
 	nextTime += FRAME_LENGTH;
 	const available = audioPlayers.filter((player) => player.checkPlayable());
 
 	// eslint-disable-next-line @typescript-eslint/dot-notation
-	available.forEach((player) => player['_dispatchAll']());
+	available.forEach((player) => player['_stepDispatch']());
 
-	prepareAudioPlayers(available);
+	prepareNextAudioFrame(available);
 }
 
-function prepareAudioPlayers(players: AudioPlayer[]) {
+/**
+ * Recursively gets the players that have been passed as parameters to prepare audio frames that can be played.
+ * at the start of the next cycle.
+ */
+function prepareNextAudioFrame(players: AudioPlayer[]) {
 	const nextPlayer = players.shift();
 
 	if (!nextPlayer && nextTime !== -1) {
@@ -93,16 +105,26 @@ function prepareAudioPlayers(players: AudioPlayer[]) {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/dot-notation
-	nextPlayer['_prepareAll']();
+	nextPlayer['_stepPrepare']();
 
 	// setImmediate to avoid long audio player chains blocking other scheduled tasks
-	setImmediate(() => prepareAudioPlayers(players));
+	setImmediate(() => prepareNextAudioFrame(players));
 }
 
+/**
+ * Checks whether or not the given audio player is being driven by the data store clock.
+ *
+ * @param target The target to test for
+ * @returns true if it is being tracked, false otherwise
+ */
 export function hasAudioPlayer(target: AudioPlayer) {
 	return audioPlayers.some((player) => player === target);
 }
 
+/**
+ * Adds an audio player to the data store tracking list, if it isn't already there.
+ * @param player The player to track
+ */
 export function addAudioPlayer(player: AudioPlayer) {
 	if (hasAudioPlayer(player)) return player;
 	audioPlayers.push(player);
@@ -110,8 +132,12 @@ export function addAudioPlayer(player: AudioPlayer) {
 		nextTime = Date.now();
 		setImmediate(() => audioCycleStep());
 	}
+	return player;
 }
 
+/**
+ * Removes an audio player from the data store tracking list, if it is present there.
+ */
 export function deleteAudioPlayer(player: AudioPlayer) {
 	for (let i = 0; i < audioPlayers.length; i++) {
 		if (audioPlayers[i] === player) {
