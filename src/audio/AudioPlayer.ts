@@ -5,9 +5,6 @@ import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioResource } from './AudioResource';
 import { PlayerSubscription } from './PlayerSubscription';
 
-// Each audio packet is 20ms long
-const FRAME_LENGTH = 20;
-
 // The Opus "silent" frame
 const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
 
@@ -70,7 +67,6 @@ interface PlayingAudioPlayerState {
 	status: AudioPlayerStatus.Playing;
 	missedFrames: number;
 	resource: AudioResource;
-	nextTime: number;
 	onStreamError: (error: Error) => void;
 }
 
@@ -78,7 +74,6 @@ interface PausedAudioPlayerState {
 	status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 	silencePacketsRemaining: number;
 	resource: AudioResource;
-	nextTime: number;
 	onStreamError: (error: Error) => void;
 }
 
@@ -308,7 +303,6 @@ export class AudioPlayer extends EventEmitter {
 				status: AudioPlayerStatus.Playing,
 				missedFrames: 0,
 				resource,
-				nextTime: Date.now(),
 				onStreamError,
 			};
 			setImmediate(() => this._step());
@@ -319,7 +313,6 @@ export class AudioPlayer extends EventEmitter {
 						status: AudioPlayerStatus.Playing,
 						missedFrames: 0,
 						resource,
-						nextTime: Date.now(),
 						onStreamError,
 					};
 					setImmediate(() => this._step());
@@ -416,9 +409,6 @@ export class AudioPlayer extends EventEmitter {
 			};
 			return;
 		}
-
-		// The next time that this method should be called (20ms from now)
-		state.nextTime += FRAME_LENGTH;
 
 		// List of connections that can receive the packet
 		const playable = this.subscribers

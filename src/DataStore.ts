@@ -66,12 +66,16 @@ export function trackVoiceConnection(guildId: string, voiceConnection: VoiceConn
 }
 
 // Audio Players
+
+// Each audio packet is 20ms long
+const FRAME_LENGTH = 20;
+
 let audioCycleInterval: NodeJS.Timeout | undefined;
 let nextTime = -1;
 const audioPlayers: AudioPlayer[] = [];
 
 function audioCycleStep() {
-	nextTime += 20;
+	nextTime += FRAME_LENGTH;
 	const available = audioPlayers.filter(
 		(player) => player.state.status !== AudioPlayerStatus.Idle && player.state.status !== AudioPlayerStatus.Buffering,
 	);
