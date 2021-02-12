@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { addAudioPlayer, deleteAudioPlayer } from '../DataStore';
 import { noop } from '../util/util';
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioResource } from './AudioResource';
@@ -71,7 +72,6 @@ type AudioPlayerState =
 			status: AudioPlayerStatus.Playing;
 			missedFrames: number;
 			resource: AudioResource;
-			stepTimeout?: NodeJS.Timeout;
 			nextTime: number;
 			onStreamError: (error: Error) => void;
 	  }
@@ -79,7 +79,6 @@ type AudioPlayerState =
 			status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 			silencePacketsRemaining: number;
 			resource: AudioResource;
-			stepTimeout?: NodeJS.Timeout;
 			nextTime: number;
 			onStreamError: (error: Error) => void;
 	  };
@@ -202,9 +201,6 @@ export class AudioPlayer extends EventEmitter {
 			oldState.resource.audioPlayer = undefined;
 			oldState.resource.playStream.destroy();
 			oldState.resource.playStream.read(); // required to ensure buffered data is drained, prevents memory leak
-			if (oldState.status !== AudioPlayerStatus.Buffering && oldState.stepTimeout) {
-				clearTimeout(oldState.stepTimeout);
-			}
 		}
 
 		// When leaving the Buffering state (or buffering a new resource), then remove the event listeners from it
@@ -221,6 +217,12 @@ export class AudioPlayer extends EventEmitter {
 		// transitioning into an idle should ensure that connections stop speaking
 		if (newState.status === AudioPlayerStatus.Idle) {
 			this._signalStopSpeaking();
+			deleteAudioPlayer(this);
+		}
+
+		// do the thing
+		if (newResource) {
+			addAudioPlayer(this);
 		}
 
 		// playing -> playing state changes should still transition if a resource changed (seems like it would be useful!)
@@ -438,7 +440,6 @@ export class AudioPlayer extends EventEmitter {
 					this._signalStopSpeaking();
 				}
 			}
-			state.stepTimeout = setTimeout(() => this._step(), state.nextTime - Date.now());
 			return;
 		}
 
@@ -450,7 +451,6 @@ export class AudioPlayer extends EventEmitter {
 					status: AudioPlayerStatus.AutoPaused,
 					silencePacketsRemaining: 5,
 				};
-				state.stepTimeout = setTimeout(() => this._step(), state.nextTime - Date.now());
 				return;
 			} else if (this.behaviours.noSubscriber === NoSubscriberBehaviour.Stop) {
 				this.stop();
@@ -475,7 +475,6 @@ export class AudioPlayer extends EventEmitter {
 				}
 			}
 		}
-		state.stepTimeout = setTimeout(() => this._step(), state.nextTime - Date.now());
 	}
 
 	/**

@@ -4,6 +4,7 @@ import {
 	GatewayVoiceStateUpdateDispatchData,
 } from 'discord-api-types/v8/gateway';
 import { Client, Constants, Guild } from 'discord.js';
+import { AudioPlayer, AudioPlayerStatus } from './audio';
 import { VoiceConnection } from './VoiceConnection';
 
 // Clients
@@ -62,4 +63,45 @@ export function untrackVoiceConnection(guildId: string) {
 
 export function trackVoiceConnection(guildId: string, voiceConnection: VoiceConnection) {
 	return voiceConnections.set(guildId, voiceConnection);
+}
+
+// Audio Players
+let audioCycleInterval: NodeJS.Timeout | undefined;
+let nextTime = -1;
+const audioPlayers: AudioPlayer[] = [];
+
+function audioCycleStep() {
+	nextTime += 20;
+	const available = audioPlayers.filter(
+		(player) => player.state.status !== AudioPlayerStatus.Idle && player.state.status !== AudioPlayerStatus.Buffering,
+	);
+
+	// eslint-disable-next-line @typescript-eslint/dot-notation
+	available.forEach((player) => player['_step']());
+	audioCycleInterval = setTimeout(() => audioCycleStep(), nextTime - Date.now());
+}
+
+export function hasAudioPlayer(target: AudioPlayer) {
+	return audioPlayers.some((player) => player === target);
+}
+
+export function addAudioPlayer(player: AudioPlayer) {
+	if (hasAudioPlayer(player)) return player;
+	audioPlayers.push(player);
+	if (audioPlayers.length === 1) {
+		nextTime = Date.now();
+		setImmediate(() => audioCycleStep());
+	}
+}
+
+export function deleteAudioPlayer(player: AudioPlayer) {
+	for (let i = 0; i < audioPlayers.length; i++) {
+		if (audioPlayers[i] === player) {
+			audioPlayers.splice(i, 1);
+			break;
+		}
+	}
+	if (audioPlayers.length === 0 && typeof audioCycleInterval !== 'undefined') {
+		clearTimeout(audioCycleInterval);
+	}
 }
