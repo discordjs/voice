@@ -232,7 +232,7 @@ export class AudioPlayer extends EventEmitter {
 			deleteAudioPlayer(this);
 		}
 
-		// do the thing
+		// attach to the global audio player timer
 		if (newResource) {
 			addAudioPlayer(this);
 		}
