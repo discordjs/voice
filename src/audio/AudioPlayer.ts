@@ -131,6 +131,15 @@ export class AudioPlayer extends EventEmitter {
 	}
 
 	/**
+	 * A list of subscribed voice connections that can currently receive audio to play
+	 */
+	public get playable() {
+		return this.subscribers
+			.filter(({ connection }) => connection.state.status === VoiceConnectionStatus.Ready)
+			.map(({ connection }) => connection);
+	}
+
+	/**
 	 * Subscribes a VoiceConnection to the audio player's play list. If the VoiceConnection is already subscribed,
 	 * then the existing subscription is used.
 	 *
@@ -405,13 +414,8 @@ export class AudioPlayer extends EventEmitter {
 		// Guard against the Idle state
 		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return;
 
-		// List of connections that can receive the packet
-		const playable = this.subscribers
-			.filter(({ connection }) => connection.state.status === VoiceConnectionStatus.Ready)
-			.map(({ connection }) => connection);
-
 		// Dispatch any audio packets that were prepared in the previous cycle
-		playable.forEach((connection) => connection.dispatchAudio());
+		this.playable.forEach((connection) => connection.dispatchAudio());
 	}
 
 	private _prepareAll() {
@@ -421,9 +425,7 @@ export class AudioPlayer extends EventEmitter {
 		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return;
 
 		// List of connections that can receive the packet
-		const playable = this.subscribers
-			.filter(({ connection }) => connection.state.status === VoiceConnectionStatus.Ready)
-			.map(({ connection }) => connection);
+		const playable = this.playable;
 
 		/* If the player was previously in the AutoPaused state, check to see whether there are newly available
 		   connections, allowing us to transition out of the AutoPaused state back into the Playing state */
