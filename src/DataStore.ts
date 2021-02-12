@@ -4,7 +4,7 @@ import {
 	GatewayVoiceStateUpdateDispatchData,
 } from 'discord-api-types/v8/gateway';
 import { Client, Constants, Guild } from 'discord.js';
-import { AudioPlayer, AudioPlayerStatus } from './audio';
+import { AudioPlayer } from './audio';
 import { VoiceConnection } from './VoiceConnection';
 
 // Clients
@@ -76,12 +76,12 @@ const audioPlayers: AudioPlayer[] = [];
 
 function audioCycleStep() {
 	nextTime += FRAME_LENGTH;
-	const available = audioPlayers.filter(
-		(player) => player.state.status !== AudioPlayerStatus.Idle && player.state.status !== AudioPlayerStatus.Buffering,
-	);
+	const available = audioPlayers.filter((player) => player.checkPlayable());
 
 	// eslint-disable-next-line @typescript-eslint/dot-notation
-	available.forEach((player) => player['_step']());
+	available.forEach((player) => player['_dispatchAll']());
+	// eslint-disable-next-line @typescript-eslint/dot-notation
+	available.forEach((player) => player['_prepareAll']());
 	audioCycleInterval = setTimeout(() => audioCycleStep(), nextTime - Date.now());
 }
 

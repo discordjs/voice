@@ -305,7 +305,6 @@ export class AudioPlayer extends EventEmitter {
 				resource,
 				onStreamError,
 			};
-			setImmediate(() => this._step());
 		} else {
 			const onReadableCallback = () => {
 				if (this.state.status === AudioPlayerStatus.Buffering && this.state.resource === resource) {
@@ -315,7 +314,6 @@ export class AudioPlayer extends EventEmitter {
 						resource,
 						onStreamError,
 					};
-					setImmediate(() => this._step());
 				}
 			};
 
@@ -387,28 +385,25 @@ export class AudioPlayer extends EventEmitter {
 		return true;
 	}
 
-	/**
-	 * Attempts to capture an Opus packet from the current resource and play it across all the available connections that
-	 * are subscribed to this player.
-	 *
-	 * Called roughly every 20ms during playback.
-	 *
-	 * Even while the player is paused, this method will still continue to be called at 20ms intervals to check whether
-	 * audio can continue to play again.
-	 */
-	private _step() {
-		const state = this.state;
-
-		// Guard against the Idle state
-		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return;
+	public checkPlayable() {
+		const state = this._state;
+		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return false;
 
 		// If the stream has been destroyed or is no longer readable, then transition to the Idle state.
 		if (!state.resource.playStream.readable) {
 			this.state = {
 				status: AudioPlayerStatus.Idle,
 			};
-			return;
+			return false;
 		}
+		return true;
+	}
+
+	private _dispatchAll() {
+		const state = this._state;
+
+		// Guard against the Idle state
+		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return;
 
 		// List of connections that can receive the packet
 		const playable = this.subscribers
@@ -417,6 +412,18 @@ export class AudioPlayer extends EventEmitter {
 
 		// Dispatch any audio packets that were prepared in the previous cycle
 		playable.forEach((connection) => connection.dispatchAudio());
+	}
+
+	private _prepareAll() {
+		const state = this._state;
+
+		// Guard against the Idle state
+		if (state.status === AudioPlayerStatus.Idle || state.status === AudioPlayerStatus.Buffering) return;
+
+		// List of connections that can receive the packet
+		const playable = this.subscribers
+			.filter(({ connection }) => connection.state.status === VoiceConnectionStatus.Ready)
+			.map(({ connection }) => connection);
 
 		/* If the player was previously in the AutoPaused state, check to see whether there are newly available
 		   connections, allowing us to transition out of the AutoPaused state back into the Playing state */
