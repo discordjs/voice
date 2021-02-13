@@ -14,7 +14,8 @@
 		"lint:fix": "eslint src --ext .ts --fix",
 		"prettier": "prettier --write **/*.{ts,js,json,yml,yaml}",
 		"build": "tsc && idtsc",
-		"build:check": "tsc --noEmit --incremental false && idtsc"
+		"build:check": "tsc --noEmit --incremental false && idtsc",
+		"docs": "typedoc --theme ./node_modules/typedoc-neo-theme/bin/default --excludeInternal --excludePrivate --includeVersion src/index.ts"
 	},
 	"repository": {
 		"type": "git",
