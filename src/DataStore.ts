@@ -143,7 +143,6 @@ export function addAudioPlayer(player: AudioPlayer) {
 export function deleteAudioPlayer(player: AudioPlayer) {
 	const index = audioPlayers.indexOf(player);
 	if (index === -1) return;
-	
 	audioPlayers.splice(index, 1);
 	if (audioPlayers.length === 0 && typeof audioCycleInterval !== 'undefined') {
 		nextTime = -1;
