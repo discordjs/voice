@@ -1,4 +1,4 @@
-export { AudioPlayer, AudioPlayerStatus, NoSubscriberBehaviour, createAudioPlayer } from './AudioPlayer';
+export { AudioPlayer, AudioPlayerStatus, NoSubscriberBehavior, createAudioPlayer } from './AudioPlayer';
 
 export { AudioResource, createAudioResource } from './AudioResource';
 

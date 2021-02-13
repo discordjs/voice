@@ -159,7 +159,7 @@ getNode(StreamType.Raw).addEdge({
 	transformer: () => new prism.VolumeTransformer({ type: 's16le' }),
 });
 
-// Try to enable FFmpeg Ogg optimisations
+// Try to enable FFmpeg Ogg optimizations
 function canEnableFFmpegOptimizations(): boolean {
 	try {
 		return prism.FFmpeg.getInfo().output.includes('--enable-libopus');

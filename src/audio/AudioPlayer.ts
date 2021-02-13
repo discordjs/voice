@@ -11,7 +11,7 @@ const FRAME_LENGTH = 20;
 const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
 
 /**
- * Describes the behaviour of the player when an audio packet is played but there are no available
+ * Describes the behavior of the player when an audio packet is played but there are no available
  * voice connections to play to.
  *
  * - `Pause` - pauses playing the stream until a voice connection becomes available
@@ -20,7 +20,7 @@ const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
  *
  * - `Stop` - the player stops and enters the Idle state.
  */
-export enum NoSubscriberBehaviour {
+export enum NoSubscriberBehavior {
 	Pause = 'pause',
 	Play = 'play',
 	Stop = 'stop',
@@ -33,7 +33,7 @@ export enum NoSubscriberBehaviour {
  *
  * - `Pause` - when the player has been manually paused
  *
- * - `AutoPaused` - when the player has paused itself. Only possible with the "pause" no subscriber behaviour.
+ * - `AutoPaused` - when the player has paused itself. Only possible with the "pause" no subscriber behavior.
  */
 export enum AudioPlayerStatus {
 	Idle = 'idle',
@@ -44,12 +44,12 @@ export enum AudioPlayerStatus {
 }
 
 /**
- * Options that can be passed when creating an audio player, used to specify its behaviour.
+ * Options that can be passed when creating an audio player, used to specify its behavior.
  */
 interface CreateAudioPlayerOptions {
 	debug?: boolean;
-	behaviours?: {
-		noSubscriber?: NoSubscriberBehaviour;
+	behaviors?: {
+		noSubscriber?: NoSubscriberBehavior;
 	};
 }
 
@@ -89,7 +89,7 @@ type AudioPlayerState =
  * It is designed to be re-used - even if a resource has finished playing, the player itself can still be used.
  *
  * The AudioPlayer drives the timing of playback, and therefore is unaffected by voice connections
- * becoming unavailable. Its behaviour in these scenarios can be configured.
+ * becoming unavailable. Its behavior in these scenarios can be configured.
  */
 export class AudioPlayer extends EventEmitter {
 	/**
@@ -104,10 +104,10 @@ export class AudioPlayer extends EventEmitter {
 	private readonly subscribers: PlayerSubscription[] = [];
 
 	/**
-	 * The behaviour that the player should follow when it enters certain situations.
+	 * The behavior that the player should follow when it enters certain situations.
 	 */
-	private readonly behaviours: {
-		noSubscriber: NoSubscriberBehaviour;
+	private readonly behaviors: {
+		noSubscriber: NoSubscriberBehavior;
 	};
 
 	/**
@@ -121,9 +121,9 @@ export class AudioPlayer extends EventEmitter {
 	public constructor(options: CreateAudioPlayerOptions = {}) {
 		super();
 		this._state = { status: AudioPlayerStatus.Idle };
-		this.behaviours = {
-			noSubscriber: NoSubscriberBehaviour.Pause,
-			...options.behaviours,
+		this.behaviors = {
+			noSubscriber: NoSubscriberBehavior.Pause,
+			...options.behaviors,
 		};
 		this.debug = options.debug === false ? null : this.emit.bind(this, 'debug');
 	}
@@ -442,9 +442,9 @@ export class AudioPlayer extends EventEmitter {
 			return;
 		}
 
-		// If there are no available connections in this cycle, observe the configured "no subscriber" behaviour.
+		// If there are no available connections in this cycle, observe the configured "no subscriber" behavior.
 		if (playable.length === 0) {
-			if (this.behaviours.noSubscriber === NoSubscriberBehaviour.Pause) {
+			if (this.behaviors.noSubscriber === NoSubscriberBehavior.Pause) {
 				this.state = {
 					...state,
 					status: AudioPlayerStatus.AutoPaused,
@@ -452,7 +452,7 @@ export class AudioPlayer extends EventEmitter {
 				};
 				state.stepTimeout = setTimeout(() => this._step(), state.nextTime - Date.now());
 				return;
-			} else if (this.behaviours.noSubscriber === NoSubscriberBehaviour.Stop) {
+			} else if (this.behaviors.noSubscriber === NoSubscriberBehavior.Stop) {
 				this.stop();
 			}
 		}
