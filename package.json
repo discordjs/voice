@@ -55,6 +55,7 @@
 		"idtsc": "^0.9.0",
 		"lint-staged": "^10.5.4",
 		"prettier": "^2.2.1",
+		"tiny-typed-emitter": "^2.0.3",
 		"typedoc": "^0.20.24",
 		"typescript": "^4.2.0-dev.20210204"
 	},
