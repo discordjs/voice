@@ -17,6 +17,10 @@ export class PlayerSubscription {
 	 */
 	public readonly player: AudioPlayer;
 
+	/**
+	 * Creates a new player subscription
+	 * @internal
+	 */
 	public constructor(connection: VoiceConnection, player: AudioPlayer) {
 		this.connection = connection;
 		this.player = player;

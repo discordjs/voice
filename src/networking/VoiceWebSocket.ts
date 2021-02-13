@@ -11,6 +11,7 @@ import WebSocket, { MessageEvent } from 'ws';
 /**
  * An extension of the WebSocket class to provide helper functionality when interacting
  * with the Discord Voice gateway.
+ * @internal
  */
 export class VoiceWebSocket extends WebSocket {
 	/**

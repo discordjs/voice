@@ -1,13 +1,18 @@
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayer, AudioPlayerStatus } from '../audio/AudioPlayer';
 
+/**
+ * Allows a target a specified amount of time to enter a given state, otherwise rejects with an error.
+ *
+ * @param target The object that we want to observe the state change for
+ * @param status The status that the target should be in
+ * @param maxTime The maximum time we are allowing for this to occur
+ */
 export function entersState(
 	target: VoiceConnection,
 	status: VoiceConnectionStatus,
 	maxTime: number,
 ): Promise<VoiceConnection>;
-
-export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxTime: number): Promise<AudioPlayer>;
 
 /**
  * Allows a target a specified amount of time to enter a given state, otherwise rejects with an error.
@@ -16,6 +21,8 @@ export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxT
  * @param status The status that the target should be in
  * @param maxTime The maximum time we are allowing for this to occur
  */
+export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxTime: number): Promise<AudioPlayer>;
+
 export function entersState<T extends VoiceConnection | AudioPlayer>(
 	target: T,
 	status: VoiceConnectionStatus | AudioPlayerStatus,

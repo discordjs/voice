@@ -58,6 +58,10 @@ export class AudioResource {
 	 */
 	public audioPlayer?: AudioPlayer;
 
+	/**
+	 * Creates a new audio resource.
+	 * @internal
+	 */
 	public constructor(pipeline: Edge[], playStream: Readable, name?: string, volume?: VolumeTransformer) {
 		this.pipeline = pipeline;
 		this.playStream = playStream;

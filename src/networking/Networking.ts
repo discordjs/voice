@@ -90,6 +90,7 @@ const nonce = Buffer.alloc(24);
 
 /**
  * Manages the networking required to maintain a voice connection and dispatch audio packets
+ * @internal
  */
 export class Networking extends EventEmitter {
 	private _state: NetworkingState;

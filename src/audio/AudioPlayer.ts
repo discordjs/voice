@@ -117,6 +117,7 @@ export class AudioPlayer extends EventEmitter {
 
 	/**
 	 * Creates a new AudioPlayer
+	 * @internal
 	 */
 	public constructor(options: CreateAudioPlayerOptions = {}) {
 		super();

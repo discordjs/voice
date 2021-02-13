@@ -12,6 +12,7 @@ interface SocketConfig {
 
 /**
  * Manages the UDP networking for a voice connection.
+ * @internal
  */
 export class VoiceUDPSocket extends EventEmitter {
 	/**

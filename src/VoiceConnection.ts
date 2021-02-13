@@ -95,6 +95,7 @@ export class VoiceConnection extends EventEmitter {
 	 * Creates a new voice connection.
 	 *
 	 * @param joinConfig The data required to establish the voice connection
+	 * @internal
 	 */
 	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
 		super();
