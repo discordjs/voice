@@ -38,13 +38,16 @@ export function entersState<T extends VoiceConnection | AudioPlayer>(
 			maxTime,
 		);
 
-		target.once(status, resolve);
-		target.once('error', reject);
+		const once = (target as any).once;
+		const off = (target as any).once;
+
+		once(status, resolve);
+		once('error', reject);
 
 		cleanup = () => {
 			clearTimeout(timeout);
-			target.off(status, resolve);
-			target.off('error', reject);
+			off(status, resolve);
+			off('error', reject);
 		};
 	})
 		.then(() => target)

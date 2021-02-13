@@ -1,5 +1,4 @@
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
-import { EventEmitter } from 'events';
 import { JoinVoiceChannelOptions } from '.';
 import { AudioPlayer } from './audio/AudioPlayer';
 import { PlayerSubscription } from './audio/PlayerSubscription';
@@ -13,6 +12,7 @@ import {
 } from './DataStore';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 /**
  * The different statuses that a voice connection can hold.
@@ -34,6 +34,14 @@ export enum VoiceConnectionStatus {
 	Disconnected = 'disconnected',
 	Destroyed = 'destroyed',
 }
+
+type VoiceConnectionEvents = {
+	debug: (message: string) => void;
+	stateChange: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
+	error: (error: Error) => void;
+} & {
+	[status in VoiceConnectionStatus]: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
+};
 
 /**
  * The various states that a voice connection can be in.
@@ -60,7 +68,7 @@ export type VoiceConnectionState =
 /**
  * A connection to the voice server of a Guild, can be used to play audio in voice channels.
  */
-export class VoiceConnection extends EventEmitter {
+export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	/**
 	 * The number of consecutive reconnect attempts. Initially 0, and increments for each reconnect.
 	 * When a connection is successfully established, it resets to 0.
@@ -114,7 +122,7 @@ export class VoiceConnection extends EventEmitter {
 			state: undefined,
 		};
 
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
 
 		this.joinConfig = joinConfig;
 	}

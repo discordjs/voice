@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { TypedEmitter } from 'tiny-typed-emitter';
 import { noop } from '../util/util';
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioResource } from './AudioResource';
@@ -50,12 +50,22 @@ export enum AudioPlayerStatus {
 /**
  * Options that can be passed when creating an audio player, used to specify its behaviour.
  */
-interface CreateAudioPlayerOptions {
+export interface CreateAudioPlayerOptions {
 	debug?: boolean;
 	behaviours?: {
 		noSubscriber?: NoSubscriberBehaviour;
 	};
 }
+
+export type AudioPlayerEvents = {
+	debug: (message: string) => void;
+	stateChange: (oldState: AudioPlayerState, newState: AudioPlayerState) => void;
+	error: (error: Error) => void;
+	subscribe: (subscription: PlayerSubscription) => void;
+	unsubscribe: (subscription: PlayerSubscription) => void;
+} & {
+	[status in AudioPlayerStatus]: (oldState: AudioPlayerState, newState: AudioPlayerState) => void;
+};
 
 /**
  * The various states that the player can be in.
@@ -95,7 +105,7 @@ type AudioPlayerState =
  * The AudioPlayer drives the timing of playback, and therefore is unaffected by voice connections
  * becoming unavailable. Its behaviour in these scenarios can be configured.
  */
-export class AudioPlayer extends EventEmitter {
+export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	/**
 	 * The state that the AudioPlayer is in
 	 */
@@ -130,7 +140,7 @@ export class AudioPlayer extends EventEmitter {
 			noSubscriber: NoSubscriberBehaviour.Pause,
 			...options.behaviours,
 		};
-		this.debug = options.debug === false ? null : this.emit.bind(this, 'debug');
+		this.debug = options.debug === false ? null : (message: string) => this.emit('debug', message);
 	}
 
 	/**
