@@ -32,6 +32,6 @@ export class PlayerSubscription {
 	 */
 	public unsubscribe() {
 		this.connection['onSubscriptionRemoved'](this);
-		this.player['unsubscribe'](this);
+		this.player.unsubscribe(this);
 	}
 }

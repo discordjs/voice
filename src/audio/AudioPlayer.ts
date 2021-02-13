@@ -141,8 +141,9 @@ export class AudioPlayer extends EventEmitter {
 	 *
 	 * @param connection The connection to subscribe
 	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
+	 * @internal
 	 */
-	private subscribe(connection: VoiceConnection) {
+	public subscribe(connection: VoiceConnection) {
 		const existingSubscription = this.subscribers.find((subscription) => subscription.connection === connection);
 		if (!existingSubscription) {
 			const subscription = new PlayerSubscription(connection, this);
@@ -168,8 +169,9 @@ export class AudioPlayer extends EventEmitter {
 	 *
 	 * @param subscription The subscription to remove
 	 * @returns Whether or not the subscription existed on the player and was removed.
+	 * @internal
 	 */
-	private unsubscribe(subscription: PlayerSubscription) {
+	public unsubscribe(subscription: PlayerSubscription) {
 		const index = this.subscribers.indexOf(subscription);
 		const exists = index !== -1;
 		if (exists) {
@@ -424,7 +426,7 @@ export class AudioPlayer extends EventEmitter {
 		playable.forEach((connection) => connection.dispatchAudio());
 
 		/* If the player was previously in the AutoPaused state, check to see whether there are newly available
-		   connections, allowing us to transition out of the AutoPaused state back into the Playing state */
+			 connections, allowing us to transition out of the AutoPaused state back into the Playing state */
 		if (state.status === AudioPlayerStatus.AutoPaused && playable.length > 0) {
 			this.state = {
 				...state,
@@ -434,7 +436,7 @@ export class AudioPlayer extends EventEmitter {
 		}
 
 		/* If the player is (auto)paused, check to see whether silence packets should be played and
-		   set a timeout to begin the next cycle, ending the current cycle here. */
+			 set a timeout to begin the next cycle, ending the current cycle here. */
 		if (state.status === AudioPlayerStatus.Paused || state.status === AudioPlayerStatus.AutoPaused) {
 			if (state.silencePacketsRemaining > 0) {
 				state.silencePacketsRemaining--;

@@ -388,8 +388,7 @@ export class VoiceConnection extends EventEmitter {
 	public subscribe(player: AudioPlayer) {
 		if (this.state.status === VoiceConnectionStatus.Destroyed) return;
 
-		// eslint-disable-next-line @typescript-eslint/dot-notation
-		const subscription = player['subscribe'](this);
+		const subscription = player.subscribe(this);
 
 		this.state = {
 			...this.state,
