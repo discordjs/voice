@@ -1,2 +1,2 @@
-export * as generateDependencyReport from './generateDependencyReport';
+export * from './generateDependencyReport';
 export * from './entersState';

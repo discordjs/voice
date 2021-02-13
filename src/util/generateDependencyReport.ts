@@ -7,7 +7,7 @@ import { FFmpeg } from 'prism-media';
  * Generates a report of the dependencies used by the @discordjs/voice module.
  * Useful for debugging.
  */
-export default function generateDependencyReport() {
+export function generateDependencyReport() {
 	const report = [];
 	const addVersion = (name: string) => report.push(`- ${name}: ${version(name)}`);
 	// general
