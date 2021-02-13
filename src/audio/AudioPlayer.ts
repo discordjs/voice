@@ -70,7 +70,7 @@ export type AudioPlayerEvents = {
 /**
  * The various states that the player can be in.
  */
-type AudioPlayerState =
+export type AudioPlayerState =
 	| {
 			status: AudioPlayerStatus.Idle;
 	  }
@@ -208,6 +208,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 
 	/**
 	 * Sets a new state for the player, performing clean-up operations where necessary.
+	 * @internal
 	 */
 	public set state(newState: AudioPlayerState) {
 		const oldState = this._state;

@@ -35,7 +35,7 @@ export enum VoiceConnectionStatus {
 	Destroyed = 'destroyed',
 }
 
-type VoiceConnectionEvents = {
+export type VoiceConnectionEvents = {
 	debug: (message: string) => void;
 	stateChange: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
 	error: (error: Error) => void;
@@ -136,6 +136,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 	/**
 	 * Updates the state of the voice connection, performing clean-up operations where necessary.
+	 * @internal
 	 */
 	public set state(newState: VoiceConnectionState) {
 		const oldState = this._state;
