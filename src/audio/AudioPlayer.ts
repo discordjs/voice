@@ -31,15 +31,19 @@ export enum NoSubscriberBehaviour {
  *
  * - `Idle` - when there is currently no resource for the player to be playing
  *
- * - `Pause` - when the player has been manually paused
+ * - `Buffering` - when the player is waiting for a resource stream to become readable before playback begins
+ *
+ * - `Playing` - when the player is currently playing a resource to the subscribed voice connections
+ *
+ * - `Paused` - when the player has been manually paused
  *
  * - `AutoPaused` - when the player has paused itself. Only possible with the "pause" no subscriber behaviour.
  */
 export enum AudioPlayerStatus {
 	Idle = 'idle',
 	Buffering = 'buffering',
-	Paused = 'paused',
 	Playing = 'playing',
+	Paused = 'paused',
 	AutoPaused = 'autopaused',
 }
 
