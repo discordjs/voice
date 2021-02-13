@@ -408,7 +408,7 @@ export class Networking extends EventEmitter {
 
 	/**
 	 * Creates a new audio packet from an Opus packet. This involves encrypting the packet,
-	 * then prepending a header that includes metadata.
+	 * then appending a header that includes metadata.
 	 *
 	 * @param opusPacket The Opus packet to prepare
 	 * @param connectionData The current connection data of the instance
