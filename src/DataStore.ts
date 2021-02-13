@@ -52,6 +52,9 @@ export function signalJoinVoiceChannel(config: JoinConfig) {
 // Voice Connections
 const voiceConnections: Map<string, VoiceConnection> = new Map();
 
+/**
+ * Returns a voice connection for a given guild ID, if one exists.
+ */
 export function getVoiceConnection(guildId: string) {
 	return voiceConnections.get(guildId);
 }
