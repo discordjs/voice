@@ -176,6 +176,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 * new data provided in the packet.
 	 *
 	 * @param packet The received `VOICE_SERVER_UPDATE` packet
+	 * @internal
 	 */
 	public addServerPacket(packet: GatewayVoiceServerUpdateDispatchData) {
 		this.packets.server = packet;
@@ -187,6 +188,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 * channel that the client is connected to.
 	 *
 	 * @param packet The received `VOICE_STATE_UPDATE` packet
+	 * @internal
 	 */
 	public addStatePacket(packet: GatewayVoiceStateUpdateDispatchData) {
 		this.packets.state = packet;
@@ -210,6 +212,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 * needs to be re-established to the new voice server.
 	 *
 	 * The connection will transition to the Connecting state when this is called.
+	 * @internal
 	 */
 	public configureNetworking() {
 		const { server, state } = this.packets;
@@ -306,6 +309,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	/**
 	 * Prepares an audio packet for dispatch
 	 * @param buffer The Opus packet to prepare
+	 * @internal
 	 */
 	public prepareAudioPacket(buffer: Buffer) {
 		const state = this.state;
@@ -315,6 +319,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 	/**
 	 * Dispatches the previously prepared audio packet (if any)
+	 * @internal
 	 */
 	public dispatchAudio() {
 		const state = this.state;
@@ -325,6 +330,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	/**
 	 * Prepares an audio packet and dispatches it immediately
 	 * @param buffer The Opus packet to play
+	 * @internal
 	 */
 	public playOpusPacket(buffer: Buffer) {
 		const state = this.state;
@@ -382,6 +388,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 * and need to signal that the connection is no longer playing audio.
 	 *
 	 * @param enabled Whether or not to show as speaking
+	 * @internal
 	 */
 	public setSpeaking(enabled: boolean) {
 		if (this.state.status !== VoiceConnectionStatus.Ready) return false;
