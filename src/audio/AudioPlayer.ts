@@ -473,7 +473,7 @@ export class AudioPlayer extends EventEmitter {
 			} else {
 				this._preparePacket(SILENCE_FRAME, playable);
 				state.missedFrames++;
-				if (state.missedFrames >= 5) {
+				if (state.missedFrames >= this.behaviours.maxMissedFrames) {
 					this.stop();
 				}
 			}
