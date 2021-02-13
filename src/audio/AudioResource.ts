@@ -7,7 +7,7 @@ import type { AudioPlayer } from './AudioPlayer';
 /**
  * Options that are set when creating a new audio resource.
  */
-interface CreateAudioResourceOptions {
+export interface CreateAudioResourceOptions {
 	/**
 	 * The type of the input stream. Defaults to `StreamType.Arbitrary`.
 	 */
