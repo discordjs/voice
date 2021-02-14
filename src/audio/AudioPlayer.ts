@@ -50,6 +50,7 @@ interface CreateAudioPlayerOptions {
 	debug?: boolean;
 	behaviors?: {
 		noSubscriber?: NoSubscriberBehavior;
+		maxMissedFrames?: number;
 	};
 }
 
@@ -108,6 +109,7 @@ export class AudioPlayer extends EventEmitter {
 	 */
 	private readonly behaviors: {
 		noSubscriber: NoSubscriberBehavior;
+		maxMissedFrames: number;
 	};
 
 	/**
@@ -123,6 +125,7 @@ export class AudioPlayer extends EventEmitter {
 		this._state = { status: AudioPlayerStatus.Idle };
 		this.behaviors = {
 			noSubscriber: NoSubscriberBehavior.Pause,
+			maxMissedFrames: 5,
 			...options.behaviors,
 		};
 		this.debug = options.debug === false ? null : this.emit.bind(this, 'debug');
@@ -470,7 +473,7 @@ export class AudioPlayer extends EventEmitter {
 			} else {
 				this._preparePacket(SILENCE_FRAME, playable);
 				state.missedFrames++;
-				if (state.missedFrames >= 5) {
+				if (state.missedFrames >= this.behaviors.maxMissedFrames) {
 					this.stop();
 				}
 			}
