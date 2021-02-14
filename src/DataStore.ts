@@ -144,8 +144,8 @@ export function deleteAudioPlayer(player: AudioPlayer) {
 	const index = audioPlayers.indexOf(player);
 	if (index === -1) return;
 	audioPlayers.splice(index, 1);
-	if (audioPlayers.length === 0 && typeof audioCycleInterval !== 'undefined') {
+	if (audioPlayers.length === 0) {
 		nextTime = -1;
-		clearTimeout(audioCycleInterval);
+		if (typeof audioCycleInterval !== 'undefined') clearTimeout(audioCycleInterval);
 	}
 }
