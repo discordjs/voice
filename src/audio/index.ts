@@ -2,7 +2,7 @@ export {
 	AudioPlayer,
 	AudioPlayerStatus,
 	AudioPlayerState,
-	NoSubscriberBehaviour,
+	NoSubscriberBehavior,
 	createAudioPlayer,
 	AudioPlayerEvents,
 	CreateAudioPlayerOptions,

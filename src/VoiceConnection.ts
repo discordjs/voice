@@ -82,8 +82,9 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 	/**
 	 * A configuration storing all the data needed to reconnect to a Guild's voice server.
+	 * @internal
 	 */
-	private readonly joinConfig: JoinConfig;
+	public readonly joinConfig: JoinConfig;
 
 	/**
 	 * The two packets needed to successfully establish a voice connection. They are received
@@ -235,6 +236,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		networking.on('debug', this.onNetworkingDebug);
 
 		this.state = {
+			...this.state,
 			status: VoiceConnectionStatus.Connecting,
 			networking,
 		};
@@ -256,11 +258,15 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		if (code === 4014) {
 			// Disconnected - networking is already destroyed here
 			this.state = {
+				...this.state,
 				status: VoiceConnectionStatus.Disconnected,
 				closeCode: code,
 			};
 		} else {
-			this.state = { status: VoiceConnectionStatus.Signalling };
+			this.state = {
+				...this.state,
+				status: VoiceConnectionStatus.Signalling,
+			};
 			signalJoinVoiceChannel(this.joinConfig);
 		}
 	}
@@ -378,6 +384,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		this.reconnectAttempts++;
 
 		this.state = {
+			...this.state,
 			status: VoiceConnectionStatus.Signalling,
 		};
 		return true;
@@ -436,10 +443,6 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
 	if (existing) {
-		existing.state = {
-			...existing.state,
-			status: VoiceConnectionStatus.Signalling,
-		};
 		signalJoinVoiceChannel(joinConfig);
 		return existing;
 	}
