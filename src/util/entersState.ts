@@ -38,8 +38,8 @@ export function entersState<T extends VoiceConnection | AudioPlayer>(
 			maxTime,
 		);
 
-		const once = (target as any).once;
-		const off = (target as any).once;
+		const once = (target as any).once.bind(target);
+		const off = (target as any).off.bind(target);
 
 		once(status, resolve);
 		once('error', reject);
