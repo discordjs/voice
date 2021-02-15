@@ -1,6 +1,6 @@
 {
 	"name": "@discordjs/voice",
-	"version": "0.0.1-alpha",
+	"version": "0.0.2",
 	"description": "audio streaming capability for discord.js",
 	"main": "dist/index.js",
 	"author": "Amish Shah <amishshah.2k@gmail.com>",
