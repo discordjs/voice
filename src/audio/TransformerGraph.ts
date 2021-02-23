@@ -25,6 +25,7 @@ const FFMPEG_OPUS_ARGUMENTS = [
 /**
  * The different types of stream that can exist within the pipeline
  *
+ * @remarks
  * - `Arbitrary` - the type of the stream at this point is unknown.
  *
  * - `Raw` - the stream at this point is s16le PCM.
@@ -87,7 +88,8 @@ export class Node {
 
 	/**
 	 * Creates an outbound edge from this node
-	 * @param edge The edge to create
+	 *
+	 * @param edge - The edge to create
 	 */
 	public addEdge(edge: Omit<Edge, 'from'>) {
 		this.edges.push({ ...edge, from: this });
@@ -102,7 +104,8 @@ for (const streamType of Object.values(StreamType)) {
 
 /**
  * Gets a node from its stream type
- * @param type The stream type of the target node
+ *
+ * @param type - The stream type of the target node
  */
 export function getNode(type: StreamType) {
 	const node = NODES.get(type);
@@ -208,11 +211,11 @@ interface Step {
 /**
  * Finds the shortest cost path from node A to node B.
  *
- * @param from The start node
- * @param constraints Extra validation for a potential solution. Takes a path, returns true if the path is valid.
- * @param goal The target node
- * @param path The running path
- * @param depth The number of remaining recursions
+ * @param from - The start node
+ * @param constraints - Extra validation for a potential solution. Takes a path, returns true if the path is valid.
+ * @param goal - The target node
+ * @param path - The running path
+ * @param depth - The number of remaining recursions
  */
 function findPath(
 	from: Node,
@@ -242,7 +245,7 @@ function findPath(
 /**
  * Takes the solution from findPath and assembles it into a list of edges
  *
- * @param step The first step of the path
+ * @param step - The first step of the path
  */
 function constructPipeline(step: Step) {
 	const edges = [];
@@ -257,8 +260,8 @@ function constructPipeline(step: Step) {
 /**
  * Finds the lowest-cost pipeline to convert the input stream type into an Opus stream
  *
- * @param from The stream type to start from
- * @param constraint Extra constraints that may be imposed on potential solution
+ * @param from - The stream type to start from
+ * @param constraint - Extra constraints that may be imposed on potential solution
  */
 export function findPipeline(from: StreamType, constraint: (path: Edge[]) => boolean) {
 	return constructPipeline(findPath(getNode(from), constraint));

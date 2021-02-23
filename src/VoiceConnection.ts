@@ -17,6 +17,7 @@ import { noop } from './util/util';
 /**
  * The different statuses that a voice connection can hold.
  *
+ * @remarks
  * - `Signalling` - sending a packet to the main Discord gateway to indicate we want to change our voice state.
  *
  * - `Connecting` - the `VOICE_SERVER_UPDATE` and `VOICE_STATE_UPDATE` packets have been received, now attempting to establish a voice connection.
@@ -95,7 +96,7 @@ export class VoiceConnection extends EventEmitter {
 	/**
 	 * Creates a new voice connection.
 	 *
-	 * @param joinConfig The data required to establish the voice connection
+	 * @param joinConfig - The data required to establish the voice connection
 	 */
 	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
 		super();
@@ -166,7 +167,7 @@ export class VoiceConnection extends EventEmitter {
 	 * Registers a `VOICE_SERVER_UPDATE` packet to the voice connection. This will cause it to reconnect using the
 	 * new data provided in the packet.
 	 *
-	 * @param packet The received `VOICE_SERVER_UPDATE` packet
+	 * @param packet - The received `VOICE_SERVER_UPDATE` packet
 	 */
 	public addServerPacket(packet: GatewayVoiceServerUpdateDispatchData) {
 		this.packets.server = packet;
@@ -177,7 +178,7 @@ export class VoiceConnection extends EventEmitter {
 	 * Registers a `VOICE_STATE_UPDATE` packet to the voice connection. Most importantly, it stores the ID of the
 	 * channel that the client is connected to.
 	 *
-	 * @param packet The received `VOICE_STATE_UPDATE` packet
+	 * @param packet - The received `VOICE_STATE_UPDATE` packet
 	 */
 	public addStatePacket(packet: GatewayVoiceStateUpdateDispatchData) {
 		this.packets.state = packet;
@@ -196,6 +197,7 @@ export class VoiceConnection extends EventEmitter {
 	 * Attempts to configure a networking instance for this voice connection using the received packets.
 	 * Both packets are required, and any existing networking instance will be destroyed.
 	 *
+	 * @remarks
 	 * This is called when the voice server of the connection changes, e.g. if the bot is moved into a
 	 * different channel in the same guild but has a different voice server. In this instance, the connection
 	 * needs to be re-established to the new voice server.
@@ -234,11 +236,12 @@ export class VoiceConnection extends EventEmitter {
 	 * the voice connection will transition to the Disconnected state which will store the close code. You can
 	 * decide whether or not to reconnect when this occurs by listening for the state change and calling reconnect().
 	 *
+	 * @remarks
 	 * If the close code was anything other than 4014, it is likely that the closing was not intended, and so the
 	 * VoiceConnection will signal to Discord that it would like to rejoin the channel. This automatically attempts
 	 * to re-establish the connection. This would be seen as a transition from the Ready state to the Signalling state.
 	 *
-	 * @param code The close code
+	 * @param code - The close code
 	 */
 	private onNetworkingClose(code: number) {
 		// If networking closes, try to connect to the voice channel again.
@@ -261,8 +264,8 @@ export class VoiceConnection extends EventEmitter {
 	/**
 	 * Called when the state of the networking instance changes. This is used to derive the state of the voice connection.
 	 *
-	 * @param oldState The previous state
-	 * @param newState The new state
+	 * @param oldState - The previous state
+	 * @param newState - The new state
 	 */
 	private onNetworkingStateChange(oldState: NetworkingState, newState: NetworkingState) {
 		if (oldState.code === newState.code) return;
@@ -284,7 +287,8 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Propagates errors from the underlying network instance.
-	 * @param error The error to propagate
+	 *
+	 * @param error - The error to propagate
 	 */
 	private onNetworkingError(error: Error) {
 		this.emit('error', error);
@@ -293,7 +297,7 @@ export class VoiceConnection extends EventEmitter {
 	/**
 	 * Propagates debug messages from the underlying network instance.
 	 *
-	 * @param message The debug message to propagate
+	 * @param message - The debug message to propagate
 	 */
 	private onNetworkingDebug(message: string) {
 		this.debug?.(`[NW] ${message}`);
@@ -301,7 +305,8 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Prepares an audio packet for dispatch
-	 * @param buffer The Opus packet to prepare
+	 *
+	 * @param buffer - The Opus packet to prepare
 	 */
 	public prepareAudioPacket(buffer: Buffer) {
 		const state = this.state;
@@ -320,7 +325,8 @@ export class VoiceConnection extends EventEmitter {
 
 	/**
 	 * Prepares an audio packet and dispatches it immediately
-	 * @param buffer The Opus packet to play
+	 *
+	 * @param buffer - The Opus packet to play
 	 */
 	public playOpusPacket(buffer: Buffer) {
 		const state = this.state;
@@ -353,6 +359,7 @@ export class VoiceConnection extends EventEmitter {
 	/**
 	 * Attempts to reconnect the VoiceConnection if it is in the Disconnected state.
 	 *
+	 * @remarks
 	 * Calling this method successfully will automatically increment the `reconnectAttempts` counter,
 	 * which you can use to inform whether or not you'd like to keep attempting to reconnect your
 	 * voice connection.
@@ -378,7 +385,7 @@ export class VoiceConnection extends EventEmitter {
 	 * Updates the speaking status of the voice connection. This is used when audio players are done playing audio,
 	 * and need to signal that the connection is no longer playing audio.
 	 *
-	 * @param enabled Whether or not to show as speaking
+	 * @param enabled - Whether or not to show as speaking
 	 */
 	public setSpeaking(enabled: boolean) {
 		if (this.state.status !== VoiceConnectionStatus.Ready) return false;
@@ -388,7 +395,7 @@ export class VoiceConnection extends EventEmitter {
 	/**
 	 * Subscribes to an audio player, allowing the player to play audio on this voice connection.
 	 *
-	 * @param player The audio player to subscribe to
+	 * @param player - The audio player to subscribe to
 	 * @returns The created subscription
 	 */
 	public subscribe(player: AudioPlayer) {
@@ -408,7 +415,7 @@ export class VoiceConnection extends EventEmitter {
 	/**
 	 * Called when a subscription of this voice connection to an audio player is removed.
 	 *
-	 * @param subscription The removed subscription
+	 * @param subscription - The removed subscription
 	 */
 	private onSubscriptionRemoved(subscription: PlayerSubscription) {
 		if (this.state.status !== VoiceConnectionStatus.Destroyed && this.state.subscription === subscription) {
@@ -422,7 +429,8 @@ export class VoiceConnection extends EventEmitter {
 
 /**
  * Creates a new voice connection
- * @param joinConfig The data required to establish the voice connection
+ *
+ * @param joinConfig - The data required to establish the voice connection
  */
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);

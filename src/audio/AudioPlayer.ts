@@ -12,6 +12,7 @@ const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
  * Describes the behavior of the player when an audio packet is played but there are no available
  * voice connections to play to.
  *
+ * @remarks
  * - `Pause` - pauses playing the stream until a voice connection becomes available
  *
  * - `Play` - continues to play through the resource regardless
@@ -27,6 +28,7 @@ export enum NoSubscriberBehavior {
 /**
  * The various statuses that a player can hold.
  *
+ * @remarks
  * - `Idle` - when there is currently no resource for the player to be playing
  *
  * - `Pause` - when the player has been manually paused
@@ -81,6 +83,8 @@ type AudioPlayerState =
 
 /**
  * Used to play audio resources (i.e. tracks, streams) to voice connections.
+ *
+ * @remarks
  * It is designed to be re-used - even if a resource has finished playing, the player itself can still be used.
  *
  * The AudioPlayer drives the timing of playback, and therefore is unaffected by voice connections
@@ -138,9 +142,10 @@ export class AudioPlayer extends EventEmitter {
 	 * Subscribes a VoiceConnection to the audio player's play list. If the VoiceConnection is already subscribed,
 	 * then the existing subscription is used.
 	 *
+	 * @remarks
 	 * This method should not be directly called. Instead, use VoiceConnection#subscribe.
 	 *
-	 * @param connection The connection to subscribe
+	 * @param connection - The connection to subscribe
 	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
 	 */
 	private subscribe(connection: VoiceConnection) {
@@ -165,9 +170,10 @@ export class AudioPlayer extends EventEmitter {
 	/**
 	 * Unsubscribes a subscription - i.e. removes a voice connection from the play list of the audio player.
 	 *
+	 * @remarks
 	 * This method should not be directly called. Instead, use PlayerSubscription#unsubscribe.
 	 *
-	 * @param subscription The subscription to remove
+	 * @param subscription - The subscription to remove
 	 * @returns Whether or not the subscription existed on the player and was removed.
 	 */
 	private unsubscribe(subscription: PlayerSubscription) {
@@ -258,13 +264,14 @@ export class AudioPlayer extends EventEmitter {
 	 * Plays a new resource on the player. If the player is already playing a resource, the existing resource is destroyed
 	 * (it cannot be reused, even in another player) and is replaced with the new resource.
 	 *
+	 * @remarks
 	 * The player will transition to the Playing state once playback begins, and will return to the Idle state once
 	 * playback is ended.
 	 *
 	 * If the player was previously playing a resource and this method is called, the player will not transition to the
 	 * Idle state during the swap over.
 	 *
-	 * @param resource The resource to play
+	 * @param resource - The resource to play
 	 * @throws Will throw if attempting to play an audio resource that has already ended, or is being played by another player.
 	 */
 	public play(resource: AudioResource) {
@@ -348,7 +355,7 @@ export class AudioPlayer extends EventEmitter {
 	/**
 	 * Pauses playback of the current resource, if any.
 	 *
-	 * @param interpolateSilence If true, the player will play 5 packets of silence after pausing to prevent audio glitches.
+	 * @param interpolateSilence - If true, the player will play 5 packets of silence after pausing to prevent audio glitches.
 	 * @returns true if the player was successfully paused, otherwise false.
 	 */
 	public pause(interpolateSilence = true) {
@@ -505,8 +512,8 @@ export class AudioPlayer extends EventEmitter {
 	 * Instructs the given connections to each prepare this packet to be played at the start of the
 	 * next cycle.
 	 *
-	 * @param packet The Opus packet to be prepared by each receiver
-	 * @param receivers The connections that should play this packet
+	 * @param packet - The Opus packet to be prepared by each receiver
+	 * @param receivers - The connections that should play this packet
 	 */
 	private _preparePacket(packet: Buffer, receivers: VoiceConnection[]) {
 		receivers.forEach((connection) => connection.prepareAudioPacket(packet));
@@ -516,7 +523,7 @@ export class AudioPlayer extends EventEmitter {
 /**
  * Stringifies an AudioPlayerState instance
  *
- * @param state The state to stringify
+ * @param state - The state to stringify
  */
 function stringifyState(state: AudioPlayerState) {
 	return JSON.stringify({

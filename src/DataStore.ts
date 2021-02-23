@@ -36,7 +36,8 @@ export interface JoinConfig {
 /**
  * Sends a voice state update to the main websocket shard of a guild, to indicate joining/leaving/moving across
  * voice channels.
- * @param voiceChannel The voice channel to move to
+ *
+ * @param voiceChannel - The voice channel to move to
  */
 export function signalJoinVoiceChannel(config: JoinConfig) {
 	return config.guild.shard.send({
@@ -116,7 +117,7 @@ function prepareNextAudioFrame(players: AudioPlayer[]) {
 /**
  * Checks whether or not the given audio player is being driven by the data store clock.
  *
- * @param target The target to test for
+ * @param target - The target to test for
  * @returns true if it is being tracked, false otherwise
  */
 export function hasAudioPlayer(target: AudioPlayer) {
@@ -125,7 +126,8 @@ export function hasAudioPlayer(target: AudioPlayer) {
 
 /**
  * Adds an audio player to the data store tracking list, if it isn't already there.
- * @param player The player to track
+ *
+ * @param player - The player to track
  */
 export function addAudioPlayer(player: AudioPlayer) {
 	if (hasAudioPlayer(player)) return player;

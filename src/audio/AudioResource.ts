@@ -69,21 +69,22 @@ export class AudioResource {
 /**
  * Ensures that a path contains at least one volume transforming component
  *
- * @param path The path to validate constraints on
+ * @param path - The path to validate constraints on
  */
 const VOLUME_CONSTRAINT = (path: Edge[]) => path.some((edge) => edge.type === TransformerType.InlineVolume);
 
 /**
  * Creates an audio resource that can be played be audio players.
  *
+ * @remarks
  * If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.
  *
  * If the input is not in the correct format, then a pipeline of transcoders and transformers will be created
  * to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
  * Opus transcoders, and Ogg/WebM demuxers.
  *
- * @param input The resource to play.
- * @param options Configurable options for creating the resource.
+ * @param input - The resource to play.
+ * @param options - Configurable options for creating the resource.
  */
 export function createAudioResource(input: string | Readable, options: CreateAudioResourceOptions = {}): AudioResource {
 	let inputType = options.inputType ?? StreamType.Arbitrary;

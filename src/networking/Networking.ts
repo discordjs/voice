@@ -178,8 +178,8 @@ export class Networking extends EventEmitter {
 	/**
 	 * Creates a new WebSocket to a Discord Voice gateway.
 	 *
-	 * @param endpoint The endpoint to connect to
-	 * @param debug Whether to enable debug logging
+	 * @param endpoint - The endpoint to connect to
+	 * @param debug - Whether to enable debug logging
 	 */
 	private createWebSocket(endpoint: string) {
 		const ws = new VoiceWebSocket(`wss://${endpoint}?v=4`, Boolean(this.debug));
@@ -196,7 +196,7 @@ export class Networking extends EventEmitter {
 	/**
 	 * Propagates errors from the children VoiceWebSocket and VoiceUDPSocket.
 	 *
-	 * @param error The error that was emitted by a child
+	 * @param error - The error that was emitted by a child
 	 */
 	private onChildError(error: Error) {
 		this.emit('error', error);
@@ -240,7 +240,7 @@ export class Networking extends EventEmitter {
 	 * the instance will either attempt to resume, or enter the closed state and emit a 'close' event
 	 * with the close code, allowing the user to decide whether or not they would like to reconnect.
 	 *
-	 * @param code The close code
+	 * @param code - The close code
 	 */
 	private onWsClose(code: number) {
 		const canResume = code === 4015 || code < 4000;
@@ -258,7 +258,7 @@ export class Networking extends EventEmitter {
 
 	/**
 	 * Called when a packet is received on the connection's WebSocket
-	 * @param packet The received packet
+	 * @param packet - The received packet
 	 */
 	private onWsPacket(packet: any) {
 		if (packet.op === VoiceOPCodes.Hello && this.state.code !== NetworkingStatusCode.Closed) {
@@ -329,7 +329,7 @@ export class Networking extends EventEmitter {
 	/**
 	 * Propagates debug messages from the child WebSocket.
 	 *
-	 * @param message The emitted debug message
+	 * @param message - The emitted debug message
 	 */
 	private onWsDebug(message: string) {
 		this.debug?.(`[WS] ${message}`);
@@ -339,10 +339,11 @@ export class Networking extends EventEmitter {
 	 * Prepares an Opus packet for playback. This includes attaching metadata to it and encrypting it.
 	 * It will be stored within the instance, and can be played by dispatchAudio().
 	 *
+	 * @remarks
 	 * Calling this method while there is already a prepared audio packet that has not yet been dispatched
 	 * will overwrite the existing audio packet. This should be avoided.
 	 *
-	 * @param opusPacket The Opus packet to encrypt
+	 * @param opusPacket - The Opus packet to encrypt
 	 *
 	 * @returns The audio packet that was prepared.
 	 */
@@ -371,7 +372,7 @@ export class Networking extends EventEmitter {
 	/**
 	 * Plays an audio packet, updating timing metadata used for playback.
 	 *
-	 * @param audioPacket The audio packet to play
+	 * @param audioPacket - The audio packet to play
 	 */
 	private playAudioPacket(audioPacket: Buffer) {
 		const state = this.state;
@@ -389,7 +390,7 @@ export class Networking extends EventEmitter {
 	 * Sends a packet to the voice gateway indicating that the client has start/stopped sending
 	 * audio.
 	 *
-	 * @param speaking Whether or not the client should be shown as speaking
+	 * @param speaking - Whether or not the client should be shown as speaking
 	 */
 	public setSpeaking(speaking: boolean) {
 		const state = this.state;
@@ -410,8 +411,8 @@ export class Networking extends EventEmitter {
 	 * Creates a new audio packet from an Opus packet. This involves encrypting the packet,
 	 * then prepending a header that includes metadata.
 	 *
-	 * @param opusPacket The Opus packet to prepare
-	 * @param connectionData The current connection data of the instance
+	 * @param opusPacket - The Opus packet to prepare
+	 * @param connectionData - The current connection data of the instance
 	 */
 	private createAudioPacket(opusPacket: Buffer, connectionData: ConnectionData) {
 		const packetBuffer = Buffer.alloc(12);
@@ -431,8 +432,8 @@ export class Networking extends EventEmitter {
 	/**
 	 * Encrypts an Opus packet using the format agreed upon by the instance and Discord.
 	 *
-	 * @param opusPacket The Opus packet to encrypt
-	 * @param connectionData The current connection data of the instance
+	 * @param opusPacket - The Opus packet to encrypt
+	 * @param connectionData - The current connection data of the instance
 	 */
 	private encryptOpusPacket(opusPacket: Buffer, connectionData: ConnectionData) {
 		const { secretKey, encryptionMode } = connectionData;
@@ -456,7 +457,7 @@ export class Networking extends EventEmitter {
 /**
  * Returns a random number that is in the range of n bits.
  *
- * @param n The number of bits
+ * @param n - The number of bits
  */
 function randomNBit(n: number) {
 	return Math.floor(Math.random() * 2 ** n);
@@ -465,7 +466,7 @@ function randomNBit(n: number) {
 /**
  * Stringifies a NetworkingState
  *
- * @param state The state to stringify
+ * @param state - The state to stringify
  */
 function stringifyState(state: NetworkingState) {
 	return JSON.stringify({
@@ -478,7 +479,7 @@ function stringifyState(state: NetworkingState) {
 /**
  * Chooses an encryption mode from a list of given options. Chooses the most preferred option.
  *
- * @param options The available encryption options
+ * @param options - The available encryption options
  */
 function chooseEncryptionMode(options: string[]): string {
 	const option = options.find((option) => SUPPORTED_ENCRYPTION_MODES.includes(option));

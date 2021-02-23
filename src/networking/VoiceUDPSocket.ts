@@ -26,7 +26,8 @@ export class VoiceUDPSocket extends EventEmitter {
 
 	/**
 	 * Creates a new VoiceUDPSocket.
-	 * @param remote Details of the remote socket
+	 *
+	 * @param remote - Details of the remote socket
 	 */
 	public constructor(remote: SocketConfig) {
 		super();
@@ -37,7 +38,8 @@ export class VoiceUDPSocket extends EventEmitter {
 
 	/**
 	 * Sends a buffer to Discord.
-	 * @param buffer The buffer to send
+	 *
+	 * @param buffer - The buffer to send
 	 */
 	public send(buffer: Buffer) {
 		return this.socket.send(buffer, this.remote.port, this.remote.ip);
@@ -52,7 +54,8 @@ export class VoiceUDPSocket extends EventEmitter {
 
 	/**
 	 * Performs IP discovery to discover the local address and port to be used for the voice connection.
-	 * @param ssrc The SSRC received from Discord
+	 *
+	 * @param ssrc - The SSRC received from Discord
 	 */
 	public performIPDiscovery(ssrc: number): Promise<SocketConfig> {
 		return new Promise((resolve, reject) => {
@@ -73,7 +76,8 @@ export class VoiceUDPSocket extends EventEmitter {
 
 /**
  * Parses the response from Discord to aid with local IP discovery.
- * @param message The received message
+ *
+ * @param message - The received message
  */
 function parseLocalPacket(message: Buffer): SocketConfig {
 	// todo, this function can throw
