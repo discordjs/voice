@@ -37,7 +37,7 @@ export interface JoinConfig {
  * Sends a voice state update to the main websocket shard of a guild, to indicate joining/leaving/moving across
  * voice channels.
  *
- * @param voiceChannel - The voice channel to move to
+ * @param config - The configuration to use when joining the voice channel
  */
 export function signalJoinVoiceChannel(config: JoinConfig) {
 	return config.guild.shard.send({
