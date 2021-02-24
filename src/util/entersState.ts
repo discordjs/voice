@@ -1,13 +1,13 @@
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayer, AudioPlayerStatus } from '../audio/AudioPlayer';
 
-export function entersState(
-	target: VoiceConnection,
-	status: VoiceConnectionStatus,
-	maxTime: number,
-): Promise<VoiceConnection>;
+// export function entersState(
+// 	target: VoiceConnection,
+// 	status: VoiceConnectionStatus,
+// 	maxTime: number,
+// ): Promise<VoiceConnection>;
 
-export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxTime: number): Promise<AudioPlayer>;
+// export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxTime: number): Promise<AudioPlayer>;
 
 /**
  * Allows a target a specified amount of time to enter a given state, otherwise rejects with an error.

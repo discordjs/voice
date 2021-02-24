@@ -1,54 +1,25 @@
 import {
-	GatewayOPCodes,
 	GatewayVoiceServerUpdateDispatchData,
 	GatewayVoiceStateUpdateDispatchData,
 } from 'discord-api-types/v8/gateway';
-import { Client, Constants, Guild } from 'discord.js';
 import { AudioPlayer } from './audio';
 import { VoiceConnection } from './VoiceConnection';
 
-// Clients
-const clients: Set<Client> = new Set();
-export function trackClient(client: Client) {
-	if (clients.has(client)) {
-		return;
+export function handleVoiceServerUpdate(payload: GatewayVoiceServerUpdateDispatchData) {
+	return getVoiceConnection(payload.guild_id)?.addServerPacket(payload);
+}
+
+export function handleVoiceStateUpdate(payload: GatewayVoiceStateUpdateDispatchData, clientId: string) {
+	if (payload.guild_id && payload.session_id && payload.user_id === clientId) {
+		getVoiceConnection(payload.guild_id)?.addStatePacket(payload);
 	}
-	clients.add(client);
-
-	client.ws.on(Constants.WSEvents.VOICE_SERVER_UPDATE, (payload: GatewayVoiceServerUpdateDispatchData) => {
-		getVoiceConnection(payload.guild_id)?.addServerPacket(payload);
-	});
-
-	client.ws.on(Constants.WSEvents.VOICE_STATE_UPDATE, (payload: GatewayVoiceStateUpdateDispatchData) => {
-		if (payload.guild_id && payload.session_id && payload.user_id === client.user?.id) {
-			getVoiceConnection(payload.guild_id)?.addStatePacket(payload);
-		}
-	});
 }
 
 export interface JoinConfig {
-	guild: Guild;
+	guildId: string;
 	channelId: string | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
-}
-
-/**
- * Sends a voice state update to the main websocket shard of a guild, to indicate joining/leaving/moving across
- * voice channels.
- *
- * @param config - The configuration to use when joining the voice channel
- */
-export function signalJoinVoiceChannel(config: JoinConfig) {
-	return config.guild.shard.send({
-		op: GatewayOPCodes.VoiceStateUpdate,
-		d: {
-			guild_id: config.guild.id,
-			channel_id: config.channelId,
-			self_deaf: config.selfDeaf,
-			self_mute: config.selfMute,
-		},
-	});
 }
 
 // Voice Connections

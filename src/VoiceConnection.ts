@@ -1,12 +1,15 @@
-import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
+import {
+	GatewayOPCodes,
+	GatewayVoiceServerUpdateDispatchData,
+	GatewayVoiceStateUpdateDispatchData,
+} from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
 import { JoinVoiceChannelOptions } from '.';
 import { AudioPlayer } from './audio/AudioPlayer';
 import { PlayerSubscription } from './audio/PlayerSubscription';
 import {
 	getVoiceConnection,
-	signalJoinVoiceChannel,
-	trackClient,
+	// signalJoinVoiceChannel,
 	trackVoiceConnection,
 	JoinConfig,
 	untrackVoiceConnection,
@@ -57,6 +60,26 @@ export type VoiceConnectionState =
 	| {
 			status: VoiceConnectionStatus.Destroyed;
 	  };
+
+/**
+ *
+ */
+export enum VoiceConnectionEvents {
+	StateChange = 'stateChange',
+	JoinVoiceChannel = 'joinVoiceChannel',
+	Error = 'error',
+	Debug = 'debug',
+}
+
+export interface SignalJoinVoiceChannelPayload {
+	op: GatewayOPCodes.VoiceStateUpdate;
+	d: {
+		guild_id: string;
+		channel_id: string | null;
+		self_deaf: boolean;
+		self_mute: boolean;
+	};
+}
 
 /**
  * A connection to the voice server of a Guild, can be used to play audio in voice channels.
@@ -115,7 +138,7 @@ export class VoiceConnection extends EventEmitter {
 			state: undefined,
 		};
 
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+		this.debug = debug ? this.emit.bind(this, VoiceConnectionEvents.Debug) : null;
 
 		this.joinConfig = joinConfig;
 	}
@@ -157,7 +180,7 @@ export class VoiceConnection extends EventEmitter {
 			oldSubscription.unsubscribe();
 		}
 
-		this.emit('stateChange', oldState, newState);
+		this.emit(VoiceConnectionEvents.StateChange, oldState, newState);
 		if (oldState.status !== newState.status) {
 			this.emit(newState.status, oldState, newState);
 		}
@@ -257,7 +280,7 @@ export class VoiceConnection extends EventEmitter {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
-			signalJoinVoiceChannel(this.joinConfig);
+			this.signalJoinVoiceChannel();
 		}
 	}
 
@@ -291,7 +314,7 @@ export class VoiceConnection extends EventEmitter {
 	 * @param error - The error to propagate
 	 */
 	private onNetworkingError(error: Error) {
-		this.emit('error', error);
+		this.emit(VoiceConnectionEvents.Error, error);
 	}
 
 	/**
@@ -344,10 +367,10 @@ export class VoiceConnection extends EventEmitter {
 		if (this.state.status === VoiceConnectionStatus.Destroyed) {
 			throw new Error('Cannot destroy VoiceConnection - it has already been destroyed');
 		}
-		if (getVoiceConnection(this.joinConfig.guild.id) === this) {
-			untrackVoiceConnection(this.joinConfig.guild.id);
+		if (getVoiceConnection(this.joinConfig.guildId) === this) {
+			untrackVoiceConnection(this.joinConfig.guildId);
 		}
-		signalJoinVoiceChannel({
+		this.signalJoinVoiceChannel({
 			...this.joinConfig,
 			channelId: null,
 		});
@@ -371,7 +394,7 @@ export class VoiceConnection extends EventEmitter {
 			return false;
 		}
 
-		signalJoinVoiceChannel(this.joinConfig);
+		this.signalJoinVoiceChannel();
 		this.reconnectAttempts++;
 
 		this.state = {
@@ -379,6 +402,10 @@ export class VoiceConnection extends EventEmitter {
 			status: VoiceConnectionStatus.Signalling,
 		};
 		return true;
+	}
+
+	public connect() {
+		return this.signalJoinVoiceChannel();
 	}
 
 	/**
@@ -425,6 +452,62 @@ export class VoiceConnection extends EventEmitter {
 			};
 		}
 	}
+
+	private signalJoinVoiceChannel(config: JoinConfig = this.joinConfig) {
+		const payload: SignalJoinVoiceChannelPayload = {
+			op: GatewayOPCodes.VoiceStateUpdate,
+			d: {
+				guild_id: config.guildId,
+				channel_id: config.channelId,
+				self_deaf: config.selfDeaf,
+				self_mute: config.selfMute,
+			},
+		};
+		return this.emit(VoiceConnectionEvents.JoinVoiceChannel, payload);
+	}
+
+	public on(
+		event: VoiceConnectionEvents.JoinVoiceChannel,
+		listener: (payload: SignalJoinVoiceChannelPayload) => void,
+	): this;
+	public on(
+		event: VoiceConnectionEvents.StateChange | VoiceConnectionStatus,
+		listener: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void,
+	): this;
+	public on(event: VoiceConnectionEvents.Error, listener: (error: Error) => void): this;
+	public on(event: VoiceConnectionEvents.Debug, listener: (message: string) => void): this;
+	public on(event: string, listener: (...args: any[]) => void): this;
+	public on(event: string, listener: (...args: any[]) => void): this {
+		return super.on(event, listener);
+	}
+
+	public once(
+		event: VoiceConnectionEvents.JoinVoiceChannel,
+		listener: (payload: SignalJoinVoiceChannelPayload) => void,
+	): this;
+	public once(
+		event: VoiceConnectionEvents.StateChange | VoiceConnectionStatus,
+		listener: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void,
+	): this;
+	public once(event: VoiceConnectionEvents.Error, listener: (error: Error) => void): this;
+	public once(event: VoiceConnectionEvents.Debug, listener: (message: string) => void): this;
+	public once(event: string, listener: (...args: any[]) => void): this;
+	public once(event: string, listener: (...args: any[]) => void): this {
+		return super.once(event, listener);
+	}
+
+	public emit(event: VoiceConnectionEvents.JoinVoiceChannel, payload: SignalJoinVoiceChannelPayload): boolean;
+	public emit(
+		event: VoiceConnectionEvents.StateChange | VoiceConnectionStatus,
+		oldState: VoiceConnectionState,
+		newState: VoiceConnectionState,
+	): boolean;
+	public emit(event: VoiceConnectionEvents.Error, error: Error): boolean;
+	public emit(event: VoiceConnectionEvents.Debug, message: string): boolean;
+	public emit(event: string, ...args: any[]): boolean;
+	public emit(event: string, ...args: any[]): boolean {
+		return super.emit(event, args);
+	}
 }
 
 /**
@@ -434,16 +517,13 @@ export class VoiceConnection extends EventEmitter {
  * @param options - The options to use when joining the voice channel
  */
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
-	const existing = getVoiceConnection(joinConfig.guild.id);
+	const existing = getVoiceConnection(joinConfig.guildId);
 	if (existing) {
-		signalJoinVoiceChannel(joinConfig);
 		return existing;
 	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
-	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
-	trackClient(joinConfig.guild.client);
-	signalJoinVoiceChannel(joinConfig);
+	trackVoiceConnection(joinConfig.guildId, voiceConnection);
 
 	return voiceConnection;
 }

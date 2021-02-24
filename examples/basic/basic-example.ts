@@ -9,6 +9,9 @@ import {
 	StreamType,
 	AudioPlayerStatus,
 	VoiceConnectionStatus,
+	handleVoiceServerUpdate,
+	handleVoiceStateUpdate,
+	VoiceConnectionEvents,
 } from '@discordjs/voice';
 
 /*
@@ -57,7 +60,12 @@ async function connectToChannel(channel: VoiceChannel) {
 		to this voice channel, @discordjs/voice will just return the existing connection for
 		us!
 	*/
-	const connection = joinVoiceChannel(channel);
+	const connection = joinVoiceChannel({ guildId: channel.guild.id, channelId: channel.id });
+	connection.on(VoiceConnectionEvents.JoinVoiceChannel, (payload) => {
+		console.log(payload);
+		channel.guild.shard.send(payload);
+	});
+	connection.connect();
 
 	/*
 		If we're dealing with a connection that isn't yet Ready, we can set a reasonable
@@ -97,7 +105,8 @@ const client = new Client({
 	ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] },
 });
 
-void client.login('token here');
+client.ws.on('VOICE_SERVER_UPDATE', handleVoiceServerUpdate);
+client.ws.on('VOICE_STATE_UPDATE', (payload) => handleVoiceStateUpdate(payload, process.env.CLIENT_ID!));
 
 client.on('ready', async () => {
 	console.log('Discord.js client is ready!');
@@ -150,3 +159,5 @@ client.on('message', async (message) => {
 		}
 	}
 });
+
+void client.login();
