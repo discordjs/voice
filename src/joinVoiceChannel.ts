@@ -16,8 +16,8 @@ export interface JoinVoiceChannelOptions {
 /**
  * Creates a VoiceConnection to a Discord.js Voice Channel.
  *
- * @param voiceChannel the voice channel to connect to
- * @param options the options for joining the voice channel
+ * @param voiceChannel - the voice channel to connect to
+ * @param options - the options for joining the voice channel
  */
 export function joinVoiceChannel(voiceChannel: VoiceChannel, options?: JoinVoiceChannelOptions) {
 	const joinConfig: JoinConfig = {

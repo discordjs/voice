@@ -11,6 +11,7 @@
 		"inlineSources": true,
 		"module": "commonjs",
 		"declaration": true,
+		"declarationMap": true,
 		"outDir": "dist",
 		"incremental": true,
 		"esModuleInterop": true,
