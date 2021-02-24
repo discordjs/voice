@@ -1,3 +1,4 @@
+import { Snowflake } from 'discord-api-types/v8';
 import {
 	GatewayVoiceServerUpdateDispatchData,
 	GatewayVoiceStateUpdateDispatchData,
@@ -16,8 +17,8 @@ export function handleVoiceStateUpdate(payload: GatewayVoiceStateUpdateDispatchD
 }
 
 export interface JoinConfig {
-	guildId: string;
-	channelId: string | null;
+	guildId: Snowflake;
+	channelId: Snowflake | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
 }

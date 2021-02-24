@@ -2,6 +2,7 @@ import {
 	GatewayOPCodes,
 	GatewayVoiceServerUpdateDispatchData,
 	GatewayVoiceStateUpdateDispatchData,
+	Snowflake,
 } from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
 import { JoinVoiceChannelOptions } from '.';
@@ -74,8 +75,8 @@ export enum VoiceConnectionEvents {
 export interface SignalJoinVoiceChannelPayload {
 	op: GatewayOPCodes.VoiceStateUpdate;
 	d: {
-		guild_id: string;
-		channel_id: string | null;
+		guild_id: Snowflake;
+		channel_id: Snowflake | null;
 		self_deaf: boolean;
 		self_mute: boolean;
 	};

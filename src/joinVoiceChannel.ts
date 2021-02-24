@@ -1,5 +1,6 @@
 import { createVoiceConnection } from './VoiceConnection';
 import { JoinConfig } from './DataStore';
+import { Snowflake } from 'discord-api-types/v8';
 
 /**
  * The options that can be given when joining a voice channel
@@ -8,11 +9,11 @@ export interface JoinVoiceChannelOptions {
 	/**
 	 * The ID of the voice channel to join
 	 */
-	channelId: string;
+	channelId: Snowflake;
 	/**
 	 * The ID of the guild the voice channel belongs to
 	 */
-	guildId: string;
+	guildId: Snowflake;
 	/**
 	 * If true, debug messages will be enabled for the voice connection and its
 	 * related components. Defaults to false.
