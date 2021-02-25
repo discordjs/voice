@@ -24,17 +24,17 @@ export interface JoinConfig {
 }
 
 // Voice Connections
-const voiceConnections: Map<string, VoiceConnection> = new Map();
+const voiceConnections: Map<Snowflake, VoiceConnection> = new Map();
 
-export function getVoiceConnection(guildId: string) {
+export function getVoiceConnection(guildId: Snowflake) {
 	return voiceConnections.get(guildId);
 }
 
-export function untrackVoiceConnection(guildId: string) {
+export function untrackVoiceConnection(guildId: Snowflake) {
 	return voiceConnections.delete(guildId);
 }
 
-export function trackVoiceConnection(guildId: string, voiceConnection: VoiceConnection) {
+export function trackVoiceConnection(guildId: Snowflake, voiceConnection: VoiceConnection) {
 	return voiceConnections.set(guildId, voiceConnection);
 }
 
