@@ -1,7 +1,6 @@
 import { Snowflake } from 'discord-api-types/v8';
 import { GatewayOPCodes } from 'discord-api-types/v8/gateway';
 import { AudioPlayer } from './audio';
-import { DiscordGatewayAdapter } from './joinVoiceChannel';
 import { VoiceConnection } from './VoiceConnection';
 
 export interface JoinConfig {
@@ -17,8 +16,8 @@ export interface JoinConfig {
  *
  * @param config - The configuration to use when joining the voice channel
  */
-export function signalJoinVoiceChannel(config: JoinConfig, adapter: DiscordGatewayAdapter) {
-	return adapter.sendPayload({
+export function createJoinVoiceChannelPayload(config: JoinConfig) {
+	return {
 		op: GatewayOPCodes.VoiceStateUpdate,
 		d: {
 			guild_id: config.guildId,
@@ -26,7 +25,7 @@ export function signalJoinVoiceChannel(config: JoinConfig, adapter: DiscordGatew
 			self_deaf: config.selfDeaf,
 			self_mute: config.selfMute,
 		},
-	});
+	};
 }
 
 // Voice Connections
