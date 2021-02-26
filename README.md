@@ -5,11 +5,7 @@
 	<a href="https://www.npmjs.com/package/@discordjs/voice"><img src="https://img.shields.io/npm/v/@discordjs/voice.svg?maxAge=3600" alt="NPM version" /></a>
 	<a href="https://www.npmjs.com/package/@discordjs/voice"><img src="https://img.shields.io/npm/dt/@discordjs/voice.svg?maxAge=3600" alt="NPM downloads" /></a>
 	<a href="https://github.com/discordjs/voice/actions"><img src="https://github.com/discordjs/voice/workflows/Testing/badge.svg" alt="Build status" /></a>
-	<a href="https://david-dm.org/discordjs/voice"><img src="https://img.shields.io/david/@discordjs/voice.svg?maxAge=3600" alt="Dependencies" /></a>
 	<a href="https://www.patreon.com/discordjs"><img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" /></a>
-</p>
-<p>
-	<a href="https://nodei.co/npm/@discordjs/voice"><img src="https://nodei.co/npm/@discordjs/voice.png?downloads=true&stars=true" alt="npm installnfo" /></a>
 </p>
 
 > Provides audio streaming functionality to Discord.js
