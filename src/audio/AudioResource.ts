@@ -102,10 +102,7 @@ export function createAudioResource<T>(
 	if (transformerPipeline.length === 0) {
 		if (typeof input === 'string') throw new Error(`Invalid pipeline constructed for string resource '${input}'`);
 		// No adjustments required
-		return {
-			playStream: input,
-			pipeline: [],
-		};
+		return new AudioResource([], input, options.metadata);
 	}
 	const streams = transformerPipeline.map((pipe) => pipe.transformer(input));
 	if (typeof input !== 'string') streams.unshift(input);
@@ -116,10 +113,5 @@ export function createAudioResource<T>(
 	// attempt to find the volume transformer in the pipeline (if one exists)
 	const volume = streams.find((stream) => stream instanceof VolumeTransformer) as VolumeTransformer | undefined;
 
-	return {
-		playStream: (playStream as any) as Readable,
-		pipeline: transformerPipeline,
-		metadata: options.metadata,
-		volume,
-	};
+	return new AudioResource(transformerPipeline, (playStream as any) as Readable, options.metadata, volume);
 }
