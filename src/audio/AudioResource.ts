@@ -7,17 +7,17 @@ import type { AudioPlayer } from './AudioPlayer';
 /**
  * Options that are set when creating a new audio resource.
  */
-interface CreateAudioResourceOptions {
+interface CreateAudioResourceOptions<T> {
 	/**
 	 * The type of the input stream. Defaults to `StreamType.Arbitrary`.
 	 */
 	inputType?: StreamType;
 
 	/**
-	 * An optional name that can be attached to the resource. This could be a track title, song name etc.
+	 * Optional metadata that can be attached to the resource (e.g. track title, random ID).
 	 * This is useful for identification purposes when the resource is passed around in events.
 	 */
-	name?: string;
+	metadata?: T;
 
 	/**
 	 * Whether or not inline volume should be enabled. If enabled, you will be able to change the volume
@@ -29,7 +29,7 @@ interface CreateAudioResourceOptions {
 /**
  * Represents an audio resource that can be played by an audio player.
  */
-export class AudioResource {
+export class AudioResource<T> {
 	/**
 	 * An object-mode Readable stream that emits Opus packets. This is what is played by audio players.
 	 */
@@ -43,9 +43,9 @@ export class AudioResource {
 	public readonly pipeline: Edge[];
 
 	/**
-	 * An optional name that can be used to identify the resource.
+	 * Optional metadata that can be used to identify the resource.
 	 */
-	public name?: string;
+	public metadata?: T;
 
 	/**
 	 * If the resource was created with inline volume transformation enabled, then this will be a
@@ -58,10 +58,10 @@ export class AudioResource {
 	 */
 	public audioPlayer?: AudioPlayer;
 
-	public constructor(pipeline: Edge[], playStream: Readable, name?: string, volume?: VolumeTransformer) {
+	public constructor(pipeline: Edge[], playStream: Readable, metadata?: T, volume?: VolumeTransformer) {
 		this.pipeline = pipeline;
 		this.playStream = playStream;
-		this.name = name;
+		this.metadata = metadata;
 		this.volume = volume;
 	}
 }
@@ -86,7 +86,10 @@ const VOLUME_CONSTRAINT = (path: Edge[]) => path.some((edge) => edge.type === Tr
  * @param input - The resource to play.
  * @param options - Configurable options for creating the resource.
  */
-export function createAudioResource(input: string | Readable, options: CreateAudioResourceOptions = {}): AudioResource {
+export function createAudioResource<T>(
+	input: string | Readable,
+	options: CreateAudioResourceOptions<T> = {},
+): AudioResource<T> {
 	let inputType = options.inputType ?? StreamType.Arbitrary;
 
 	// string inputs can only be used with FFmpeg
@@ -116,7 +119,7 @@ export function createAudioResource(input: string | Readable, options: CreateAud
 	return {
 		playStream: (playStream as any) as Readable,
 		pipeline: transformerPipeline,
-		name: options.name,
+		metadata: options.metadata,
 		volume,
 	};
 }

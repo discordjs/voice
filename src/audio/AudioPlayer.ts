@@ -63,7 +63,7 @@ type AudioPlayerState =
 	  }
 	| {
 			status: AudioPlayerStatus.Buffering;
-			resource: AudioResource;
+			resource: AudioResource<unknown>;
 			onReadableCallback: () => void;
 			onFailureCallback: () => void;
 			onStreamError: (error: Error) => void;
@@ -71,13 +71,13 @@ type AudioPlayerState =
 	| {
 			status: AudioPlayerStatus.Playing;
 			missedFrames: number;
-			resource: AudioResource;
+			resource: AudioResource<unknown>;
 			onStreamError: (error: Error) => void;
 	  }
 	| {
 			status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 			silencePacketsRemaining: number;
-			resource: AudioResource;
+			resource: AudioResource<unknown>;
 			onStreamError: (error: Error) => void;
 	  };
 
@@ -206,7 +206,7 @@ export class AudioPlayer extends EventEmitter {
 	 */
 	public set state(newState: AudioPlayerState) {
 		const oldState = this._state;
-		const newResource = Reflect.get(newState, 'resource') as AudioResource | undefined;
+		const newResource = Reflect.get(newState, 'resource') as AudioResource<unknown> | undefined;
 
 		if (oldState.status !== AudioPlayerStatus.Idle && oldState.resource !== newResource) {
 			oldState.resource.playStream.on('error', noop);
@@ -274,16 +274,16 @@ export class AudioPlayer extends EventEmitter {
 	 * @param resource - The resource to play
 	 * @throws Will throw if attempting to play an audio resource that has already ended, or is being played by another player.
 	 */
-	public play(resource: AudioResource) {
+	public play<T>(resource: AudioResource<T>) {
 		if (resource.playStream.readableEnded || resource.playStream.destroyed) {
-			throw new Error(`Cannot play a resource (${resource.name ?? 'unnamed'}) that has already ended.`);
+			throw new Error('Cannot play a resource that has already ended.');
 		}
 
 		if (resource.audioPlayer) {
 			if (resource.audioPlayer === this) {
 				return;
 			}
-			throw new Error(`Resource (${resource.name ?? 'unnamed'}) is already being played by another audio player.`);
+			throw new Error('Resource is already being played by another audio player.');
 		}
 		resource.audioPlayer = this;
 
