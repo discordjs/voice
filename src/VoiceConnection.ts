@@ -113,6 +113,9 @@ export class VoiceConnection extends EventEmitter {
 		this.onNetworkingError = this.onNetworkingError.bind(this);
 		this.onNetworkingDebug = this.onNetworkingDebug.bind(this);
 
+		adapter.on('voiceServerUpdate', (packet: GatewayVoiceServerUpdateDispatchData) => this.addServerPacket(packet));
+		adapter.on('voiceStateUpdate', (packet: GatewayVoiceStateUpdateDispatchData) => this.addStatePacket(packet));
+
 		this._state = { status: VoiceConnectionStatus.Signalling, adapter };
 
 		this.packets = {
@@ -177,7 +180,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param packet - The received `VOICE_SERVER_UPDATE` packet
 	 */
-	public addServerPacket(packet: GatewayVoiceServerUpdateDispatchData) {
+	private addServerPacket(packet: GatewayVoiceServerUpdateDispatchData) {
 		this.packets.server = packet;
 		this.configureNetworking();
 	}
@@ -188,7 +191,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param packet - The received `VOICE_STATE_UPDATE` packet
 	 */
-	public addStatePacket(packet: GatewayVoiceStateUpdateDispatchData) {
+	private addStatePacket(packet: GatewayVoiceStateUpdateDispatchData) {
 		this.packets.state = packet;
 
 		if (typeof packet.self_deaf !== 'undefined') this.joinConfig.selfDeaf = packet.self_deaf;
