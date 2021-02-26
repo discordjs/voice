@@ -22,6 +22,7 @@ import {
 	AudioPlayerStatus,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
+import { createDiscordJSAdapter } from './adapter';
 
 const player = createAudioPlayer();
 
@@ -36,7 +37,11 @@ function playSong() {
 }
 
 async function connectToChannel(channel: VoiceChannel) {
-	const connection = joinVoiceChannel(channel);
+	const connection = joinVoiceChannel({
+		channelId: channel.id,
+		guildId: channel.guild.id,
+		adapterCreator: createDiscordJSAdapter(channel),
+	});
 
 	try {
 		await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
