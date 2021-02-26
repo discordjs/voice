@@ -159,7 +159,7 @@ export class VoiceConnection extends EventEmitter {
 		}
 
 		// If destroyed, the adapter can also be destroyed so it can be cleaned up by the user
-		if (oldState.status !== VoiceConnectionStatus.Destroyed) {
+		if (oldState.status !== VoiceConnectionStatus.Destroyed && newState.status === VoiceConnectionStatus.Destroyed) {
 			oldState.adapter.destroy?.();
 		}
 

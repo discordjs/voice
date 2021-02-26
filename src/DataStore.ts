@@ -1,11 +1,10 @@
-import { Snowflake } from 'discord-api-types/v8';
 import { GatewayOPCodes } from 'discord-api-types/v8/gateway';
 import { AudioPlayer } from './audio';
 import { VoiceConnection } from './VoiceConnection';
 
 export interface JoinConfig {
-	guildId: Snowflake;
-	channelId: Snowflake | null;
+	guildId: string;
+	channelId: string | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
 }

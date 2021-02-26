@@ -1,6 +1,5 @@
 import { createVoiceConnection } from './VoiceConnection';
 import { JoinConfig } from './DataStore';
-import { Snowflake } from 'discord-api-types/v8';
 import { DiscordGatewayAdapterCreator } from './util/adapter';
 
 /**
@@ -16,8 +15,8 @@ export interface CreateVoiceConnectionOptions {
 }
 
 export interface JoinVoiceChannelOptions {
-	channelId: Snowflake;
-	guildId: Snowflake;
+	channelId: string;
+	guildId: string;
 }
 
 /**
