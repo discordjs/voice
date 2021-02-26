@@ -2,13 +2,22 @@ import { VoiceChannel } from 'discord.js';
 import { createVoiceConnection } from './VoiceConnection';
 import { JoinConfig } from './DataStore';
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
+import { EventEmitter } from 'events';
 
 /**
  * Used to connect a VoiceConnection to a main Discord gateway connection.
  */
-export interface DiscordGatewayAdapter {
-	onVoiceServerUpdate(data: GatewayVoiceServerUpdateDispatchData): void;
-	onVoiceStateUpdate(data: GatewayVoiceStateUpdateDispatchData): void;
+export interface DiscordGatewayAdapter extends EventEmitter {
+	on(event: 'voiceServerUpdate', listener: (data: GatewayVoiceServerUpdateDispatchData) => void): this;
+	on(event: 'voiceStateUpdate', listener: (data: GatewayVoiceStateUpdateDispatchData) => void): this;
+	/**
+	 * Called by @discordjs/voice when the adapter is no longer
+	 */
+	destroy?(): void;
+	/**
+	 * Called by @discordjs/voice when a payload needs to be forwarded to the gateway connection.
+	 * The creator of the adapter should make sure that they implement this logic.
+	 */
 	sendPayload(data: any): void;
 }
 

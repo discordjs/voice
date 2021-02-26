@@ -44,16 +44,19 @@ export type VoiceConnectionState =
 	| {
 			status: VoiceConnectionStatus.Signalling;
 			subscription?: PlayerSubscription;
+			adapter: DiscordGatewayAdapter;
 	  }
 	| {
 			status: VoiceConnectionStatus.Disconnected;
 			closeCode: number;
 			subscription?: PlayerSubscription;
+			adapter: DiscordGatewayAdapter;
 	  }
 	| {
 			status: VoiceConnectionStatus.Connecting | VoiceConnectionStatus.Ready;
 			networking: Networking;
 			subscription?: PlayerSubscription;
+			adapter: DiscordGatewayAdapter;
 	  }
 	| {
 			status: VoiceConnectionStatus.Destroyed;
@@ -95,12 +98,6 @@ export class VoiceConnection extends EventEmitter {
 	private readonly debug: null | ((message: string) => void);
 
 	/**
-	 * The adapter for this voice connection.
-	 * @internal
-	 */
-	public readonly adapter: DiscordGatewayAdapter;
-
-	/**
 	 * Creates a new voice connection.
 	 *
 	 * @param joinConfig - The data required to establish the voice connection
@@ -109,7 +106,6 @@ export class VoiceConnection extends EventEmitter {
 		super();
 
 		this.debug = debug ? this.emit.bind(this, 'debug') : null;
-		this.adapter = adapter;
 		this.reconnectAttempts = 0;
 
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
@@ -117,7 +113,7 @@ export class VoiceConnection extends EventEmitter {
 		this.onNetworkingError = this.onNetworkingError.bind(this);
 		this.onNetworkingDebug = this.onNetworkingDebug.bind(this);
 
-		this._state = { status: VoiceConnectionStatus.Signalling };
+		this._state = { status: VoiceConnectionStatus.Signalling, adapter };
 
 		this.packets = {
 			server: undefined,
@@ -156,6 +152,11 @@ export class VoiceConnection extends EventEmitter {
 
 		if (newState.status === VoiceConnectionStatus.Ready) {
 			this.reconnectAttempts = 0;
+		}
+
+		// If destroyed, the adapter can also be destroyed so it can be cleaned up by the user
+		if (oldState.status !== VoiceConnectionStatus.Destroyed) {
+			oldState.adapter.destroy?.();
 		}
 
 		this._state = newState;
@@ -251,6 +252,7 @@ export class VoiceConnection extends EventEmitter {
 	 * @param code - The close code
 	 */
 	private onNetworkingClose(code: number) {
+		if (this.state.status === VoiceConnectionStatus.Destroyed) return;
 		// If networking closes, try to connect to the voice channel again.
 		if (code === 4014) {
 			// Disconnected - networking is already destroyed here
@@ -264,7 +266,7 @@ export class VoiceConnection extends EventEmitter {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
-			signalJoinVoiceChannel(this.joinConfig, this.adapter);
+			signalJoinVoiceChannel(this.joinConfig, this.state.adapter);
 		}
 	}
 
@@ -359,7 +361,7 @@ export class VoiceConnection extends EventEmitter {
 				...this.joinConfig,
 				channelId: null,
 			},
-			this.adapter,
+			this.state.adapter,
 		);
 		this.state = {
 			status: VoiceConnectionStatus.Destroyed,
@@ -381,7 +383,7 @@ export class VoiceConnection extends EventEmitter {
 			return false;
 		}
 
-		signalJoinVoiceChannel(this.joinConfig, this.adapter);
+		signalJoinVoiceChannel(this.joinConfig, this.state.adapter);
 		this.reconnectAttempts++;
 
 		this.state = {
@@ -445,15 +447,17 @@ export class VoiceConnection extends EventEmitter {
  */
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
-	if (existing) {
-		signalJoinVoiceChannel(joinConfig, existing.adapter);
+	if (existing && existing.state.status !== VoiceConnectionStatus.Destroyed) {
+		// The new adapter hasn't actually been accepted, so it can be destroyed
+		options.adapter.destroy?.();
+		signalJoinVoiceChannel(joinConfig, existing.state.adapter);
 		return existing;
 	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
 	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
 	trackClient(joinConfig.guild.client);
-	signalJoinVoiceChannel(joinConfig, voiceConnection.adapter);
+	signalJoinVoiceChannel(joinConfig, options.adapter);
 
 	return voiceConnection;
 }
