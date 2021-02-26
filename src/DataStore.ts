@@ -5,6 +5,7 @@ import {
 } from 'discord-api-types/v8/gateway';
 import { Client, Constants, Guild } from 'discord.js';
 import { AudioPlayer } from './audio';
+import { DiscordGatewayAdapter } from './joinVoiceChannel';
 import { VoiceConnection } from './VoiceConnection';
 
 // Clients
@@ -39,8 +40,8 @@ export interface JoinConfig {
  *
  * @param config - The configuration to use when joining the voice channel
  */
-export function signalJoinVoiceChannel(config: JoinConfig) {
-	return config.guild.shard.send({
+export function signalJoinVoiceChannel(config: JoinConfig, adapter: DiscordGatewayAdapter) {
+	return adapter.sendPayload({
 		op: GatewayOPCodes.VoiceStateUpdate,
 		d: {
 			guild_id: config.guild.id,

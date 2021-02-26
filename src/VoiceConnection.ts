@@ -11,6 +11,7 @@ import {
 	JoinConfig,
 	untrackVoiceConnection,
 } from './DataStore';
+import { DiscordGatewayAdapter } from './joinVoiceChannel';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
 
@@ -94,13 +95,21 @@ export class VoiceConnection extends EventEmitter {
 	private readonly debug: null | ((message: string) => void);
 
 	/**
+	 * The adapter for this voice connection.
+	 * @internal
+	 */
+	public readonly adapter: DiscordGatewayAdapter;
+
+	/**
 	 * Creates a new voice connection.
 	 *
 	 * @param joinConfig - The data required to establish the voice connection
 	 */
-	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
+	public constructor(joinConfig: JoinConfig, { debug, adapter }: JoinVoiceChannelOptions) {
 		super();
 
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+		this.adapter = adapter;
 		this.reconnectAttempts = 0;
 
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
@@ -114,8 +123,6 @@ export class VoiceConnection extends EventEmitter {
 			server: undefined,
 			state: undefined,
 		};
-
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 
 		this.joinConfig = joinConfig;
 	}
@@ -257,7 +264,7 @@ export class VoiceConnection extends EventEmitter {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
-			signalJoinVoiceChannel(this.joinConfig);
+			signalJoinVoiceChannel(this.joinConfig, this.adapter);
 		}
 	}
 
@@ -347,10 +354,13 @@ export class VoiceConnection extends EventEmitter {
 		if (getVoiceConnection(this.joinConfig.guild.id) === this) {
 			untrackVoiceConnection(this.joinConfig.guild.id);
 		}
-		signalJoinVoiceChannel({
-			...this.joinConfig,
-			channelId: null,
-		});
+		signalJoinVoiceChannel(
+			{
+				...this.joinConfig,
+				channelId: null,
+			},
+			this.adapter,
+		);
 		this.state = {
 			status: VoiceConnectionStatus.Destroyed,
 		};
@@ -371,7 +381,7 @@ export class VoiceConnection extends EventEmitter {
 			return false;
 		}
 
-		signalJoinVoiceChannel(this.joinConfig);
+		signalJoinVoiceChannel(this.joinConfig, this.adapter);
 		this.reconnectAttempts++;
 
 		this.state = {
@@ -436,14 +446,14 @@ export class VoiceConnection extends EventEmitter {
 export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
 	const existing = getVoiceConnection(joinConfig.guild.id);
 	if (existing) {
-		signalJoinVoiceChannel(joinConfig);
+		signalJoinVoiceChannel(joinConfig, existing.adapter);
 		return existing;
 	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
 	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
 	trackClient(joinConfig.guild.client);
-	signalJoinVoiceChannel(joinConfig);
+	signalJoinVoiceChannel(joinConfig, voiceConnection.adapter);
 
 	return voiceConnection;
 }
