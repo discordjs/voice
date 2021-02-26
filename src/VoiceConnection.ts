@@ -6,7 +6,6 @@ import { PlayerSubscription } from './audio/PlayerSubscription';
 import {
 	getVoiceConnection,
 	signalJoinVoiceChannel,
-	trackClient,
 	trackVoiceConnection,
 	JoinConfig,
 	untrackVoiceConnection,
@@ -459,7 +458,6 @@ export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoice
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
 	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
-	trackClient(joinConfig.guild.client);
 	signalJoinVoiceChannel(joinConfig, options.adapter);
 
 	return voiceConnection;
