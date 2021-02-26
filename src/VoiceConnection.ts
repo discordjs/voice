@@ -1,6 +1,6 @@
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
-import { JoinVoiceChannelOptions } from '.';
+import { CreateVoiceConnectionOptions } from '.';
 import { AudioPlayer } from './audio/AudioPlayer';
 import { PlayerSubscription } from './audio/PlayerSubscription';
 import {
@@ -101,7 +101,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param joinConfig - The data required to establish the voice connection
 	 */
-	public constructor(joinConfig: JoinConfig, { debug, adapter }: JoinVoiceChannelOptions) {
+	public constructor(joinConfig: JoinConfig, { debug, adapter }: CreateVoiceConnectionOptions) {
 		super();
 
 		this.debug = debug ? this.emit.bind(this, 'debug') : null;
@@ -355,8 +355,8 @@ export class VoiceConnection extends EventEmitter {
 		if (this.state.status === VoiceConnectionStatus.Destroyed) {
 			throw new Error('Cannot destroy VoiceConnection - it has already been destroyed');
 		}
-		if (getVoiceConnection(this.joinConfig.guild.id) === this) {
-			untrackVoiceConnection(this.joinConfig.guild.id);
+		if (getVoiceConnection(this.joinConfig.guildId) === this) {
+			untrackVoiceConnection(this.joinConfig.guildId);
 		}
 		signalJoinVoiceChannel(
 			{
@@ -447,8 +447,8 @@ export class VoiceConnection extends EventEmitter {
  * @param joinConfig - The data required to establish the voice connection
  * @param options - The options to use when joining the voice channel
  */
-export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
-	const existing = getVoiceConnection(joinConfig.guild.id);
+export function createVoiceConnection(joinConfig: JoinConfig, options: CreateVoiceConnectionOptions) {
+	const existing = getVoiceConnection(joinConfig.guildId);
 	if (existing && existing.state.status !== VoiceConnectionStatus.Destroyed) {
 		// The new adapter hasn't actually been accepted, so it can be destroyed
 		options.adapter.destroy?.();
@@ -457,7 +457,7 @@ export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoice
 	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
-	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
+	trackVoiceConnection(joinConfig.guildId, voiceConnection);
 	signalJoinVoiceChannel(joinConfig, options.adapter);
 
 	return voiceConnection;

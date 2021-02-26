@@ -13,7 +13,6 @@ export default function generateDependencyReport() {
 	// general
 	report.push('Core Dependencies');
 	addVersion('@discordjs/voice');
-	addVersion('discord.js');
 	addVersion('prism-media');
 	report.push('');
 

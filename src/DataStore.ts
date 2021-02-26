@@ -1,12 +1,12 @@
+import { Snowflake } from 'discord-api-types/v8';
 import { GatewayOPCodes } from 'discord-api-types/v8/gateway';
-import { Guild } from 'discord.js';
 import { AudioPlayer } from './audio';
 import { DiscordGatewayAdapter } from './joinVoiceChannel';
 import { VoiceConnection } from './VoiceConnection';
 
 export interface JoinConfig {
-	guild: Guild;
-	channelId: string | null;
+	guildId: Snowflake;
+	channelId: Snowflake | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
 }
@@ -21,7 +21,7 @@ export function signalJoinVoiceChannel(config: JoinConfig, adapter: DiscordGatew
 	return adapter.sendPayload({
 		op: GatewayOPCodes.VoiceStateUpdate,
 		d: {
-			guild_id: config.guild.id,
+			guild_id: config.guildId,
 			channel_id: config.channelId,
 			self_deaf: config.selfDeaf,
 			self_mute: config.selfMute,
