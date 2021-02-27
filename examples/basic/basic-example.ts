@@ -10,6 +10,7 @@ import {
 	AudioPlayerStatus,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
+import { createDiscordJSAdapter } from './adapter';
 
 /*
 	In this example, we are creating a single audio player that plays to a number of
@@ -57,7 +58,11 @@ async function connectToChannel(channel: VoiceChannel) {
 		to this voice channel, @discordjs/voice will just return the existing connection for
 		us!
 	*/
-	const connection = joinVoiceChannel(channel);
+	const connection = joinVoiceChannel({
+		channelId: channel.id,
+		guildId: channel.guild.id,
+		adapterCreator: createDiscordJSAdapter(channel),
+	});
 
 	/*
 		If we're dealing with a connection that isn't yet Ready, we can set a reasonable

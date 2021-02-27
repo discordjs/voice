@@ -1,33 +1,9 @@
-import {
-	GatewayOPCodes,
-	GatewayVoiceServerUpdateDispatchData,
-	GatewayVoiceStateUpdateDispatchData,
-} from 'discord-api-types/v8/gateway';
-import { Client, Constants, Guild } from 'discord.js';
+import { GatewayOPCodes } from 'discord-api-types/v8/gateway';
 import { AudioPlayer } from './audio';
 import { VoiceConnection } from './VoiceConnection';
 
-// Clients
-const clients: Set<Client> = new Set();
-export function trackClient(client: Client) {
-	if (clients.has(client)) {
-		return;
-	}
-	clients.add(client);
-
-	client.ws.on(Constants.WSEvents.VOICE_SERVER_UPDATE, (payload: GatewayVoiceServerUpdateDispatchData) => {
-		getVoiceConnection(payload.guild_id)?.addServerPacket(payload);
-	});
-
-	client.ws.on(Constants.WSEvents.VOICE_STATE_UPDATE, (payload: GatewayVoiceStateUpdateDispatchData) => {
-		if (payload.guild_id && payload.session_id && payload.user_id === client.user?.id) {
-			getVoiceConnection(payload.guild_id)?.addStatePacket(payload);
-		}
-	});
-}
-
 export interface JoinConfig {
-	guild: Guild;
+	guildId: string;
 	channelId: string | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
@@ -39,16 +15,16 @@ export interface JoinConfig {
  *
  * @param config - The configuration to use when joining the voice channel
  */
-export function signalJoinVoiceChannel(config: JoinConfig) {
-	return config.guild.shard.send({
+export function createJoinVoiceChannelPayload(config: JoinConfig) {
+	return {
 		op: GatewayOPCodes.VoiceStateUpdate,
 		d: {
-			guild_id: config.guild.id,
+			guild_id: config.guildId,
 			channel_id: config.channelId,
 			self_deaf: config.selfDeaf,
 			self_mute: config.selfMute,
 		},
-	});
+	};
 }
 
 // Voice Connections
