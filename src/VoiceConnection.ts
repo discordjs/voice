@@ -1,16 +1,16 @@
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
 import { EventEmitter } from 'events';
-import { JoinVoiceChannelOptions } from '.';
+import { CreateVoiceConnectionOptions } from '.';
 import { AudioPlayer } from './audio/AudioPlayer';
 import { PlayerSubscription } from './audio/PlayerSubscription';
 import {
 	getVoiceConnection,
-	signalJoinVoiceChannel,
-	trackClient,
+	createJoinVoiceChannelPayload,
 	trackVoiceConnection,
 	JoinConfig,
 	untrackVoiceConnection,
 } from './DataStore';
+import { DiscordGatewayAdapterImplementerMethods } from './util/adapter';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
 
@@ -43,16 +43,19 @@ export type VoiceConnectionState =
 	| {
 			status: VoiceConnectionStatus.Signalling;
 			subscription?: PlayerSubscription;
+			adapter: DiscordGatewayAdapterImplementerMethods;
 	  }
 	| {
 			status: VoiceConnectionStatus.Disconnected;
 			closeCode: number;
 			subscription?: PlayerSubscription;
+			adapter: DiscordGatewayAdapterImplementerMethods;
 	  }
 	| {
 			status: VoiceConnectionStatus.Connecting | VoiceConnectionStatus.Ready;
 			networking: Networking;
 			subscription?: PlayerSubscription;
+			adapter: DiscordGatewayAdapterImplementerMethods;
 	  }
 	| {
 			status: VoiceConnectionStatus.Destroyed;
@@ -98,9 +101,10 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param joinConfig - The data required to establish the voice connection
 	 */
-	public constructor(joinConfig: JoinConfig, { debug }: JoinVoiceChannelOptions) {
+	public constructor(joinConfig: JoinConfig, { debug, adapterCreator }: CreateVoiceConnectionOptions) {
 		super();
 
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 		this.reconnectAttempts = 0;
 
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
@@ -108,14 +112,17 @@ export class VoiceConnection extends EventEmitter {
 		this.onNetworkingError = this.onNetworkingError.bind(this);
 		this.onNetworkingDebug = this.onNetworkingDebug.bind(this);
 
-		this._state = { status: VoiceConnectionStatus.Signalling };
+		const adapter = adapterCreator({
+			onVoiceServerUpdate: this.addServerPacket.bind(this),
+			onVoiceStateUpdate: this.addStatePacket.bind(this),
+		});
+
+		this._state = { status: VoiceConnectionStatus.Signalling, adapter };
 
 		this.packets = {
 			server: undefined,
 			state: undefined,
 		};
-
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 
 		this.joinConfig = joinConfig;
 	}
@@ -151,6 +158,11 @@ export class VoiceConnection extends EventEmitter {
 			this.reconnectAttempts = 0;
 		}
 
+		// If destroyed, the adapter can also be destroyed so it can be cleaned up by the user
+		if (oldState.status !== VoiceConnectionStatus.Destroyed && newState.status === VoiceConnectionStatus.Destroyed) {
+			oldState.adapter.destroy?.();
+		}
+
 		this._state = newState;
 
 		if (oldSubscription && oldSubscription !== newSubscription) {
@@ -169,7 +181,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param packet - The received `VOICE_SERVER_UPDATE` packet
 	 */
-	public addServerPacket(packet: GatewayVoiceServerUpdateDispatchData) {
+	private addServerPacket(packet: GatewayVoiceServerUpdateDispatchData) {
 		this.packets.server = packet;
 		this.configureNetworking();
 	}
@@ -180,7 +192,7 @@ export class VoiceConnection extends EventEmitter {
 	 *
 	 * @param packet - The received `VOICE_STATE_UPDATE` packet
 	 */
-	public addStatePacket(packet: GatewayVoiceStateUpdateDispatchData) {
+	private addStatePacket(packet: GatewayVoiceStateUpdateDispatchData) {
 		this.packets.state = packet;
 
 		if (typeof packet.self_deaf !== 'undefined') this.joinConfig.selfDeaf = packet.self_deaf;
@@ -244,6 +256,7 @@ export class VoiceConnection extends EventEmitter {
 	 * @param code - The close code
 	 */
 	private onNetworkingClose(code: number) {
+		if (this.state.status === VoiceConnectionStatus.Destroyed) return;
 		// If networking closes, try to connect to the voice channel again.
 		if (code === 4014) {
 			// Disconnected - networking is already destroyed here
@@ -257,7 +270,7 @@ export class VoiceConnection extends EventEmitter {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
-			signalJoinVoiceChannel(this.joinConfig);
+			this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig));
 		}
 	}
 
@@ -344,13 +357,10 @@ export class VoiceConnection extends EventEmitter {
 		if (this.state.status === VoiceConnectionStatus.Destroyed) {
 			throw new Error('Cannot destroy VoiceConnection - it has already been destroyed');
 		}
-		if (getVoiceConnection(this.joinConfig.guild.id) === this) {
-			untrackVoiceConnection(this.joinConfig.guild.id);
+		if (getVoiceConnection(this.joinConfig.guildId) === this) {
+			untrackVoiceConnection(this.joinConfig.guildId);
 		}
-		signalJoinVoiceChannel({
-			...this.joinConfig,
-			channelId: null,
-		});
+		this.state.adapter.sendPayload(createJoinVoiceChannelPayload({ ...this.joinConfig, channelId: null }));
 		this.state = {
 			status: VoiceConnectionStatus.Destroyed,
 		};
@@ -371,7 +381,7 @@ export class VoiceConnection extends EventEmitter {
 			return false;
 		}
 
-		signalJoinVoiceChannel(this.joinConfig);
+		this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig));
 		this.reconnectAttempts++;
 
 		this.state = {
@@ -433,17 +443,18 @@ export class VoiceConnection extends EventEmitter {
  * @param joinConfig - The data required to establish the voice connection
  * @param options - The options to use when joining the voice channel
  */
-export function createVoiceConnection(joinConfig: JoinConfig, options: JoinVoiceChannelOptions) {
-	const existing = getVoiceConnection(joinConfig.guild.id);
-	if (existing) {
-		signalJoinVoiceChannel(joinConfig);
+export function createVoiceConnection(joinConfig: JoinConfig, options: CreateVoiceConnectionOptions) {
+	const payload = createJoinVoiceChannelPayload(joinConfig);
+	const existing = getVoiceConnection(joinConfig.guildId);
+	if (existing && existing.state.status !== VoiceConnectionStatus.Destroyed) {
+		existing.state.adapter.sendPayload(payload);
 		return existing;
 	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
-	trackVoiceConnection(joinConfig.guild.id, voiceConnection);
-	trackClient(joinConfig.guild.client);
-	signalJoinVoiceChannel(joinConfig);
-
+	trackVoiceConnection(joinConfig.guildId, voiceConnection);
+	if (voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) {
+		voiceConnection.state.adapter.sendPayload(payload);
+	}
 	return voiceConnection;
 }
