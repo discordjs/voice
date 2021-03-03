@@ -29,7 +29,7 @@ interface CreateAudioResourceOptions<T> {
 /**
  * Represents an audio resource that can be played by an audio player.
  */
-export class AudioResource<T> {
+export class AudioResource<T = unknown> {
 	/**
 	 * An object-mode Readable stream that emits Opus packets. This is what is played by audio players.
 	 */

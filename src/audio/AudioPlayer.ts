@@ -63,7 +63,7 @@ type AudioPlayerState =
 	  }
 	| {
 			status: AudioPlayerStatus.Buffering;
-			resource: AudioResource<unknown>;
+			resource: AudioResource;
 			onReadableCallback: () => void;
 			onFailureCallback: () => void;
 			onStreamError: (error: Error) => void;
@@ -71,13 +71,13 @@ type AudioPlayerState =
 	| {
 			status: AudioPlayerStatus.Playing;
 			missedFrames: number;
-			resource: AudioResource<unknown>;
+			resource: AudioResource;
 			onStreamError: (error: Error) => void;
 	  }
 	| {
 			status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 			silencePacketsRemaining: number;
-			resource: AudioResource<unknown>;
+			resource: AudioResource;
 			onStreamError: (error: Error) => void;
 	  };
 
@@ -206,7 +206,7 @@ export class AudioPlayer extends EventEmitter {
 	 */
 	public set state(newState: AudioPlayerState) {
 		const oldState = this._state;
-		const newResource = Reflect.get(newState, 'resource') as AudioResource<unknown> | undefined;
+		const newResource = Reflect.get(newState, 'resource') as AudioResource | undefined;
 
 		if (oldState.status !== AudioPlayerStatus.Idle && oldState.resource !== newResource) {
 			oldState.resource.playStream.on('error', noop);
