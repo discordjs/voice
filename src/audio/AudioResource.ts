@@ -16,6 +16,7 @@ interface CreateAudioResourceOptions<T> {
 	/**
 	 * Optional metadata that can be attached to the resource (e.g. track title, random ID).
 	 * This is useful for identification purposes when the resource is passed around in events.
+	 * @see AudioResource#metadata
 	 */
 	metadata?: T;
 
