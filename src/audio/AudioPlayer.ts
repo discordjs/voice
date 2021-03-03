@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import { addAudioPlayer, deleteAudioPlayer } from '../DataStore';
 import { noop } from '../util/util';
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
+import { AudioPlayerError } from './AudioPlayerError';
 import { AudioResource } from './AudioResource';
 import { PlayerSubscription } from './PlayerSubscription';
 
@@ -295,9 +296,9 @@ export class AudioPlayer extends EventEmitter {
 				 * Emitted when there is an error emitted from the audio resource played by the audio player
 				 *
 				 * @event AudioPlayer#error
-				 * @type {Error}
+				 * @type {AudioPlayerError}
 				 */
-				this.emit('error', error);
+				this.emit('error', new AudioPlayerError(error, this.state.resource));
 			}
 
 			if (this.state.status !== AudioPlayerStatus.Idle && this.state.resource === resource) {
