@@ -10,7 +10,8 @@
 		"test": "test"
 	},
 	"scripts": {
-		"test": "jest src",
+		"test": "jest",
+		"test:ci": "jest --verbose --ci --no-stack-trace",
 		"lint": "eslint src --ext .ts",
 		"lint:fix": "eslint src --ext .ts --fix",
 		"prettier": "prettier --write **/*.{ts,js,json,yml,yaml}",
