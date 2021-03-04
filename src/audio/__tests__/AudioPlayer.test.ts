@@ -128,5 +128,25 @@ describe('State transitions', () => {
 			player['_stepPrepare']();
 			expect(player.state.status).toBe(AudioPlayerStatus.Playing);
 		});
+
+		test('NoSubscriberBehavior.Play', () => {
+			const resource = new AudioResource([], Readable.from(silence()));
+			player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
+
+			player.play(resource);
+			expect(player.checkPlayable()).toBe(true);
+			player['_stepPrepare']();
+			expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		});
+
+		test('NoSubscriberBehavior.Stop', () => {
+			const resource = new AudioResource([], Readable.from(silence()));
+			player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Stop } });
+
+			player.play(resource);
+			expect(player.checkPlayable()).toBe(true);
+			player['_stepPrepare']();
+			expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		});
 	});
 });
