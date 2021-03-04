@@ -20,6 +20,23 @@ function* silence() {
 	}
 }
 
+function createVoiceConnectionMock() {
+	const connection = new VoiceConnectionMock();
+	connection.state = {
+		status: VoiceConnectionStatus.Signalling,
+		adapter: {
+			sendPayload: jest.fn(),
+			destroy: jest.fn(),
+		},
+	};
+	connection.subscribe = jest.fn((player) => player['subscribe'](connection));
+	return connection;
+}
+
+function wait() {
+	return new Promise((resolve) => process.nextTick(resolve));
+}
+
 describe('State transitions', () => {
 	let player: AudioPlayer | undefined;
 
@@ -99,15 +116,10 @@ describe('State transitions', () => {
 
 	describe('NoSubscriberBehavior transitions', () => {
 		test('NoSubscriberBehavior.Pause', () => {
-			const connection = new VoiceConnectionMock();
-			connection.state = {
-				status: VoiceConnectionStatus.Signalling,
-				adapter: {
-					sendPayload: jest.fn(),
-					destroy: jest.fn(),
-				},
-			};
-			connection.subscribe = jest.fn((player) => player['subscribe'](connection));
+			const connection = createVoiceConnectionMock();
+			if (connection.state.status !== VoiceConnectionStatus.Signalling) {
+				throw new Error('Voice connection should have been Signalling');
+			}
 
 			const resource = new AudioResource([], Readable.from(silence()));
 			player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Pause } });
@@ -144,9 +156,62 @@ describe('State transitions', () => {
 			player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Stop } });
 
 			player.play(resource);
+			expect(addAudioPlayerMock).toBeCalledTimes(1);
 			expect(player.checkPlayable()).toBe(true);
 			player['_stepPrepare']();
 			expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+			expect(deleteAudioPlayerMock).toBeCalledTimes(1);
 		});
+	});
+
+	test('Playing state', async () => {
+		const connection = createVoiceConnectionMock();
+		if (connection.state.status !== VoiceConnectionStatus.Signalling) {
+			throw new Error('Voice connection should have been Signalling');
+		}
+		connection.state = {
+			...connection.state,
+			status: VoiceConnectionStatus.Ready,
+			networking: null as any,
+		};
+
+		const buffer = Buffer.from([1, 2, 4, 8]);
+		const resource = new AudioResource([], Readable.from([buffer, buffer, buffer, buffer, buffer]));
+		resource.playStream.read(); // To start the stream
+		player = createAudioPlayer();
+		connection.subscribe(player);
+
+		player.play(resource);
+		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		expect(addAudioPlayerMock).toBeCalledTimes(1);
+		expect(player.checkPlayable()).toBe(true);
+
+		// Run through a few packet cycles
+		for (let i = 1; i <= 5; i++) {
+			player['_stepDispatch']();
+			expect(connection.dispatchAudio).toHaveBeenCalledTimes(i);
+
+			await wait(); // Wait for the stream
+
+			player['_stepPrepare']();
+			expect(connection.prepareAudioPacket).toHaveBeenCalledTimes(i);
+			expect(connection.prepareAudioPacket).toHaveBeenLastCalledWith(buffer);
+		}
+
+		// Expect silence to be played
+		player['_stepDispatch']();
+		expect(connection.dispatchAudio).toHaveBeenCalledTimes(6);
+		await wait();
+		player['_stepPrepare']();
+		const prepareAudioPacket = (connection.prepareAudioPacket as unknown) as jest.Mock<
+			typeof connection.prepareAudioPacket
+		>;
+		expect(prepareAudioPacket).toHaveBeenCalledTimes(6);
+		expect(prepareAudioPacket.mock.calls[5][0]).toEqual(silence().next().value);
+
+		player.stop();
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		expect(connection.setSpeaking).toBeCalledTimes(1);
+		expect(connection.setSpeaking).toHaveBeenLastCalledWith(false);
 	});
 });
