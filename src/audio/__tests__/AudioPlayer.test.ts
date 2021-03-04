@@ -37,19 +37,19 @@ function wait() {
 	return new Promise((resolve) => process.nextTick(resolve));
 }
 
+let player: AudioPlayer | undefined;
+
+beforeEach(() => {
+	VoiceConnectionMock.mockReset();
+	addAudioPlayerMock.mockReset();
+	deleteAudioPlayerMock.mockReset();
+});
+
+afterEach(() => {
+	player?.stop();
+});
+
 describe('State transitions', () => {
-	let player: AudioPlayer | undefined;
-
-	beforeEach(() => {
-		VoiceConnectionMock.mockReset();
-		addAudioPlayerMock.mockReset();
-		deleteAudioPlayerMock.mockReset();
-	});
-
-	afterEach(() => {
-		player?.stop();
-	});
-
 	test('Starts in Idle state', () => {
 		player = createAudioPlayer();
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
@@ -214,4 +214,19 @@ describe('State transitions', () => {
 		expect(connection.setSpeaking).toBeCalledTimes(1);
 		expect(connection.setSpeaking).toHaveBeenLastCalledWith(false);
 	});
+});
+
+test('play() throws when playing a resource that has already ended', async () => {
+	const resource = new AudioResource([], Readable.from([Buffer.from([1])]));
+	player = createAudioPlayer();
+	player.play(resource);
+	expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+	for (let i = 0; i < 3; i++) {
+		resource.playStream.read();
+		await wait();
+	}
+	expect(resource.playStream.readableEnded).toBe(true);
+	player.stop();
+	expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+	expect(() => player.play(resource)).toThrow();
 });
