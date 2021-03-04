@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import { addAudioPlayer, deleteAudioPlayer } from '../DataStore';
 import { noop } from '../util/util';
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
+import { AudioPlayerError } from './AudioPlayerError';
 import { AudioResource } from './AudioResource';
 import { PlayerSubscription } from './PlayerSubscription';
 
@@ -274,16 +275,16 @@ export class AudioPlayer extends EventEmitter {
 	 * @param resource - The resource to play
 	 * @throws Will throw if attempting to play an audio resource that has already ended, or is being played by another player.
 	 */
-	public play(resource: AudioResource) {
+	public play<T>(resource: AudioResource<T>) {
 		if (resource.playStream.readableEnded || resource.playStream.destroyed) {
-			throw new Error(`Cannot play a resource (${resource.name ?? 'unnamed'}) that has already ended.`);
+			throw new Error('Cannot play a resource that has already ended.');
 		}
 
 		if (resource.audioPlayer) {
 			if (resource.audioPlayer === this) {
 				return;
 			}
-			throw new Error(`Resource (${resource.name ?? 'unnamed'}) is already being played by another audio player.`);
+			throw new Error('Resource is already being played by another audio player.');
 		}
 		resource.audioPlayer = this;
 
@@ -295,9 +296,9 @@ export class AudioPlayer extends EventEmitter {
 				 * Emitted when there is an error emitted from the audio resource played by the audio player
 				 *
 				 * @event AudioPlayer#error
-				 * @type {Error}
+				 * @type {AudioPlayerError}
 				 */
-				this.emit('error', error);
+				this.emit('error', new AudioPlayerError(error, this.state.resource));
 			}
 
 			if (this.state.status !== AudioPlayerStatus.Idle && this.state.resource === resource) {
