@@ -169,7 +169,7 @@ describe('State transitions', () => {
 		});
 	});
 
-	test('Playing state', async () => {
+	test('Normal playing state', async () => {
 		const connection = createVoiceConnectionMock();
 		if (connection.state.status !== VoiceConnectionStatus.Signalling) {
 			throw new Error('Voice connection should have been Signalling');
@@ -218,6 +218,21 @@ describe('State transitions', () => {
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(connection.setSpeaking).toBeCalledTimes(1);
 		expect(connection.setSpeaking).toHaveBeenLastCalledWith(false);
+	});
+
+	test('checkPlayable() transitions to Idle for unreadable stream', async () => {
+		const resource = new AudioResource([], Readable.from([Buffer.from([1])]));
+		player = createAudioPlayer();
+		player.play(resource);
+		expect(player.checkPlayable()).toBe(true);
+		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		for (let i = 0; i < 3; i++) {
+			resource.playStream.read();
+			await wait();
+		}
+		expect(resource.playStream.readableEnded).toBe(true);
+		expect(player.checkPlayable()).toBe(false);
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 	});
 });
 
