@@ -17,3 +17,6 @@ pids
 
 # Miscellaneous
 .tmp/
+
+# Coverage
+coverage/
