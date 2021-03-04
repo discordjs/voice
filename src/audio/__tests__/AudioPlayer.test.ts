@@ -5,12 +5,16 @@ import { Readable } from 'stream';
 import { addAudioPlayer, deleteAudioPlayer } from '../../DataStore';
 import { NoSubscriberBehavior } from '../..';
 import { VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
+import { once } from 'events';
+import { AudioPlayerError } from '../AudioPlayerError';
 
 jest.mock('../../DataStore');
 jest.mock('../../VoiceConnection');
+jest.mock('../AudioPlayerError');
 
 const addAudioPlayerMock = (addAudioPlayer as unknown) as jest.Mock<typeof addAudioPlayer>;
 const deleteAudioPlayerMock = (deleteAudioPlayer as unknown) as jest.Mock<typeof deleteAudioPlayer>;
+const AudioPlayerErrorMock = (AudioPlayerError as unknown) as jest.Mock<typeof AudioPlayerError>;
 const VoiceConnectionMock = (VoiceConnection as unknown) as jest.Mock<VoiceConnection>;
 
 function* silence() {
@@ -40,6 +44,7 @@ function wait() {
 let player: AudioPlayer | undefined;
 
 beforeEach(() => {
+	AudioPlayerErrorMock.mockReset();
 	VoiceConnectionMock.mockReset();
 	addAudioPlayerMock.mockReset();
 	deleteAudioPlayerMock.mockReset();
@@ -229,4 +234,18 @@ test('play() throws when playing a resource that has already ended', async () =>
 	player.stop();
 	expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 	expect(() => player.play(resource)).toThrow();
+});
+
+test('Propagates errors from streams', async () => {
+	const resource = new AudioResource([], Readable.from(silence()));
+	player = createAudioPlayer();
+	player.play(resource);
+	expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+	const error = new Error('AudioPlayer test error');
+	process.nextTick(() => resource.playStream.emit('error', error));
+	const res = await once(player, 'error');
+	const playerError = res[0] as AudioPlayerError;
+	expect(playerError).toBeInstanceOf(AudioPlayerError);
+	expect(AudioPlayerErrorMock).toHaveBeenCalledWith(error, resource);
+	expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 });
