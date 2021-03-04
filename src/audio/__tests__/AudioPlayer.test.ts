@@ -1,12 +1,17 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { AudioResource } from '../../audio/AudioResource';
 import { createAudioPlayer, AudioPlayerStatus, AudioPlayer } from '../AudioPlayer';
 import { Readable } from 'stream';
 import { addAudioPlayer, deleteAudioPlayer } from '../../DataStore';
+import { NoSubscriberBehavior } from '../..';
+import { VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
 
 jest.mock('../../DataStore');
+jest.mock('../../VoiceConnection');
 
 const addAudioPlayerMock = (addAudioPlayer as unknown) as jest.Mock<typeof addAudioPlayer>;
 const deleteAudioPlayerMock = (deleteAudioPlayer as unknown) as jest.Mock<typeof deleteAudioPlayer>;
+const VoiceConnectionMock = (VoiceConnection as unknown) as jest.Mock<VoiceConnection>;
 
 function* silence() {
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -19,6 +24,7 @@ describe('State transitions', () => {
 	let player: AudioPlayer | undefined;
 
 	beforeEach(() => {
+		VoiceConnectionMock.mockReset();
 		addAudioPlayerMock.mockReset();
 		deleteAudioPlayerMock.mockReset();
 	});
@@ -89,5 +95,38 @@ describe('State transitions', () => {
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(addAudioPlayerMock).toBeCalledTimes(1);
 		expect(deleteAudioPlayerMock).toBeCalledTimes(1);
+	});
+
+	describe('NoSubscriberBehavior transitions', () => {
+		test('NoSubscriberBehavior.Pause', () => {
+			const connection = new VoiceConnectionMock();
+			connection.state = {
+				status: VoiceConnectionStatus.Signalling,
+				adapter: {
+					sendPayload: jest.fn(),
+					destroy: jest.fn(),
+				},
+			};
+			connection.subscribe = jest.fn((player) => player['subscribe'](connection));
+
+			const resource = new AudioResource([], Readable.from(silence()));
+			player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Pause } });
+			connection.subscribe(player);
+
+			player.play(resource);
+			expect(player.checkPlayable()).toBe(true);
+			player['_stepPrepare']();
+			expect(player.state.status).toBe(AudioPlayerStatus.AutoPaused);
+
+			connection.state = {
+				...connection.state,
+				status: VoiceConnectionStatus.Ready,
+				networking: null as any,
+			};
+
+			expect(player.checkPlayable()).toBe(true);
+			player['_stepPrepare']();
+			expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		});
 	});
 });
