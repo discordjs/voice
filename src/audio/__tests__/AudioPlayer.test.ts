@@ -71,4 +71,23 @@ describe('State transitions', () => {
 		// The audio player should not have been deleted throughout these changes
 		expect(deleteAudioPlayerMock).toBeCalledTimes(0);
 	});
+
+	test('Playing to Stopping', () => {
+		const resource = new AudioResource([], Readable.from(silence()));
+		player = createAudioPlayer();
+
+		// stop() shouldn't do anything in Idle state
+		expect(player.stop()).toBe(false);
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+
+		player.play(resource);
+		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		expect(addAudioPlayerMock).toBeCalledTimes(1);
+		expect(deleteAudioPlayerMock).toBeCalledTimes(0);
+
+		expect(player.stop()).toBe(true);
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		expect(addAudioPlayerMock).toBeCalledTimes(1);
+		expect(deleteAudioPlayerMock).toBeCalledTimes(1);
+	});
 });
