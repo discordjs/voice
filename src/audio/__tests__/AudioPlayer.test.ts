@@ -218,6 +218,50 @@ describe('State transitions', () => {
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(connection.setSpeaking).toBeCalledTimes(1);
 		expect(connection.setSpeaking).toHaveBeenLastCalledWith(false);
+		expect(deleteAudioPlayerMock).toHaveBeenCalledTimes(1);
+	});
+
+	test('Plays silence 5 times for unreadable stream before quitting', () => {
+		const connection = createVoiceConnectionMock();
+		if (connection.state.status !== VoiceConnectionStatus.Signalling) {
+			throw new Error('Voice connection should have been Signalling');
+		}
+		connection.state = {
+			...connection.state,
+			status: VoiceConnectionStatus.Ready,
+			networking: null as any,
+		};
+
+		const resource = new AudioResource([], Readable.from([]));
+		player = createAudioPlayer({ behaviors: { maxMissedFrames: 5 } });
+		connection.subscribe(player);
+
+		player.play(resource);
+		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		expect(addAudioPlayerMock).toBeCalledTimes(1);
+		expect(player.checkPlayable()).toBe(true);
+
+		const prepareAudioPacket = (connection.prepareAudioPacket as unknown) as jest.Mock<
+			typeof connection.prepareAudioPacket
+		>;
+
+		// Run through a few packet cycles
+		for (let i = 1; i <= 5; i++) {
+			expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+			if (player.state.status !== AudioPlayerStatus.Playing) throw new Error('Error');
+			expect(player.state.missedFrames).toBe(i - 1);
+			player['_stepDispatch']();
+			expect(connection.dispatchAudio).toHaveBeenCalledTimes(i);
+			player['_stepPrepare']();
+			expect(prepareAudioPacket).toHaveBeenCalledTimes(i);
+			expect(prepareAudioPacket.mock.calls[i - 1][0]).toEqual(silence().next().value);
+		}
+
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		expect(connection.setSpeaking).toBeCalledTimes(1);
+		expect(connection.setSpeaking).toHaveBeenLastCalledWith(false);
+		expect(deleteAudioPlayerMock).toHaveBeenCalledTimes(1);
 	});
 
 	test('checkPlayable() transitions to Idle for unreadable stream', async () => {
