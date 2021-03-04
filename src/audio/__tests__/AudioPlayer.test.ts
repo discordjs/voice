@@ -1,6 +1,12 @@
 import { AudioResource } from '../../audio/AudioResource';
 import { createAudioPlayer, AudioPlayerStatus, AudioPlayer } from '../AudioPlayer';
 import { Readable } from 'stream';
+import { addAudioPlayer, deleteAudioPlayer } from '../../DataStore';
+
+jest.mock('../../DataStore');
+
+const addAudioPlayerMock = (addAudioPlayer as unknown) as jest.Mock<typeof addAudioPlayer>;
+const deleteAudioPlayerMock = (deleteAudioPlayer as unknown) as jest.Mock<typeof deleteAudioPlayer>;
 
 function* silence() {
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -12,6 +18,11 @@ function* silence() {
 describe('State transitions', () => {
 	let player: AudioPlayer | undefined;
 
+	beforeEach(() => {
+		addAudioPlayerMock.mockReset();
+		deleteAudioPlayerMock.mockReset();
+	});
+
 	afterEach(() => {
 		player?.stop();
 	});
@@ -19,6 +30,8 @@ describe('State transitions', () => {
 	test('Starts in Idle state', () => {
 		player = createAudioPlayer();
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		expect(addAudioPlayerMock).toBeCalledTimes(0);
+		expect(deleteAudioPlayerMock).toBeCalledTimes(0);
 	});
 
 	test('Playing resource with pausing and resuming', () => {
@@ -32,10 +45,12 @@ describe('State transitions', () => {
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(player.unpause()).toBe(false);
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		expect(addAudioPlayerMock).toBeCalledTimes(0);
 
 		// Expect to be in the Playing state after calling .play() with a readable resource
 		player.play(resource);
 		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		expect(addAudioPlayerMock).toBeCalledTimes(1);
 
 		// Expect pause() to return true and transition to paused state
 		expect(player.pause()).toBe(true);
@@ -52,5 +67,8 @@ describe('State transitions', () => {
 		// further calls to unpause() should be unsuccessful
 		expect(player.unpause()).toBe(false);
 		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+
+		// The audio player should not have been deleted throughout these changes
+		expect(deleteAudioPlayerMock).toBeCalledTimes(0);
 	});
 });
