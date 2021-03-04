@@ -60,6 +60,8 @@ const audioPlayers: AudioPlayer[] = [];
  * the next audio frame.
  */
 function audioCycleStep() {
+	if (nextTime === -1) return;
+
 	nextTime += FRAME_LENGTH;
 	const available = audioPlayers.filter((player) => player.checkPlayable());
 
