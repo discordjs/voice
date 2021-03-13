@@ -47,7 +47,7 @@ export enum AudioPlayerStatus {
 /**
  * Options that can be passed when creating an audio player, used to specify its behavior.
  */
-interface CreateAudioPlayerOptions {
+export interface CreateAudioPlayerOptions {
 	debug?: boolean;
 	behaviors?: {
 		noSubscriber?: NoSubscriberBehavior;
@@ -58,7 +58,7 @@ interface CreateAudioPlayerOptions {
 /**
  * The state that an AudioPlayer is in when it has no resource to play. This is the starting state.
  */
-interface AudioPlayerIdleState {
+export interface AudioPlayerIdleState {
 	status: AudioPlayerStatus.Idle;
 }
 
@@ -67,7 +67,7 @@ interface AudioPlayerIdleState {
  * happens, the AudioPlayer will enter the Playing state. If the resource ends/errors before this, then
  * it will re-enter the Idle state.
  */
-interface AudioPlayerBufferingState {
+export interface AudioPlayerBufferingState {
 	status: AudioPlayerStatus.Buffering;
 	/**
 	 * The resource that the AudioPlayer is waiting for
@@ -82,7 +82,7 @@ interface AudioPlayerBufferingState {
  * The state that an AudioPlayer is in when it is actively playing an AudioResource. When playback ends,
  * it will enter the Idle state.
  */
-interface AudioPlayerPlayingState {
+export interface AudioPlayerPlayingState {
 	status: AudioPlayerStatus.Playing;
 	/**
 	 * The number of consecutive times that the audio resource has been unable to provide an Opus frame.
@@ -104,7 +104,7 @@ interface AudioPlayerPlayingState {
  * The state that an AudioPlayer is in when it has either been explicitly paused by the user, or done
  * automatically by the AudioPlayer itself if there are no available subscribers.
  */
-interface AudioPlayerPausedState {
+export interface AudioPlayerPausedState {
 	status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 	/**
 	 * How many silence packets still need to be played to avoid audio interpolation due to the stream suddenly pausing
