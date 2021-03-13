@@ -37,29 +37,72 @@ export enum VoiceConnectionStatus {
 }
 
 /**
+ * The state that a VoiceConnection will be in when it is waiting to receive a VOICE_SERVER_UPDATE and
+ * VOICE_STATE_UPDATE packet from Discord, provided by the adapter.
+ */
+export interface VoiceConnectionSignallingState {
+	status: VoiceConnectionStatus.Signalling;
+	subscription?: PlayerSubscription;
+	adapter: DiscordGatewayAdapterImplementerMethods;
+}
+
+/**
+ * The state that a VoiceConnection will be in when it is not connected to a Discord voice server, and
+ * is not making an attempt to do so.
+ *
+ * It is possible to attempt a reconnect when in this state, but it will not be automatically done by
+ * the library.
+ */
+export interface VoiceConnectionDisconnectedState {
+	status: VoiceConnectionStatus.Disconnected;
+	/**
+	 * The close code of the WebSocket connection to the Discord voice server.
+	 */
+	closeCode: number;
+	subscription?: PlayerSubscription;
+	adapter: DiscordGatewayAdapterImplementerMethods;
+}
+
+/**
+ * The state that a VoiceConnection will be in when it is establishing a connection to a Discord
+ * voice server.
+ */
+export interface VoiceConnectionConnectingState {
+	status: VoiceConnectionStatus.Connecting;
+	networking: Networking;
+	subscription?: PlayerSubscription;
+	adapter: DiscordGatewayAdapterImplementerMethods;
+}
+
+/**
+ * The state that a VoiceConnection will be in when it has an active connection to a Discord
+ * voice server.
+ */
+export interface VoiceConnectionReadyState {
+	status: VoiceConnectionStatus.Ready;
+	networking: Networking;
+	subscription?: PlayerSubscription;
+	adapter: DiscordGatewayAdapterImplementerMethods;
+}
+
+/**
+ * The state that a VoiceConnection will be in when it has been permanently been destroyed by the
+ * user and untracked by the library. It cannot be reconnected, instead, a new VoiceConnection
+ * needs to be established.
+ */
+export interface VoiceConnectionDestroyedState {
+	status: VoiceConnectionStatus.Destroyed;
+}
+
+/**
  * The various states that a voice connection can be in.
  */
 export type VoiceConnectionState =
-	| {
-			status: VoiceConnectionStatus.Signalling;
-			subscription?: PlayerSubscription;
-			adapter: DiscordGatewayAdapterImplementerMethods;
-	  }
-	| {
-			status: VoiceConnectionStatus.Disconnected;
-			closeCode: number;
-			subscription?: PlayerSubscription;
-			adapter: DiscordGatewayAdapterImplementerMethods;
-	  }
-	| {
-			status: VoiceConnectionStatus.Connecting | VoiceConnectionStatus.Ready;
-			networking: Networking;
-			subscription?: PlayerSubscription;
-			adapter: DiscordGatewayAdapterImplementerMethods;
-	  }
-	| {
-			status: VoiceConnectionStatus.Destroyed;
-	  };
+	| VoiceConnectionSignallingState
+	| VoiceConnectionDisconnectedState
+	| VoiceConnectionConnectingState
+	| VoiceConnectionReadyState
+	| VoiceConnectionDestroyedState;
 
 /**
  * A connection to the voice server of a Guild, can be used to play audio in voice channels.

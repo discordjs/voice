@@ -47,7 +47,7 @@ export enum AudioPlayerStatus {
 /**
  * Options that can be passed when creating an audio player, used to specify its behavior.
  */
-interface CreateAudioPlayerOptions {
+export interface CreateAudioPlayerOptions {
 	debug?: boolean;
 	behaviors?: {
 		noSubscriber?: NoSubscriberBehavior;
@@ -56,33 +56,80 @@ interface CreateAudioPlayerOptions {
 }
 
 /**
+ * The state that an AudioPlayer is in when it has no resource to play. This is the starting state.
+ */
+export interface AudioPlayerIdleState {
+	status: AudioPlayerStatus.Idle;
+}
+
+/**
+ * The state that an AudioPlayer is in when it is waiting for a resource to become readable. Once this
+ * happens, the AudioPlayer will enter the Playing state. If the resource ends/errors before this, then
+ * it will re-enter the Idle state.
+ */
+export interface AudioPlayerBufferingState {
+	status: AudioPlayerStatus.Buffering;
+	/**
+	 * The resource that the AudioPlayer is waiting for
+	 */
+	resource: AudioResource;
+	onReadableCallback: () => void;
+	onFailureCallback: () => void;
+	onStreamError: (error: Error) => void;
+}
+
+/**
+ * The state that an AudioPlayer is in when it is actively playing an AudioResource. When playback ends,
+ * it will enter the Idle state.
+ */
+export interface AudioPlayerPlayingState {
+	status: AudioPlayerStatus.Playing;
+	/**
+	 * The number of consecutive times that the audio resource has been unable to provide an Opus frame.
+	 */
+	missedFrames: number;
+	/**
+	 * The playback duration in milliseconds of the current audio resource. This includes filler silence packets
+	 * that have been played when the resource was buffering.
+	 */
+	playbackDuration: number;
+	/**
+	 * The resource that is being played
+	 */
+	resource: AudioResource;
+	onStreamError: (error: Error) => void;
+}
+
+/**
+ * The state that an AudioPlayer is in when it has either been explicitly paused by the user, or done
+ * automatically by the AudioPlayer itself if there are no available subscribers.
+ */
+export interface AudioPlayerPausedState {
+	status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
+	/**
+	 * How many silence packets still need to be played to avoid audio interpolation due to the stream suddenly pausing
+	 */
+	silencePacketsRemaining: number;
+	/**
+	 * The playback duration in milliseconds of the current audio resource. This includes filler silence packets
+	 * that have been played when the resource was buffering.
+	 */
+	playbackDuration: number;
+	/**
+	 * The current resource of the audio player
+	 */
+	resource: AudioResource;
+	onStreamError: (error: Error) => void;
+}
+
+/**
  * The various states that the player can be in.
  */
 type AudioPlayerState =
-	| {
-			status: AudioPlayerStatus.Idle;
-	  }
-	| {
-			status: AudioPlayerStatus.Buffering;
-			resource: AudioResource;
-			onReadableCallback: () => void;
-			onFailureCallback: () => void;
-			onStreamError: (error: Error) => void;
-	  }
-	| {
-			status: AudioPlayerStatus.Playing;
-			missedFrames: number;
-			playbackDuration: number;
-			resource: AudioResource;
-			onStreamError: (error: Error) => void;
-	  }
-	| {
-			status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
-			silencePacketsRemaining: number;
-			playbackDuration: number;
-			resource: AudioResource;
-			onStreamError: (error: Error) => void;
-	  };
+	| AudioPlayerIdleState
+	| AudioPlayerBufferingState
+	| AudioPlayerPlayingState
+	| AudioPlayerPausedState;
 
 /**
  * Used to play audio resources (i.e. tracks, streams) to voice connections.
@@ -463,8 +510,7 @@ export class AudioPlayer extends EventEmitter {
 		if (state.status === AudioPlayerStatus.Paused || state.status === AudioPlayerStatus.AutoPaused) {
 			if (state.silencePacketsRemaining > 0) {
 				state.silencePacketsRemaining--;
-				state.playbackDuration += 20;
-				this._preparePacket(SILENCE_FRAME, playable);
+				this._preparePacket(SILENCE_FRAME, playable, state);
 				if (state.silencePacketsRemaining === 0) {
 					this._signalStopSpeaking();
 				}
@@ -493,12 +539,11 @@ export class AudioPlayer extends EventEmitter {
 
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (state.status === AudioPlayerStatus.Playing) {
-			state.playbackDuration += 20;
 			if (packet) {
-				this._preparePacket(packet, playable);
+				this._preparePacket(packet, playable, state);
 				state.missedFrames = 0;
 			} else {
-				this._preparePacket(SILENCE_FRAME, playable);
+				this._preparePacket(SILENCE_FRAME, playable, state);
 				state.missedFrames++;
 				if (state.missedFrames >= this.behaviors.maxMissedFrames) {
 					this.stop();
@@ -522,7 +567,12 @@ export class AudioPlayer extends EventEmitter {
 	 * @param packet - The Opus packet to be prepared by each receiver
 	 * @param receivers - The connections that should play this packet
 	 */
-	private _preparePacket(packet: Buffer, receivers: VoiceConnection[]) {
+	private _preparePacket(
+		packet: Buffer,
+		receivers: VoiceConnection[],
+		state: AudioPlayerPlayingState | AudioPlayerPausedState,
+	) {
+		state.playbackDuration += 20;
 		receivers.forEach((connection) => connection.prepareAudioPacket(packet));
 	}
 }

@@ -28,32 +28,92 @@ export enum NetworkingStatusCode {
 }
 
 /**
+ * The initial Networking state. Instances will be in this state when a WebSocket connection to a Discord
+ * voice gateway is being opened.
+ */
+export interface NetworkingOpeningWsState {
+	code: NetworkingStatusCode.OpeningWs;
+	ws: VoiceWebSocket;
+	connectionOptions: ConnectionOptions;
+}
+
+/**
+ * The state that a Networking instance will be in when it is attempting to authorize itself.
+ */
+export interface NetworkingIdentifyingState {
+	code: NetworkingStatusCode.Identifying;
+	ws: VoiceWebSocket;
+	connectionOptions: ConnectionOptions;
+}
+
+/**
+ * The state that a Networking instance will be in when opening a UDP connection to the IP and port provided
+ * by Discord, as well as performing IP discovery.
+ */
+export interface NetworkingUdpHandshakingState {
+	code: NetworkingStatusCode.UdpHandshaking;
+	ws: VoiceWebSocket;
+	udp: VoiceUDPSocket;
+	connectionOptions: ConnectionOptions;
+	connectionData: Pick<ConnectionData, 'ssrc'>;
+}
+
+/**
+ * The state that a Networking instance will be in when selecting an encryption protocol for audio packets.
+ */
+export interface NetworkingSelectingProtocolState {
+	code: NetworkingStatusCode.SelectingProtocol;
+	ws: VoiceWebSocket;
+	udp: VoiceUDPSocket;
+	connectionOptions: ConnectionOptions;
+	connectionData: Pick<ConnectionData, 'ssrc'>;
+}
+
+/**
+ * The state that a Networking instance will be in when it has a fully established connection to a Discord
+ * voice server.
+ */
+export interface NetworkingReadyState {
+	code: NetworkingStatusCode.Ready;
+	ws: VoiceWebSocket;
+	udp: VoiceUDPSocket;
+	connectionOptions: ConnectionOptions;
+	connectionData: ConnectionData;
+	preparedPacket?: Buffer;
+}
+
+/**
+ * The state that a Networking instance will be in when its connection has been dropped unexpectedly, and it
+ * is attempting to resume an existing session.
+ */
+export interface NetworkingResumingState {
+	code: NetworkingStatusCode.Resuming;
+	ws: VoiceWebSocket;
+	udp: VoiceUDPSocket;
+	connectionOptions: ConnectionOptions;
+	connectionData: ConnectionData;
+	preparedPacket?: Buffer;
+}
+
+/**
+ * The state that a Networking instance will be in when it has been destroyed. It cannot be recovered from this
+ * state.
+ */
+export interface NetworkingClosedState {
+	code: NetworkingStatusCode.Closed;
+}
+
+/**
  * The various states that a networking instance can be in.
  */
 export type NetworkingState =
-	| {
-			code: NetworkingStatusCode.OpeningWs | NetworkingStatusCode.Identifying;
-			ws: VoiceWebSocket;
-			connectionOptions: ConnectionOptions;
-	  }
-	| {
-			code: NetworkingStatusCode.UdpHandshaking | NetworkingStatusCode.SelectingProtocol;
-			ws: VoiceWebSocket;
-			udp: VoiceUDPSocket;
-			connectionOptions: ConnectionOptions;
-			connectionData: Pick<ConnectionData, 'ssrc'>;
-	  }
-	| {
-			code: NetworkingStatusCode.Ready | NetworkingStatusCode.Resuming;
-			ws: VoiceWebSocket;
-			udp: VoiceUDPSocket;
-			connectionOptions: ConnectionOptions;
-			connectionData: ConnectionData;
-			preparedPacket?: Buffer;
-	  }
-	| {
-			code: NetworkingStatusCode.Closed;
-	  };
+	| NetworkingOpeningWsState
+	| NetworkingIdentifyingState
+	| NetworkingUdpHandshakingState
+	| NetworkingSelectingProtocolState
+	| NetworkingReadyState
+	| NetworkingResumingState
+	| NetworkingClosedState;
 
 /**
  * Details required to connect to the Discord voice gateway. These details
