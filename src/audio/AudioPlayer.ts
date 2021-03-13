@@ -510,8 +510,7 @@ export class AudioPlayer extends EventEmitter {
 		if (state.status === AudioPlayerStatus.Paused || state.status === AudioPlayerStatus.AutoPaused) {
 			if (state.silencePacketsRemaining > 0) {
 				state.silencePacketsRemaining--;
-				state.playbackDuration += 20;
-				this._preparePacket(SILENCE_FRAME, playable);
+				this._preparePacket(SILENCE_FRAME, playable, state);
 				if (state.silencePacketsRemaining === 0) {
 					this._signalStopSpeaking();
 				}
@@ -540,12 +539,11 @@ export class AudioPlayer extends EventEmitter {
 
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (state.status === AudioPlayerStatus.Playing) {
-			state.playbackDuration += 20;
 			if (packet) {
-				this._preparePacket(packet, playable);
+				this._preparePacket(packet, playable, state);
 				state.missedFrames = 0;
 			} else {
-				this._preparePacket(SILENCE_FRAME, playable);
+				this._preparePacket(SILENCE_FRAME, playable, state);
 				state.missedFrames++;
 				if (state.missedFrames >= this.behaviors.maxMissedFrames) {
 					this.stop();
@@ -569,7 +567,12 @@ export class AudioPlayer extends EventEmitter {
 	 * @param packet - The Opus packet to be prepared by each receiver
 	 * @param receivers - The connections that should play this packet
 	 */
-	private _preparePacket(packet: Buffer, receivers: VoiceConnection[]) {
+	private _preparePacket(
+		packet: Buffer,
+		receivers: VoiceConnection[],
+		state: AudioPlayerPlayingState | AudioPlayerPausedState,
+	) {
+		state.playbackDuration += 20;
 		receivers.forEach((connection) => connection.prepareAudioPacket(packet));
 	}
 }
