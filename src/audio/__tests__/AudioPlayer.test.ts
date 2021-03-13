@@ -201,6 +201,10 @@ describe('State transitions', () => {
 			player['_stepPrepare']();
 			expect(connection.prepareAudioPacket).toHaveBeenCalledTimes(i);
 			expect(connection.prepareAudioPacket).toHaveBeenLastCalledWith(buffer);
+			expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+			if (player.state.status === AudioPlayerStatus.Playing) {
+				expect(player.state.playbackDuration).toStrictEqual(i * 20);
+			}
 		}
 
 		// Expect silence to be played
@@ -249,6 +253,7 @@ describe('State transitions', () => {
 		for (let i = 1; i <= 5; i++) {
 			expect(player.state.status).toBe(AudioPlayerStatus.Playing);
 			if (player.state.status !== AudioPlayerStatus.Playing) throw new Error('Error');
+			expect(player.state.playbackDuration).toStrictEqual((i - 1) * 20);
 			expect(player.state.missedFrames).toBe(i - 1);
 			player['_stepDispatch']();
 			expect(connection.dispatchAudio).toHaveBeenCalledTimes(i);
@@ -257,7 +262,6 @@ describe('State transitions', () => {
 			expect(prepareAudioPacket.mock.calls[i - 1][0]).toEqual(silence().next().value);
 		}
 
-		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(connection.setSpeaking).toBeCalledTimes(1);
 		expect(connection.setSpeaking).toHaveBeenLastCalledWith(false);

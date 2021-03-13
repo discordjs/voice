@@ -59,11 +59,33 @@ export class AudioResource<T = unknown> {
 	 */
 	public audioPlayer?: AudioPlayer;
 
+	/**
+	 * The playback duration of this audio resource, given in milliseconds.
+	 */
+	public playbackDuration = 0;
+
 	public constructor(pipeline: Edge[], playStream: Readable, metadata?: T, volume?: VolumeTransformer) {
 		this.pipeline = pipeline;
 		this.playStream = playStream;
 		this.metadata = metadata;
 		this.volume = volume;
+	}
+
+	/**
+	 * Attempts to read an Opus packet from the audio resource. If a packet is available, the playbackDuration
+	 * is incremented.
+	 * @internal
+	 * @remarks
+	 * It is advisable to check that the playStream is readable before calling this method. While no runtime
+	 * errors will be thrown, you should check that the resource is still available before attempting to
+	 * read from it.
+	 */
+	public read(): Buffer | null {
+		const packet: Buffer | null = this.playStream.read();
+		if (packet) {
+			this.playbackDuration += 20;
+		}
+		return packet;
 	}
 }
 

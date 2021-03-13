@@ -72,12 +72,14 @@ type AudioPlayerState =
 	| {
 			status: AudioPlayerStatus.Playing;
 			missedFrames: number;
+			playbackDuration: number;
 			resource: AudioResource;
 			onStreamError: (error: Error) => void;
 	  }
 	| {
 			status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 			silencePacketsRemaining: number;
+			playbackDuration: number;
 			resource: AudioResource;
 			onStreamError: (error: Error) => void;
 	  };
@@ -314,6 +316,7 @@ export class AudioPlayer extends EventEmitter {
 			this.state = {
 				status: AudioPlayerStatus.Playing,
 				missedFrames: 0,
+				playbackDuration: 0,
 				resource,
 				onStreamError,
 			};
@@ -323,6 +326,7 @@ export class AudioPlayer extends EventEmitter {
 					this.state = {
 						status: AudioPlayerStatus.Playing,
 						missedFrames: 0,
+						playbackDuration: 0,
 						resource,
 						onStreamError,
 					};
@@ -459,6 +463,7 @@ export class AudioPlayer extends EventEmitter {
 		if (state.status === AudioPlayerStatus.Paused || state.status === AudioPlayerStatus.AutoPaused) {
 			if (state.silencePacketsRemaining > 0) {
 				state.silencePacketsRemaining--;
+				state.playbackDuration += 20;
 				this._preparePacket(SILENCE_FRAME, playable);
 				if (state.silencePacketsRemaining === 0) {
 					this._signalStopSpeaking();
@@ -484,10 +489,11 @@ export class AudioPlayer extends EventEmitter {
 		/* Attempt to read an Opus packet from the resource. If there isn't an available packet,
 			 play a silence packet. If there are 5 consecutive cycles with failed reads, then the
 			 playback will end. */
-		const packet: Buffer | null = state.resource.playStream.read();
+		const packet: Buffer | null = state.resource.read();
 
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (state.status === AudioPlayerStatus.Playing) {
+			state.playbackDuration += 20;
 			if (packet) {
 				this._preparePacket(packet, playable);
 				state.missedFrames = 0;
