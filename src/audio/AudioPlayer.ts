@@ -56,33 +56,80 @@ interface CreateAudioPlayerOptions {
 }
 
 /**
+ * The state that an AudioPlayer is in when it has no resource to play. This is the starting state.
+ */
+interface AudioPlayerIdleState {
+	status: AudioPlayerStatus.Idle;
+}
+
+/**
+ * The state that an AudioPlayer is in when it is waiting for a resource to become readable. Once this
+ * happens, the AudioPlayer will enter the Playing state. If the resource ends/errors before this, then
+ * it will re-enter the Idle state.
+ */
+interface AudioPlayerBufferingState {
+	status: AudioPlayerStatus.Buffering;
+	/**
+	 * The resource that the AudioPlayer is waiting for
+	 */
+	resource: AudioResource;
+	onReadableCallback: () => void;
+	onFailureCallback: () => void;
+	onStreamError: (error: Error) => void;
+}
+
+/**
+ * The state that an AudioPlayer is in when it is actively playing an AudioResource. When playback ends,
+ * it will enter the Idle state.
+ */
+interface AudioPlayerPlayingState {
+	status: AudioPlayerStatus.Playing;
+	/**
+	 * The number of consecutive times that the audio resource has been unable to provide an Opus frame.
+	 */
+	missedFrames: number;
+	/**
+	 * The playback duration in milliseconds of the current audio resource. This includes filler silence packets
+	 * that have been played when the resource was buffering.
+	 */
+	playbackDuration: number;
+	/**
+	 * The resource that is being played
+	 */
+	resource: AudioResource;
+	onStreamError: (error: Error) => void;
+}
+
+/**
+ * The state that an AudioPlayer is in when it has either been explicitly paused by the user, or done
+ * automatically by the AudioPlayer itself if there are no available subscribers.
+ */
+interface AudioPlayerPausedState {
+	status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
+	/**
+	 * How many silence packets still need to be played to avoid audio interpolation due to the stream suddenly pausing
+	 */
+	silencePacketsRemaining: number;
+	/**
+	 * The playback duration in milliseconds of the current audio resource. This includes filler silence packets
+	 * that have been played when the resource was buffering.
+	 */
+	playbackDuration: number;
+	/**
+	 * The current resource of the audio player
+	 */
+	resource: AudioResource;
+	onStreamError: (error: Error) => void;
+}
+
+/**
  * The various states that the player can be in.
  */
 type AudioPlayerState =
-	| {
-			status: AudioPlayerStatus.Idle;
-	  }
-	| {
-			status: AudioPlayerStatus.Buffering;
-			resource: AudioResource;
-			onReadableCallback: () => void;
-			onFailureCallback: () => void;
-			onStreamError: (error: Error) => void;
-	  }
-	| {
-			status: AudioPlayerStatus.Playing;
-			missedFrames: number;
-			playbackDuration: number;
-			resource: AudioResource;
-			onStreamError: (error: Error) => void;
-	  }
-	| {
-			status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
-			silencePacketsRemaining: number;
-			playbackDuration: number;
-			resource: AudioResource;
-			onStreamError: (error: Error) => void;
-	  };
+	| AudioPlayerIdleState
+	| AudioPlayerBufferingState
+	| AudioPlayerPlayingState
+	| AudioPlayerPausedState;
 
 /**
  * Used to play audio resources (i.e. tracks, streams) to voice connections.
