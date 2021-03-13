@@ -484,7 +484,7 @@ export class AudioPlayer extends EventEmitter {
 		/* Attempt to read an Opus packet from the resource. If there isn't an available packet,
 			 play a silence packet. If there are 5 consecutive cycles with failed reads, then the
 			 playback will end. */
-		const packet: Buffer | null = state.resource.playStream.read();
+		const packet: Buffer | null = state.resource.read();
 
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (state.status === AudioPlayerStatus.Playing) {
