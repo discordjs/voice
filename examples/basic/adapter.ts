@@ -39,13 +39,15 @@ function cleanupGuilds(shard: WebSocketShard) {
 }
 
 function trackGuild(guild: Guild) {
-	if (!trackedGuilds.has(guild.shard)) {
+	let guilds = trackedGuilds.get(guild.shard);
+	if (!guilds) {
 		const cleanup = () => cleanupGuilds(guild.shard);
 		guild.shard.on('close', cleanup);
 		guild.shard.on('destroyed', cleanup);
-		trackedGuilds.set(guild.shard, new Set());
+		guilds = new Set();
+		trackedGuilds.set(guild.shard, guilds);
 	}
-	trackedGuilds.get(guild.shard)!.add(guild.id);
+	guilds.add(guild.id);
 }
 
 /**
