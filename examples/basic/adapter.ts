@@ -28,14 +28,12 @@ function trackClient(client: Client) {
 const trackedGuilds = new Map<WebSocketShard, Set<Snowflake>>();
 
 function cleanupGuilds(shard: WebSocketShard) {
-	shard.once('close', () => {
-		const guilds = trackedGuilds.get(shard);
-		if (guilds?.values) {
-			for (const guildID of guilds.values()) {
-				adapters.get(guildID)?.destroy();
-			}
+	const guilds = trackedGuilds.get(shard);
+	if (guilds) {
+		for (const guildID of guilds.values()) {
+			adapters.get(guildID)?.destroy();
 		}
-	});
+	}
 }
 
 function trackGuild(guild: Guild) {
