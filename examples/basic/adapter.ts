@@ -1,5 +1,5 @@
 import { DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods } from '../../';
-import { VoiceChannel, Snowflake, Client, Constants } from 'discord.js';
+import { VoiceChannel, Snowflake, Client, Constants, WebSocketShard, Guild } from 'discord.js';
 import {
 	GatewayVoiceServerUpdateDispatchData,
 	GatewayVoiceStateUpdateDispatchData,
@@ -25,6 +25,29 @@ function trackClient(client: Client) {
 	});
 }
 
+const trackedGuilds = new Map<WebSocketShard, Set<Snowflake>>();
+
+function cleanupGuilds(shard: WebSocketShard) {
+	shard.once('close', () => {
+		const guilds = trackedGuilds.get(shard);
+		if (guilds?.values) {
+			for (const guildID of guilds.values()) {
+				adapters.get(guildID)?.destroy();
+			}
+		}
+	});
+}
+
+function trackGuild(guild: Guild) {
+	if (!trackedGuilds.has(guild.shard)) {
+		const cleanup = () => cleanupGuilds(guild.shard);
+		guild.shard.on('close', cleanup);
+		guild.shard.on('destroyed', cleanup);
+		trackedGuilds.set(guild.shard, new Set());
+	}
+	trackedGuilds.get(guild.shard)!.add(guild.id);
+}
+
 /**
  * Creates an adapter for a Voice Channel
  * @param channel The channel to create the adapter for
@@ -33,6 +56,7 @@ export function createDiscordJSAdapter(channel: VoiceChannel): DiscordGatewayAda
 	return (methods) => {
 		adapters.set(channel.guild.id, methods);
 		trackClient(channel.client);
+		trackGuild(channel.guild);
 		return {
 			sendPayload(data) {
 				return channel.guild.shard.send(data);
