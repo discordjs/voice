@@ -241,5 +241,6 @@ describe('VoiceConnection#onNetworkingClose', () => {
 		voiceConnection['onNetworkingClose'](1234);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(fakePayload);
+		expect(voiceConnection.reconnectAttempts).toBe(1);
 	});
 });

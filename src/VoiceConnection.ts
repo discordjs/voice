@@ -313,6 +313,7 @@ export class VoiceConnection extends EventEmitter {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
+			this.reconnectAttempts++;
 			this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig));
 		}
 	}
