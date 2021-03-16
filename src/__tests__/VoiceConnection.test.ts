@@ -1,10 +1,18 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { createVoiceConnection, VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
+import {
+	createVoiceConnection,
+	VoiceConnection,
+	VoiceConnectionConnectingState,
+	VoiceConnectionSignallingState,
+	VoiceConnectionStatus,
+} from '../VoiceConnection';
 import * as _DataStore from '../DataStore';
+import * as _Networking from '../networking/Networking';
 jest.mock('../DataStore');
 jest.mock('../networking/Networking');
 
 const DataStore = (_DataStore as unknown) as jest.Mocked<typeof _DataStore>;
+const Networking = (_Networking as unknown) as jest.Mocked<typeof _Networking>;
 
 function createFakeAdapter() {
 	const sendPayload = jest.fn();
@@ -141,5 +149,64 @@ describe('VoiceConnection#addStatePacket', () => {
 			selfMute: false,
 			channelId: '123',
 		});
+	});
+});
+
+describe('configureNetworking', () => {
+	test('Only creates Networking instance when both packets are present and not destroyed', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+
+		voiceConnection.configureNetworking();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+		const adapter = (voiceConnection.state as VoiceConnectionSignallingState).adapter;
+
+		const state = {
+			session_id: 'abc',
+			user_id: '123',
+		} as any;
+
+		const server = {
+			endpoint: 'def',
+			guild_id: '123',
+			token: 'xyz',
+		} as any;
+
+		Object.assign(voiceConnection['packets'], { state, server: undefined });
+		voiceConnection.configureNetworking();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+		expect(Networking.Networking).toHaveBeenCalledTimes(0);
+
+		Object.assign(voiceConnection['packets'], { state: undefined, server });
+		voiceConnection.configureNetworking();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+		expect(Networking.Networking).toHaveBeenCalledTimes(0);
+
+		Object.assign(voiceConnection['packets'], { state, server });
+		voiceConnection.state = { status: VoiceConnectionStatus.Destroyed };
+		voiceConnection.configureNetworking();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+		expect(Networking.Networking).toHaveBeenCalledTimes(0);
+
+		voiceConnection.state = { status: VoiceConnectionStatus.Signalling, adapter };
+		voiceConnection.configureNetworking();
+		expect(Networking.Networking).toHaveBeenCalledTimes(1);
+		expect(Networking.Networking).toHaveBeenCalledWith(
+			{
+				endpoint: server.endpoint,
+				serverID: server.guild_id,
+				token: server.token,
+				sessionID: state.session_id,
+				userID: state.user_id,
+			},
+			false,
+		);
+		expect(voiceConnection.state).toMatchObject({
+			status: VoiceConnectionStatus.Connecting,
+			adapter,
+		});
+		expect(((voiceConnection.state as unknown) as VoiceConnectionConnectingState).networking).toBeInstanceOf(
+			Networking.Networking,
+		);
 	});
 });
