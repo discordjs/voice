@@ -10,6 +10,7 @@ import * as _DataStore from '../DataStore';
 import * as _Networking from '../networking/Networking';
 import * as _AudioPlayer from '../audio/AudioPlayer';
 import { PlayerSubscription as _PlayerSubscription } from '../audio/PlayerSubscription';
+import type { DiscordGatewayAdapterLibraryMethods } from '../util/adapter';
 jest.mock('../audio/AudioPlayer');
 jest.mock('../audio/PlayerSubscription');
 jest.mock('../DataStore');
@@ -23,13 +24,18 @@ const PlayerSubscription = (_PlayerSubscription as unknown) as jest.Mock<_Player
 function createFakeAdapter() {
 	const sendPayload = jest.fn();
 	const destroy = jest.fn();
+	const libMethods: Partial<DiscordGatewayAdapterLibraryMethods> = {};
 	return {
 		sendPayload,
 		destroy,
-		creator: jest.fn(() => ({
-			sendPayload,
-			destroy,
-		})),
+		libMethods,
+		creator: jest.fn((methods) => {
+			Object.assign(libMethods, methods);
+			return {
+				sendPayload,
+				destroy,
+			};
+		}),
 	};
 }
 
@@ -436,5 +442,23 @@ describe('VoiceConnection#onSubscriptionRemoved', () => {
 			subscription: undefined,
 		});
 		expect(subscription.unsubscribe).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('Adapter', () => {
+	test('onVoiceServerUpdate', () => {
+		const { adapter, voiceConnection } = createFakeVoiceConnection();
+		voiceConnection['addServerPacket'] = jest.fn();
+		const dummy = Symbol('dummy') as any;
+		adapter.libMethods.onVoiceServerUpdate(dummy);
+		expect(voiceConnection['addServerPacket']).toHaveBeenCalledWith(dummy);
+	});
+
+	test('onVoiceStateUpdate', () => {
+		const { adapter, voiceConnection } = createFakeVoiceConnection();
+		voiceConnection['addStatePacket'] = jest.fn();
+		const dummy = Symbol('dummy') as any;
+		adapter.libMethods.onVoiceStateUpdate(dummy);
+		expect(voiceConnection['addStatePacket']).toHaveBeenCalledWith(dummy);
 	});
 });
