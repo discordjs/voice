@@ -9,13 +9,16 @@ import {
 import * as _DataStore from '../DataStore';
 import * as _Networking from '../networking/Networking';
 import * as _AudioPlayer from '../audio/AudioPlayer';
+import { PlayerSubscription as _PlayerSubscription } from '../audio/PlayerSubscription';
 jest.mock('../audio/AudioPlayer');
+jest.mock('../audio/PlayerSubscription');
 jest.mock('../DataStore');
 jest.mock('../networking/Networking');
 
 const DataStore = (_DataStore as unknown) as jest.Mocked<typeof _DataStore>;
 const Networking = (_Networking as unknown) as jest.Mocked<typeof _Networking>;
 const AudioPlayer = (_AudioPlayer as unknown) as jest.Mocked<typeof _AudioPlayer>;
+const PlayerSubscription = (_PlayerSubscription as unknown) as jest.Mock<_PlayerSubscription>;
 
 function createFakeAdapter() {
 	const sendPayload = jest.fn();
@@ -392,5 +395,39 @@ describe('VoiceConnection#subscribe', () => {
 			status: VoiceConnectionStatus.Signalling,
 			adapter,
 		});
+	});
+});
+
+describe('VoiceConnection#onSubscriptionRemoved', () => {
+	test('Does nothing in Destroyed state', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		voiceConnection.state = { status: VoiceConnectionStatus.Destroyed };
+		const dummy = Symbol('playerSubscription') as any;
+		voiceConnection['onSubscriptionRemoved'](dummy);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+	});
+
+	test('Does nothing when subscription is not the same as the stored one', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		const dummy = Symbol('playerSubscription') as any;
+		voiceConnection.state = { ...(voiceConnection.state as VoiceConnectionSignallingState), subscription: dummy };
+		voiceConnection['onSubscriptionRemoved'](Symbol('new subscription') as any);
+		expect(voiceConnection.state).toMatchObject({
+			status: VoiceConnectionStatus.Signalling,
+			subscription: dummy,
+		});
+	});
+
+	test('Unsubscribes in a live state with matching subscription', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		const subscription = new PlayerSubscription(voiceConnection, new AudioPlayer.AudioPlayer());
+		subscription.unsubscribe = jest.fn();
+		voiceConnection.state = { ...(voiceConnection.state as VoiceConnectionSignallingState), subscription };
+		voiceConnection['onSubscriptionRemoved'](subscription);
+		expect(voiceConnection.state).toEqual({
+			...voiceConnection.state,
+			subscription: undefined,
+		});
+		expect(subscription.unsubscribe).toHaveBeenCalledTimes(1);
 	});
 });
