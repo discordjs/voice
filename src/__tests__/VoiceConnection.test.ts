@@ -8,11 +8,14 @@ import {
 } from '../VoiceConnection';
 import * as _DataStore from '../DataStore';
 import * as _Networking from '../networking/Networking';
+import * as _AudioPlayer from '../audio/AudioPlayer';
+jest.mock('../audio/AudioPlayer');
 jest.mock('../DataStore');
 jest.mock('../networking/Networking');
 
 const DataStore = (_DataStore as unknown) as jest.Mocked<typeof _DataStore>;
 const Networking = (_Networking as unknown) as jest.Mocked<typeof _Networking>;
+const AudioPlayer = (_AudioPlayer as unknown) as jest.Mocked<typeof _AudioPlayer>;
 
 function createFakeAdapter() {
 	const sendPayload = jest.fn();
@@ -363,5 +366,31 @@ describe('VoiceConnection#reconnect', () => {
 		expect(voiceConnection.reconnectAttempts).toBe(1);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(fake);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+	});
+});
+
+describe('VoiceConnection#subscribe', () => {
+	test('Does nothing in Destroyed state', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		const player = new AudioPlayer.AudioPlayer();
+		player['subscribe'] = jest.fn();
+		voiceConnection.state = { status: VoiceConnectionStatus.Destroyed };
+		expect(voiceConnection.subscribe(player)).toBeUndefined();
+		expect(player['subscribe']).not.toHaveBeenCalled();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+	});
+
+	test('Subscribes in a live state', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		const adapter = (voiceConnection.state as VoiceConnectionSignallingState).adapter;
+		const player = new AudioPlayer.AudioPlayer();
+		const fake = Symbol('fake');
+		player['subscribe'] = jest.fn().mockImplementation(() => fake);
+		expect(voiceConnection.subscribe(player)).toBe(fake);
+		expect(player['subscribe']).toHaveBeenCalledWith(voiceConnection);
+		expect(voiceConnection.state).toMatchObject({
+			status: VoiceConnectionStatus.Signalling,
+			adapter,
+		});
 	});
 });
