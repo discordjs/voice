@@ -2,6 +2,7 @@
 import { createVoiceConnection, VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import * as _DataStore from '../DataStore';
 jest.mock('../DataStore');
+jest.mock('../networking/Networking');
 
 const DataStore = (_DataStore as unknown) as jest.Mocked<typeof _DataStore>;
 
@@ -25,6 +26,16 @@ function createJoinConfig() {
 		selfDeaf: true,
 		selfMute: false,
 	};
+}
+
+function createFakeVoiceConnection() {
+	const adapter = createFakeAdapter();
+	const joinConfig = createJoinConfig();
+	const voiceConnection = new VoiceConnection(joinConfig, {
+		debug: false,
+		adapterCreator: adapter.creator,
+	});
+	return { adapter, joinConfig, voiceConnection };
 }
 
 beforeEach(() => {
@@ -87,12 +98,7 @@ describe('createVoiceConnection', () => {
 
 describe('VoiceConnection#addServerPacket', () => {
 	test('Stores the packet and attempts to configure networking', () => {
-		const adapter = createFakeAdapter();
-		const joinConfig = createJoinConfig();
-		const voiceConnection = new VoiceConnection(joinConfig, {
-			debug: false,
-			adapterCreator: adapter.creator,
-		});
+		const { voiceConnection } = createFakeVoiceConnection();
 		voiceConnection.configureNetworking = jest.fn();
 		const fake = Symbol('fake') as any;
 		voiceConnection['addServerPacket'](fake);
@@ -101,12 +107,7 @@ describe('VoiceConnection#addServerPacket', () => {
 	});
 
 	test('Overwrites existing packet', () => {
-		const adapter = createFakeAdapter();
-		const joinConfig = createJoinConfig();
-		const voiceConnection = new VoiceConnection(joinConfig, {
-			debug: false,
-			adapterCreator: adapter.creator,
-		});
+		const { voiceConnection } = createFakeVoiceConnection();
 		voiceConnection['packets'].server = Symbol('old') as any;
 		voiceConnection.configureNetworking = jest.fn();
 		const fake = Symbol('fake') as any;
@@ -118,13 +119,7 @@ describe('VoiceConnection#addServerPacket', () => {
 
 describe('VoiceConnection#addStatePacket', () => {
 	test('State is assigned to joinConfig', () => {
-		const adapter = createFakeAdapter();
-		const joinConfig = createJoinConfig();
-		const voiceConnection = new VoiceConnection(joinConfig, {
-			debug: false,
-			adapterCreator: adapter.creator,
-		});
-
+		const { voiceConnection } = createFakeVoiceConnection();
 		voiceConnection['addStatePacket']({
 			self_deaf: true,
 			self_mute: true,
