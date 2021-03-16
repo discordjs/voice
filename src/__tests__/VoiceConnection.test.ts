@@ -114,9 +114,9 @@ describe('VoiceConnection#addServerPacket', () => {
 	test('Stores the packet and attempts to configure networking', () => {
 		const { voiceConnection } = createFakeVoiceConnection();
 		voiceConnection.configureNetworking = jest.fn();
-		const fake = Symbol('fake') as any;
-		voiceConnection['addServerPacket'](fake);
-		expect(voiceConnection['packets'].server).toBe(fake);
+		const dummy = Symbol('dummy') as any;
+		voiceConnection['addServerPacket'](dummy);
+		expect(voiceConnection['packets'].server).toBe(dummy);
 		expect(voiceConnection.configureNetworking).toHaveBeenCalled();
 	});
 
@@ -124,9 +124,9 @@ describe('VoiceConnection#addServerPacket', () => {
 		const { voiceConnection } = createFakeVoiceConnection();
 		voiceConnection['packets'].server = Symbol('old') as any;
 		voiceConnection.configureNetworking = jest.fn();
-		const fake = Symbol('fake') as any;
-		voiceConnection['addServerPacket'](fake);
-		expect(voiceConnection['packets'].server).toBe(fake);
+		const dummy = Symbol('dummy') as any;
+		voiceConnection['addServerPacket'](dummy);
+		expect(voiceConnection['packets'].server).toBe(dummy);
 		expect(voiceConnection.configureNetworking).toHaveBeenCalled();
 	});
 });
@@ -239,14 +239,14 @@ describe('VoiceConnection#onNetworkingClose', () => {
 	});
 
 	test('Attempts reconnect for codes != 4014', () => {
-		const fakePayload = Symbol('fake') as any;
+		const dummyPayload = Symbol('dummy') as any;
 		const { voiceConnection, adapter, joinConfig } = createFakeVoiceConnection();
 		DataStore.createJoinVoiceChannelPayload.mockImplementation((config) =>
-			config === joinConfig ? fakePayload : undefined,
+			config === joinConfig ? dummyPayload : undefined,
 		);
 		voiceConnection['onNetworkingClose'](1234);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
-		expect(adapter.sendPayload).toHaveBeenCalledWith(fakePayload);
+		expect(adapter.sendPayload).toHaveBeenCalledWith(dummyPayload);
 		expect(voiceConnection.reconnectAttempts).toBe(1);
 	});
 });
@@ -331,8 +331,8 @@ describe('VoiceConnection#destroy', () => {
 		DataStore.getVoiceConnection.mockImplementation((guildId) =>
 			joinConfig.guildId === guildId ? voiceConnection : undefined,
 		);
-		const fake = Symbol('fake');
-		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => fake as any);
+		const dummy = Symbol('dummy');
+		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => dummy as any);
 		voiceConnection.destroy();
 		expect(DataStore.getVoiceConnection).toHaveReturnedWith(voiceConnection);
 		expect(DataStore.untrackVoiceConnection).toHaveBeenCalledWith(joinConfig.guildId);
@@ -340,7 +340,7 @@ describe('VoiceConnection#destroy', () => {
 			channelId: null,
 			guildId: joinConfig.guildId,
 		});
-		expect(adapter.sendPayload).toHaveBeenCalledWith(fake);
+		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
 	});
 });
@@ -356,8 +356,8 @@ describe('VoiceConnection#reconnect', () => {
 	});
 
 	test('Reconnects in a disconnected state', () => {
-		const fake = Symbol('fake') as any;
-		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => fake);
+		const dummy = Symbol('dummy') as any;
+		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => dummy);
 
 		const { voiceConnection, adapter } = createFakeVoiceConnection();
 		voiceConnection.state = {
@@ -367,7 +367,7 @@ describe('VoiceConnection#reconnect', () => {
 		};
 		expect(voiceConnection.reconnect()).toBe(true);
 		expect(voiceConnection.reconnectAttempts).toBe(1);
-		expect(adapter.sendPayload).toHaveBeenCalledWith(fake);
+		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
 	});
 });
@@ -387,9 +387,9 @@ describe('VoiceConnection#subscribe', () => {
 		const { voiceConnection } = createFakeVoiceConnection();
 		const adapter = (voiceConnection.state as VoiceConnectionSignallingState).adapter;
 		const player = new AudioPlayer.AudioPlayer();
-		const fake = Symbol('fake');
-		player['subscribe'] = jest.fn().mockImplementation(() => fake);
-		expect(voiceConnection.subscribe(player)).toBe(fake);
+		const dummy = Symbol('dummy');
+		player['subscribe'] = jest.fn().mockImplementation(() => dummy);
+		expect(voiceConnection.subscribe(player)).toBe(dummy);
 		expect(player['subscribe']).toHaveBeenCalledWith(voiceConnection);
 		expect(voiceConnection.state).toMatchObject({
 			status: VoiceConnectionStatus.Signalling,
