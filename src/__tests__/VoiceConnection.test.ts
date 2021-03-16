@@ -338,3 +338,30 @@ describe('VoiceConnection#destroy', () => {
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
 	});
 });
+
+describe('VoiceConnection#reconnect', () => {
+	test('Does nothing in a non-disconnected state', () => {
+		const { voiceConnection, adapter } = createFakeVoiceConnection();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+		expect(voiceConnection.reconnect()).toBe(false);
+		expect(voiceConnection.reconnectAttempts).toBe(0);
+		expect(adapter.sendPayload).not.toHaveBeenCalled();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+	});
+
+	test('Reconnects in a disconnected state', () => {
+		const fake = Symbol('fake') as any;
+		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => fake);
+
+		const { voiceConnection, adapter } = createFakeVoiceConnection();
+		voiceConnection.state = {
+			...(voiceConnection.state as VoiceConnectionSignallingState),
+			status: VoiceConnectionStatus.Disconnected,
+			closeCode: 1000,
+		};
+		expect(voiceConnection.reconnect()).toBe(true);
+		expect(voiceConnection.reconnectAttempts).toBe(1);
+		expect(adapter.sendPayload).toHaveBeenCalledWith(fake);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+	});
+});
