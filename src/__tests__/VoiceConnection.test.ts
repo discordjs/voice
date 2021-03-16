@@ -244,3 +244,71 @@ describe('VoiceConnection#onNetworkingClose', () => {
 		expect(voiceConnection.reconnectAttempts).toBe(1);
 	});
 });
+
+describe('VoiceConnection#onNetworkingStateChange', () => {
+	test('Does nothing when status code identical', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		const stateSetter = jest.spyOn(voiceConnection, 'state', 'set');
+		voiceConnection['onNetworkingStateChange'](
+			{ code: _Networking.NetworkingStatusCode.Ready } as any,
+			{ code: _Networking.NetworkingStatusCode.Ready } as any,
+		);
+		voiceConnection['onNetworkingStateChange'](
+			{ code: _Networking.NetworkingStatusCode.Closed } as any,
+			{ code: _Networking.NetworkingStatusCode.Closed } as any,
+		);
+		expect(stateSetter).not.toHaveBeenCalled();
+	});
+
+	test('Does nothing when not in Ready or Connecting states', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		const stateSetter = jest.spyOn(voiceConnection, 'state', 'set');
+		const call = [
+			{ code: _Networking.NetworkingStatusCode.Ready } as any,
+			{ code: _Networking.NetworkingStatusCode.Closed } as any,
+		];
+		voiceConnection['_state'] = { status: VoiceConnectionStatus.Signalling } as any;
+		voiceConnection['onNetworkingStateChange'](call[0], call[1]);
+		voiceConnection['_state'] = { status: VoiceConnectionStatus.Disconnected } as any;
+		voiceConnection['onNetworkingStateChange'](call[0], call[1]);
+		voiceConnection['_state'] = { status: VoiceConnectionStatus.Destroyed } as any;
+		voiceConnection['onNetworkingStateChange'](call[0], call[1]);
+		expect(stateSetter).not.toHaveBeenCalled();
+	});
+
+	test('Transitions to Ready', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		const stateSetter = jest.spyOn(voiceConnection, 'state', 'set');
+		voiceConnection['_state'] = {
+			...(voiceConnection.state as VoiceConnectionSignallingState),
+			status: VoiceConnectionStatus.Connecting,
+			networking: new Networking.Networking({} as any, false),
+		};
+
+		voiceConnection['onNetworkingStateChange'](
+			{ code: _Networking.NetworkingStatusCode.Closed } as any,
+			{ code: _Networking.NetworkingStatusCode.Ready } as any,
+		);
+
+		expect(stateSetter).toHaveBeenCalledTimes(1);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Ready);
+	});
+
+	test('Transitions to Connecting', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		const stateSetter = jest.spyOn(voiceConnection, 'state', 'set');
+		voiceConnection['_state'] = {
+			...(voiceConnection.state as VoiceConnectionSignallingState),
+			status: VoiceConnectionStatus.Connecting,
+			networking: new Networking.Networking({} as any, false),
+		};
+
+		voiceConnection['onNetworkingStateChange'](
+			{ code: _Networking.NetworkingStatusCode.Ready } as any,
+			{ code: _Networking.NetworkingStatusCode.Identifying } as any,
+		);
+
+		expect(stateSetter).toHaveBeenCalledTimes(1);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Connecting);
+	});
+});
