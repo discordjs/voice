@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { createVoiceConnection, VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import * as _DataStore from '../DataStore';
 jest.mock('../DataStore');
@@ -81,5 +82,36 @@ describe('createVoiceConnection', () => {
 		expect(existingAdapter.sendPayload).toHaveBeenCalledWith(mockPayload);
 		expect(newVoiceConnection).toBe(existingVoiceConnection);
 		expect(stateSetter).not.toHaveBeenCalled();
+	});
+});
+
+describe('VoiceConnection#addServerPacket', () => {
+	test('Stores the packet and attempts to configure networking', () => {
+		const adapter = createFakeAdapter();
+		const joinConfig = createJoinConfig();
+		const voiceConnection = new VoiceConnection(joinConfig, {
+			debug: false,
+			adapterCreator: adapter.creator,
+		});
+		voiceConnection.configureNetworking = jest.fn();
+		const fake = Symbol('fake') as any;
+		voiceConnection['addServerPacket'](fake);
+		expect(voiceConnection['packets'].server).toBe(fake);
+		expect(voiceConnection.configureNetworking).toHaveBeenCalled();
+	});
+
+	test('Overwrites existing packet', () => {
+		const adapter = createFakeAdapter();
+		const joinConfig = createJoinConfig();
+		const voiceConnection = new VoiceConnection(joinConfig, {
+			debug: false,
+			adapterCreator: adapter.creator,
+		});
+		voiceConnection['packets'].server = Symbol('old') as any;
+		voiceConnection.configureNetworking = jest.fn();
+		const fake = Symbol('fake') as any;
+		voiceConnection['addServerPacket'](fake);
+		expect(voiceConnection['packets'].server).toBe(fake);
+		expect(voiceConnection.configureNetworking).toHaveBeenCalled();
 	});
 });
