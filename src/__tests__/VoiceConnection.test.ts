@@ -115,3 +115,36 @@ describe('VoiceConnection#addServerPacket', () => {
 		expect(voiceConnection.configureNetworking).toHaveBeenCalled();
 	});
 });
+
+describe('VoiceConnection#addStatePacket', () => {
+	test('State is assigned to joinConfig', () => {
+		const adapter = createFakeAdapter();
+		const joinConfig = createJoinConfig();
+		const voiceConnection = new VoiceConnection(joinConfig, {
+			debug: false,
+			adapterCreator: adapter.creator,
+		});
+
+		voiceConnection['addStatePacket']({
+			self_deaf: true,
+			self_mute: true,
+			channel_id: '123',
+		} as any);
+
+		expect(voiceConnection.joinConfig).toMatchObject({
+			selfDeaf: true,
+			selfMute: true,
+			channelId: '123',
+		});
+
+		voiceConnection['addStatePacket']({
+			self_mute: false,
+		} as any);
+
+		expect(voiceConnection.joinConfig).toMatchObject({
+			selfDeaf: true,
+			selfMute: false,
+			channelId: '123',
+		});
+	});
+});
