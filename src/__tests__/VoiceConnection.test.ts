@@ -152,7 +152,7 @@ describe('VoiceConnection#addStatePacket', () => {
 	});
 });
 
-describe('configureNetworking', () => {
+describe('VoiceConnection#configureNetworking', () => {
 	test('Only creates Networking instance when both packets are present and not destroyed', () => {
 		const { voiceConnection } = createFakeVoiceConnection();
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
@@ -208,5 +208,38 @@ describe('configureNetworking', () => {
 		expect(((voiceConnection.state as unknown) as VoiceConnectionConnectingState).networking).toBeInstanceOf(
 			Networking.Networking,
 		);
+	});
+});
+
+describe('VoiceConnection#onNetworkingClose', () => {
+	test('Does nothing in destroyed state', () => {
+		const { voiceConnection, adapter } = createFakeVoiceConnection();
+		voiceConnection.state = {
+			status: VoiceConnectionStatus.Destroyed,
+		};
+		voiceConnection['onNetworkingClose'](1000);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+		expect(adapter.sendPayload).not.toHaveBeenCalled();
+	});
+
+	test('Disconnects for code 4014', () => {
+		const { voiceConnection, adapter } = createFakeVoiceConnection();
+		voiceConnection['onNetworkingClose'](4014);
+		expect(voiceConnection.state).toMatchObject({
+			status: VoiceConnectionStatus.Disconnected,
+			closeCode: 4014,
+		});
+		expect(adapter.sendPayload).not.toHaveBeenCalled();
+	});
+
+	test('Attempts reconnect for codes != 4014', () => {
+		const fakePayload = Symbol('fake') as any;
+		const { voiceConnection, adapter, joinConfig } = createFakeVoiceConnection();
+		DataStore.createJoinVoiceChannelPayload.mockImplementation((config) =>
+			config === joinConfig ? fakePayload : undefined,
+		);
+		voiceConnection['onNetworkingClose'](1234);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+		expect(adapter.sendPayload).toHaveBeenCalledWith(fakePayload);
 	});
 });
