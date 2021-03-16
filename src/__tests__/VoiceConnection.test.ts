@@ -401,27 +401,34 @@ describe('VoiceConnection#subscribe', () => {
 describe('VoiceConnection#onSubscriptionRemoved', () => {
 	test('Does nothing in Destroyed state', () => {
 		const { voiceConnection } = createFakeVoiceConnection();
+		const subscription = new PlayerSubscription(voiceConnection, new AudioPlayer.AudioPlayer());
+		subscription.unsubscribe = jest.fn();
+
 		voiceConnection.state = { status: VoiceConnectionStatus.Destroyed };
-		const dummy = Symbol('playerSubscription') as any;
-		voiceConnection['onSubscriptionRemoved'](dummy);
+		voiceConnection['onSubscriptionRemoved'](subscription);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+		expect(subscription.unsubscribe).not.toHaveBeenCalled();
 	});
 
 	test('Does nothing when subscription is not the same as the stored one', () => {
 		const { voiceConnection } = createFakeVoiceConnection();
-		const dummy = Symbol('playerSubscription') as any;
-		voiceConnection.state = { ...(voiceConnection.state as VoiceConnectionSignallingState), subscription: dummy };
+		const subscription = new PlayerSubscription(voiceConnection, new AudioPlayer.AudioPlayer());
+		subscription.unsubscribe = jest.fn();
+
+		voiceConnection.state = { ...(voiceConnection.state as VoiceConnectionSignallingState), subscription };
 		voiceConnection['onSubscriptionRemoved'](Symbol('new subscription') as any);
 		expect(voiceConnection.state).toMatchObject({
 			status: VoiceConnectionStatus.Signalling,
-			subscription: dummy,
+			subscription,
 		});
+		expect(subscription.unsubscribe).not.toHaveBeenCalled();
 	});
 
 	test('Unsubscribes in a live state with matching subscription', () => {
 		const { voiceConnection } = createFakeVoiceConnection();
 		const subscription = new PlayerSubscription(voiceConnection, new AudioPlayer.AudioPlayer());
 		subscription.unsubscribe = jest.fn();
+
 		voiceConnection.state = { ...(voiceConnection.state as VoiceConnectionSignallingState), subscription };
 		voiceConnection['onSubscriptionRemoved'](subscription);
 		expect(voiceConnection.state).toEqual({
