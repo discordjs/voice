@@ -312,3 +312,29 @@ describe('VoiceConnection#onNetworkingStateChange', () => {
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Connecting);
 	});
 });
+
+describe('VoiceConnection#destroy', () => {
+	test('Throws when in Destroyed state', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		voiceConnection.state = { status: VoiceConnectionStatus.Destroyed };
+		expect(() => voiceConnection.destroy()).toThrow();
+	});
+
+	test('Cleans up in a valid, destroyable state', () => {
+		const { voiceConnection, joinConfig, adapter } = createFakeVoiceConnection();
+		DataStore.getVoiceConnection.mockImplementation((guildId) =>
+			joinConfig.guildId === guildId ? voiceConnection : undefined,
+		);
+		const fake = Symbol('fake');
+		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => fake as any);
+		voiceConnection.destroy();
+		expect(DataStore.getVoiceConnection).toHaveReturnedWith(voiceConnection);
+		expect(DataStore.untrackVoiceConnection).toHaveBeenCalledWith(joinConfig.guildId);
+		expect(DataStore.createJoinVoiceChannelPayload.mock.calls[0][0]).toMatchObject({
+			channelId: null,
+			guildId: joinConfig.guildId,
+		});
+		expect(adapter.sendPayload).toHaveBeenCalledWith(fake);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+	});
+});
