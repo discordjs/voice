@@ -34,7 +34,7 @@ export class VoiceWebSocket extends EventEmitter {
 	/**
 	 * The last recorded ping.
 	 */
-	private ping?: number;
+	public ping?: number;
 
 	/**
 	 * The debug logger function, if debugging is enabled.
