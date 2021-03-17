@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
  * Stores an IP address and port. Used to store socket details for the local client as well as
  * for Discord.
  */
-interface SocketConfig {
+export interface SocketConfig {
 	ip: string;
 	port: number;
 }
@@ -60,8 +60,11 @@ export class VoiceUDPSocket extends EventEmitter {
 	public performIPDiscovery(ssrc: number): Promise<SocketConfig> {
 		return new Promise((resolve, reject) => {
 			const listener = (message: Buffer) => {
-				resolve(parseLocalPacket(message));
-				this.socket.removeListener('message', listener);
+				try {
+					const packet = parseLocalPacket(message);
+					this.socket.removeListener('message', listener);
+					resolve(packet);
+				} catch {}
 			};
 
 			this.socket.on('message', listener);
@@ -74,16 +77,27 @@ export class VoiceUDPSocket extends EventEmitter {
 	}
 }
 
+const IPV4_REGEX = new RegExp(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/);
+
 /**
  * Parses the response from Discord to aid with local IP discovery.
  *
  * @param message - The received message
  */
-function parseLocalPacket(message: Buffer): SocketConfig {
+export function parseLocalPacket(message: Buffer): SocketConfig {
 	// todo, this function can throw
 	const packet = Buffer.from(message);
 	let ip = '';
 	for (let i = 4; i < packet.indexOf(0, i); i++) ip += String.fromCharCode(packet[i]);
 	const port = parseInt(packet.readUIntLE(packet.length - 2, 2).toString(10), 10);
+
+	if (!IPV4_REGEX.exec(ip)) {
+		throw new Error('Malformed IP address');
+	}
+
+	if (!port || isNaN(port)) {
+		throw new Error('Malformed packet');
+	}
+
 	return { ip, port };
 }
