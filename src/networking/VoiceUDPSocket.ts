@@ -1,5 +1,6 @@
 import { createSocket, Socket } from 'dgram';
 import { EventEmitter } from 'events';
+import { isIPv4 } from 'net';
 
 /**
  * Stores an IP address and port. Used to store socket details for the local client as well as
@@ -77,27 +78,21 @@ export class VoiceUDPSocket extends EventEmitter {
 	}
 }
 
-const IPV4_REGEX = new RegExp(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/);
-
 /**
  * Parses the response from Discord to aid with local IP discovery.
  *
  * @param message - The received message
  */
 export function parseLocalPacket(message: Buffer): SocketConfig {
-	// todo, this function can throw
 	const packet = Buffer.from(message);
 	let ip = '';
 	for (let i = 4; i < packet.indexOf(0, i); i++) ip += String.fromCharCode(packet[i]);
-	const port = parseInt(packet.readUIntLE(packet.length - 2, 2).toString(10), 10);
 
-	if (!IPV4_REGEX.exec(ip)) {
+	if (!isIPv4(ip)) {
 		throw new Error('Malformed IP address');
 	}
 
-	if (!port || isNaN(port)) {
-		throw new Error('Malformed packet');
-	}
+	const port = parseInt(packet.readUIntLE(packet.length - 2, 2).toString(10), 10);
 
 	return { ip, port };
 }
