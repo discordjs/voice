@@ -1,4 +1,5 @@
 import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
+import EventEmitter from 'events';
 import WebSocket, { MessageEvent } from 'ws';
 
 /**
@@ -12,7 +13,7 @@ import WebSocket, { MessageEvent } from 'ws';
  * An extension of the WebSocket class to provide helper functionality when interacting
  * with the Discord Voice gateway.
  */
-export class VoiceWebSocket extends WebSocket {
+export class VoiceWebSocket extends EventEmitter {
 	/**
 	 * The current heartbeat interval, if any
 	 */
@@ -25,9 +26,30 @@ export class VoiceWebSocket extends WebSocket {
 	private lastHeartbeatAck: number;
 
 	/**
+	 * The time (milliseconds since UNIX epoch) that the last heartbeat was sent. This is set to 0 if a heartbeat
+	 * hasn't been sent yet.
+	 */
+	private lastHeatbeatSend: number;
+
+	/**
+	 * The number of consecutively missed heartbeats.
+	 */
+	private missedHeartbeats = 0;
+
+	/**
+	 * The last recorded ping.
+	 */
+	public ping?: number;
+
+	/**
 	 * The debug logger function, if debugging is enabled.
 	 */
 	private readonly debug: null | ((message: string) => void);
+
+	/**
+	 * The underlying WebSocket of this wrapper
+	 */
+	private readonly ws: WebSocket;
 
 	/**
 	 * Creates a new VoiceWebSocket
@@ -35,9 +57,16 @@ export class VoiceWebSocket extends WebSocket {
 	 * @param address - The address to connect to
 	 */
 	public constructor(address: string, debug: boolean) {
-		super(address);
+		super();
+		this.ws = new WebSocket(address);
+		this.ws.onmessage = (e) => this.onMessage(e);
+		this.ws.onopen = (e) => this.emit('open', e);
+		this.ws.onerror = (e) => this.emit('error', e);
+		this.ws.onclose = (e) => this.emit('close', e);
+
 		this.lastHeartbeatAck = 0;
-		this.onmessage = (e) => this.onMessage(e);
+		this.lastHeatbeatSend = 0;
+
 		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 	}
 
@@ -48,7 +77,7 @@ export class VoiceWebSocket extends WebSocket {
 		try {
 			this.debug?.('destroyed');
 			this.setHeartbeatInterval(-1);
-			this.close(1000);
+			this.ws.close(1000);
 		} catch (error) {
 			this.emit('error', error);
 		}
@@ -75,6 +104,8 @@ export class VoiceWebSocket extends WebSocket {
 
 		if (packet.op === VoiceOPCodes.HeartbeatAck) {
 			this.lastHeartbeatAck = Date.now();
+			this.missedHeartbeats = 0;
+			this.ping = this.lastHeartbeatAck - this.lastHeatbeatSend;
 		}
 
 		/**
@@ -95,7 +126,7 @@ export class VoiceWebSocket extends WebSocket {
 		try {
 			const stringified = JSON.stringify(packet);
 			this.debug?.(`>> ${stringified}`);
-			return this.send(stringified);
+			return this.ws.send(stringified);
 		} catch (error) {
 			this.emit('error', error);
 		}
@@ -105,7 +136,9 @@ export class VoiceWebSocket extends WebSocket {
 	 * Sends a heartbeat over the WebSocket
 	 */
 	private sendHeartbeat() {
-		const nonce = Date.now();
+		this.lastHeatbeatSend = Date.now();
+		this.missedHeartbeats++;
+		const nonce = this.lastHeatbeatSend;
 		return this.sendPacket({
 			op: VoiceOPCodes.Heartbeat,
 			d: nonce,
@@ -121,9 +154,10 @@ export class VoiceWebSocket extends WebSocket {
 		if (typeof this.heartbeatInterval !== 'undefined') clearInterval(this.heartbeatInterval);
 		if (ms > 0) {
 			this.heartbeatInterval = setInterval(() => {
-				if (this.lastHeartbeatAck !== 0 && Date.now() - this.lastHeartbeatAck >= 3 * ms) {
+				if (this.lastHeatbeatSend !== 0 && this.missedHeartbeats >= 3) {
 					// Missed too many heartbeats - disconnect
-					this.close();
+					this.ws.close();
+					this.setHeartbeatInterval(-1);
 				}
 				this.sendHeartbeat();
 			}, ms);

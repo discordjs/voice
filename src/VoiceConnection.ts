@@ -471,6 +471,24 @@ export class VoiceConnection extends EventEmitter {
 	}
 
 	/**
+	 * The latest ping (in milliseconds) for the WebSocket connection for this voice connection, if this
+	 * data is available.
+	 *
+	 * @remarks
+	 * For this data to be available, the VoiceConnection must be in the Ready state, and its underlying
+	 * WebSocket connection must have had at least one ping-pong exchange.
+	 */
+	public get ping() {
+		if (
+			this.state.status === VoiceConnectionStatus.Ready &&
+			this.state.networking.state.code === NetworkingStatusCode.Ready &&
+			typeof this.state.networking.state.ws.ping !== 'undefined'
+		) {
+			return this.state.networking.state.ws.ping;
+		}
+	}
+
+	/**
 	 * Called when a subscription of this voice connection to an audio player is removed.
 	 *
 	 * @param subscription - The removed subscription
