@@ -1,3 +1,4 @@
+import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
 import EventEmitter, { once } from 'events';
 import WS from 'jest-websocket-mock';
 import { VoiceWebSocket } from '../VoiceWebSocket';
@@ -9,6 +10,13 @@ beforeEach(() => {
 function onceIgnoreError<T extends EventEmitter>(target: T, event: string) {
 	return new Promise((resolve) => {
 		target.on(event, resolve);
+	});
+}
+
+function onceOrThrow<T extends EventEmitter>(target: T, event: string, after: number) {
+	return new Promise((resolve, reject) => {
+		target.on(event, resolve);
+		setTimeout(() => reject(new Error('Time up')), after);
 	});
 }
 
@@ -71,5 +79,41 @@ describe('VoiceWebSocket: event propagation', () => {
 		server.error();
 		await expect(rcvError).resolves.toBeTruthy();
 		await expect(rcvClose).resolves.toBeTruthy();
+	});
+});
+
+describe('VoiceWebSocket: heartbeating', () => {
+	test('Normal heartbeat flow', async () => {
+		const endpoint = 'ws://localhost:1234';
+		const server = new WS(endpoint, { jsonProtocol: true });
+		const ws = new VoiceWebSocket(endpoint, false);
+		await server.connected;
+		const rcv = onceOrThrow(ws, 'close', 750);
+		ws.setHeartbeatInterval(50);
+		for (let i = 0; i < 10; i++) {
+			const packet: any = await server.nextMessage;
+			expect(packet).toMatchObject({
+				op: VoiceOPCodes.Heartbeat,
+			});
+			server.send({
+				op: VoiceOPCodes.HeartbeatAck,
+				d: packet.d,
+			});
+		}
+		ws.setHeartbeatInterval(-1);
+		await expect(rcv).rejects.toThrowError();
+	});
+
+	test('Closes when no ack is received', async () => {
+		const endpoint = 'ws://localhost:1234';
+		const server = new WS(endpoint, { jsonProtocol: true });
+		const ws = new VoiceWebSocket(endpoint, false);
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		ws.on('error', () => {});
+		await server.connected;
+		const rcv = onceIgnoreError(ws, 'close');
+		ws.setHeartbeatInterval(50);
+		await expect(rcv).resolves.toBeTruthy();
+		expect(server.messages.length).toBe(3);
 	});
 });
