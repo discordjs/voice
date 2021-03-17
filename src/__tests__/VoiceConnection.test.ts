@@ -461,4 +461,11 @@ describe('Adapter', () => {
 		adapter.libMethods.onVoiceStateUpdate(dummy);
 		expect(voiceConnection['addStatePacket']).toHaveBeenCalledWith(dummy);
 	});
+
+	test('destroy', () => {
+		const { adapter, voiceConnection } = createFakeVoiceConnection();
+		adapter.libMethods.destroy();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+		expect(adapter.sendPayload).not.toHaveBeenCalled();
+	});
 });
