@@ -32,6 +32,11 @@ export class VoiceWebSocket extends EventEmitter {
 	private lastHeatbeatSend: number;
 
 	/**
+	 * The number of consecutively missed heartbeats.
+	 */
+	private missedHeartbeats = 0;
+
+	/**
 	 * The last recorded ping.
 	 */
 	public ping?: number;
@@ -99,6 +104,7 @@ export class VoiceWebSocket extends EventEmitter {
 
 		if (packet.op === VoiceOPCodes.HeartbeatAck) {
 			this.lastHeartbeatAck = Date.now();
+			this.missedHeartbeats = 0;
 			this.ping = this.lastHeartbeatAck - this.lastHeatbeatSend;
 		}
 
@@ -131,6 +137,7 @@ export class VoiceWebSocket extends EventEmitter {
 	 */
 	private sendHeartbeat() {
 		this.lastHeatbeatSend = Date.now();
+		this.missedHeartbeats++;
 		const nonce = this.lastHeatbeatSend;
 		return this.sendPacket({
 			op: VoiceOPCodes.Heartbeat,
@@ -147,9 +154,10 @@ export class VoiceWebSocket extends EventEmitter {
 		if (typeof this.heartbeatInterval !== 'undefined') clearInterval(this.heartbeatInterval);
 		if (ms > 0) {
 			this.heartbeatInterval = setInterval(() => {
-				if (this.lastHeartbeatAck !== 0 && Date.now() - this.lastHeartbeatAck >= 3 * ms) {
+				if (this.lastHeatbeatSend !== 0 && this.missedHeartbeats >= 3) {
 					// Missed too many heartbeats - disconnect
 					this.ws.close();
+					this.setHeartbeatInterval(-1);
 				}
 				this.sendHeartbeat();
 			}, ms);

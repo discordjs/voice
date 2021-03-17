@@ -4,6 +4,7 @@ import { VoiceUDPSocket } from './VoiceUDPSocket';
 import { VoiceWebSocket } from './VoiceWebSocket';
 import * as secretbox from '../util/Secretbox';
 import { noop } from '../util/util';
+import { CloseEvent } from 'ws';
 
 // The number of audio channels required by Discord
 const CHANNELS = 2;
@@ -302,7 +303,7 @@ export class Networking extends EventEmitter {
 	 *
 	 * @param code - The close code
 	 */
-	private onWsClose(code: number) {
+	private onWsClose({ code }: CloseEvent) {
 		const canResume = code === 4015 || code < 4000;
 		if (canResume && this.state.code === NetworkingStatusCode.Ready) {
 			this.state = {
