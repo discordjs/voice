@@ -156,8 +156,8 @@ export class VoiceConnection extends EventEmitter {
 		this.onNetworkingDebug = this.onNetworkingDebug.bind(this);
 
 		const adapter = adapterCreator({
-			onVoiceServerUpdate: this.addServerPacket.bind(this),
-			onVoiceStateUpdate: this.addStatePacket.bind(this),
+			onVoiceServerUpdate: (data) => this.addServerPacket(data),
+			onVoiceStateUpdate: (data) => this.addStatePacket(data),
 			destroy: () => this.destroy(false),
 		});
 
@@ -314,6 +314,7 @@ export class VoiceConnection extends EventEmitter {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
+			this.reconnectAttempts++;
 			this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig));
 		}
 	}
