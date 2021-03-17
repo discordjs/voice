@@ -99,6 +99,7 @@ describe('VoiceWebSocket: heartbeating', () => {
 				op: VoiceOPCodes.HeartbeatAck,
 				d: packet.d,
 			});
+			expect(ws.ping).toBeGreaterThanOrEqual(0);
 		}
 		ws.setHeartbeatInterval(-1);
 		await expect(rcv).rejects.toThrowError();
@@ -114,6 +115,7 @@ describe('VoiceWebSocket: heartbeating', () => {
 		const rcv = onceIgnoreError(ws, 'close');
 		ws.setHeartbeatInterval(50);
 		await expect(rcv).resolves.toBeTruthy();
+		expect(ws.ping).toBe(undefined);
 		expect(server.messages.length).toBe(3);
 	});
 });
