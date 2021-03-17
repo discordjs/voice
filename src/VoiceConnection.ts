@@ -156,8 +156,9 @@ export class VoiceConnection extends EventEmitter {
 		this.onNetworkingDebug = this.onNetworkingDebug.bind(this);
 
 		const adapter = adapterCreator({
-			onVoiceServerUpdate: this.addServerPacket.bind(this),
-			onVoiceStateUpdate: this.addStatePacket.bind(this),
+			onVoiceServerUpdate: (data) => this.addServerPacket(data),
+			onVoiceStateUpdate: (data) => this.addStatePacket(data),
+			destroy: () => this.destroy(false),
 		});
 
 		this._state = { status: VoiceConnectionStatus.Signalling, adapter };
@@ -203,7 +204,7 @@ export class VoiceConnection extends EventEmitter {
 
 		// If destroyed, the adapter can also be destroyed so it can be cleaned up by the user
 		if (oldState.status !== VoiceConnectionStatus.Destroyed && newState.status === VoiceConnectionStatus.Destroyed) {
-			oldState.adapter.destroy?.();
+			oldState.adapter.destroy();
 		}
 
 		this._state = newState;
@@ -313,6 +314,7 @@ export class VoiceConnection extends EventEmitter {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
+			this.reconnectAttempts++;
 			this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig));
 		}
 	}
@@ -395,15 +397,18 @@ export class VoiceConnection extends EventEmitter {
 	 * Destroys the VoiceConnection, preventing it from connecting to voice again.
 	 * This method should be called when you no longer require the VoiceConnection to
 	 * prevent memory leaks.
+	 * @param adapterAvailable - Whether the adapter can be used
 	 */
-	public destroy() {
+	public destroy(adapterAvailable = true) {
 		if (this.state.status === VoiceConnectionStatus.Destroyed) {
 			throw new Error('Cannot destroy VoiceConnection - it has already been destroyed');
 		}
 		if (getVoiceConnection(this.joinConfig.guildId) === this) {
 			untrackVoiceConnection(this.joinConfig.guildId);
 		}
-		this.state.adapter.sendPayload(createJoinVoiceChannelPayload({ ...this.joinConfig, channelId: null }));
+		if (adapterAvailable) {
+			this.state.adapter.sendPayload(createJoinVoiceChannelPayload({ ...this.joinConfig, channelId: null }));
+		}
 		this.state = {
 			status: VoiceConnectionStatus.Destroyed,
 		};

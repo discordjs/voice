@@ -10,6 +10,7 @@ import {
 export interface DiscordGatewayAdapterLibraryMethods {
 	onVoiceServerUpdate(data: GatewayVoiceServerUpdateDispatchData): void;
 	onVoiceStateUpdate(data: GatewayVoiceStateUpdateDispatchData): void;
+	destroy(): void;
 }
 
 /**
@@ -17,7 +18,7 @@ export interface DiscordGatewayAdapterLibraryMethods {
  */
 export interface DiscordGatewayAdapterImplementerMethods {
 	sendPayload(payload: any): void;
-	destroy?(): void;
+	destroy(): void;
 }
 
 /**
