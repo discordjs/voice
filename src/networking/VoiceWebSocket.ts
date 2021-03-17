@@ -55,19 +55,14 @@ export class VoiceWebSocket extends EventEmitter {
 		super();
 		this.ws = new WebSocket(address);
 		this.ws.onmessage = (e) => this.onMessage(e);
-
-		this.propagateEvent('open');
-		this.propagateEvent('error');
-		this.propagateEvent('close');
+		this.ws.onopen = (e) => this.emit('open', e);
+		this.ws.onerror = (e) => this.emit('error', e);
+		this.ws.onclose = (e) => this.emit('close', e);
 
 		this.lastHeartbeatAck = 0;
 		this.lastHeatbeatSend = 0;
 
 		this.debug = debug ? this.emit.bind(this, 'debug') : null;
-	}
-
-	public propagateEvent(name: string) {
-		this.ws.on(name, this.emit.bind(this, name));
 	}
 
 	/**
