@@ -63,7 +63,7 @@ export class VoiceUDPSocket extends EventEmitter {
 			const listener = (message: Buffer) => {
 				try {
 					const packet = parseLocalPacket(message);
-					this.socket.removeListener('message', listener);
+					this.socket.off('message', listener);
 					resolve(packet);
 				} catch {}
 			};
