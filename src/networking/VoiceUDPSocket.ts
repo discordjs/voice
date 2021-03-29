@@ -1,4 +1,4 @@
-import { createSocket, Socket } from 'dgram';
+import { createSocket, RemoteInfo, Socket } from 'dgram';
 import { EventEmitter } from 'events';
 import { isIPv4 } from 'net';
 
@@ -34,6 +34,7 @@ export class VoiceUDPSocket extends EventEmitter {
 		super();
 		this.socket = createSocket('udp4');
 		this.socket.on('error', (error: Error) => this.emit('error', error));
+		this.socket.on('message', (msg: Buffer, rinfo: RemoteInfo) => this.emit('message', msg, rinfo));
 		this.remote = remote;
 	}
 
