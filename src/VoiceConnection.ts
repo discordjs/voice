@@ -15,24 +15,28 @@ import { Networking, NetworkingState, NetworkingStatusCode } from './networking/
 import { noop } from './util/util';
 
 /**
- * The different statuses that a voice connection can hold.
- *
- * @remarks
- * - `Signalling` - sending a packet to the main Discord gateway to indicate we want to change our voice state.
- *
- * - `Connecting` - the `VOICE_SERVER_UPDATE` and `VOICE_STATE_UPDATE` packets have been received, now attempting to establish a voice connection.
- *
- * - `Ready` - a voice connection has been established, and is ready to be used
- *
- * - `Disconnected` - the voice connection has either been severed or not established.
- *
- * - `Destroyed` - the voice connection has been destroyed and untracked, it cannot be reused.
+ * The various status codes a voice connection can hold at any one time.
  */
 export enum VoiceConnectionStatus {
+	/**
+	 * Sending a packet to the main Discord gateway to indicate we want to change our voice state.
+	 */
 	Signalling = 'signalling',
+	/**
+	 * The `VOICE_SERVER_UPDATE` and `VOICE_STATE_UPDATE` packets have been received, now attempting to establish a voice connection.
+	 */
 	Connecting = 'connecting',
+	/**
+	 * A voice connection has been established, and is ready to be used
+	 */
 	Ready = 'ready',
+	/**
+	 * The voice connection has either been severed or not established.
+	 */
 	Disconnected = 'disconnected',
+	/**
+	 * The voice connection has been destroyed and untracked, it cannot be reused.
+	 */
 	Destroyed = 'destroyed',
 }
 
@@ -143,6 +147,7 @@ export class VoiceConnection extends EventEmitter {
 	 * Creates a new voice connection.
 	 *
 	 * @param joinConfig - The data required to establish the voice connection
+	 * @param options - The options used to create this voice connection
 	 */
 	public constructor(joinConfig: JoinConfig, { debug, adapterCreator }: CreateVoiceConnectionOptions) {
 		super();
