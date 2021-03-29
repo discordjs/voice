@@ -11,7 +11,7 @@ const CHANNELS = 2;
 const TIMESTAMP_INC = (48000 / 100) * CHANNELS;
 const MAX_NONCE_SIZE = 2 ** 32 - 1;
 
-const SUPPORTED_ENCRYPTION_MODES = ['xsalsa20_poly1305_lite', 'xsalsa20_poly1305_suffix', 'xsalsa20_poly1305'];
+export const SUPPORTED_ENCRYPTION_MODES = ['xsalsa20_poly1305_lite', 'xsalsa20_poly1305_suffix', 'xsalsa20_poly1305'];
 
 /**
  * The different statuses that a networking instance can hold. The order
@@ -133,7 +133,7 @@ interface ConnectionOptions {
  * Information about the current connection, e.g. which encryption mode is to be used on
  * the connection, timing information for playback of streams.
  */
-interface ConnectionData {
+export interface ConnectionData {
 	ssrc: number;
 	encryptionMode: string;
 	secretKey: Uint8Array;

@@ -1,7 +1,8 @@
 import { VoiceOPCodes } from 'discord-api-types/v8';
-import type { Networking, NetworkingState } from '../networking/Networking';
+import { ConnectionData, Networking, NetworkingState } from '../networking/Networking';
 import { VoiceUDPSocket } from '../networking/VoiceUDPSocket';
 import { VoiceWebSocket } from '../networking/VoiceWebSocket';
+import { methods } from '../util/Secretbox';
 import type { VoiceConnection } from '../VoiceConnection';
 
 export class VoiceReceiver {
@@ -12,9 +13,12 @@ export class VoiceReceiver {
 	 */
 	public readonly ssrcMap: Map<number, string>;
 
+	private connectionData: Partial<ConnectionData>;
+
 	public constructor(voiceConnection: VoiceConnection) {
 		this.voiceConnection = voiceConnection;
 		this.ssrcMap = new Map();
+		this.connectionData = {};
 
 		const onWsPacket = (packet: any) => this.onWsPacket(packet);
 		const onUdpMessage = (msg: Buffer) => this.onUdpMessage(msg);
@@ -25,6 +29,14 @@ export class VoiceReceiver {
 			const oldUdp = Reflect.get(oldState, 'udp') as VoiceUDPSocket | undefined;
 			const newWs = Reflect.get(newState, 'ws') as VoiceWebSocket | undefined;
 			const newUdp = Reflect.get(newState, 'udp') as VoiceUDPSocket | undefined;
+
+			const connectionData = Reflect.get(newState, 'connectionData') as Partial<ConnectionData> | undefined;
+			if (connectionData) {
+				this.connectionData = {
+					...this.connectionData,
+					...connectionData,
+				};
+			}
 
 			if (newWs !== oldWs) {
 				oldWs?.off('packet', onWsPacket);
@@ -52,8 +64,13 @@ export class VoiceReceiver {
 		if (networking) {
 			const ws = Reflect.get(networking.state, 'ws') as VoiceWebSocket | undefined;
 			const udp = Reflect.get(networking.state, 'udp') as VoiceUDPSocket | undefined;
+			const connectionData = Reflect.get(networking.state, 'connectionData') as Partial<ConnectionData> | undefined;
 			ws?.on('packet', onWsPacket);
 			udp?.on('message', onUdpMessage);
+			this.connectionData = {
+				...this.connectionData,
+				...connectionData,
+			};
 		}
 	}
 
@@ -73,8 +90,52 @@ export class VoiceReceiver {
 		}
 	}
 
+	private parseBuffer(buffer: Buffer, mode: string, nonce: Buffer, secretKey: Uint8Array) {
+		// Choose correct nonce depending on encryption
+		let end;
+		if (mode === 'xsalsa20_poly1305_lite') {
+			buffer.copy(nonce, 0, buffer.length - 4);
+			end = buffer.length - 4;
+		} else if (mode === 'xsalsa20_poly1305_suffix') {
+			buffer.copy(nonce, 0, buffer.length - 24);
+			end = buffer.length - 24;
+		} else {
+			buffer.copy(nonce, 0, 0, 12);
+		}
+
+		// Open packet
+		const decrypted = methods.open(buffer.slice(12, end), nonce, secretKey);
+		if (!decrypted) return;
+		let packet = Buffer.from(decrypted);
+
+		// Strip RTP Header Extensions (one-byte only)
+		if (packet[0] === 0xbe && packet[1] === 0xde && packet.length > 4) {
+			const headerExtensionLength = packet.readUInt16BE(2);
+			let offset = 4;
+			for (let i = 0; i < headerExtensionLength; i++) {
+				const byte = packet[offset];
+				offset++;
+				if (byte === 0) continue;
+				offset += 1 + (0b1111 & (byte >> 4));
+			}
+			// Skip over undocumented Discord byte
+			offset++;
+
+			packet = packet.slice(offset);
+		}
+
+		return packet;
+	}
+
 	private onUdpMessage(msg: Buffer) {
-		console.log(msg);
+		if (this.connectionData.encryptionMode && this.connectionData.nonceBuffer && this.connectionData.secretKey) {
+			this.parseBuffer(
+				msg,
+				this.connectionData.encryptionMode,
+				this.connectionData.nonceBuffer,
+				this.connectionData.secretKey,
+			);
+		}
 	}
 }
 
