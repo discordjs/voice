@@ -1,5 +1,5 @@
 name: Documentation
-on: [push, pull_request]
+on: [push]
 jobs:
   docs:
     name: Documentation
