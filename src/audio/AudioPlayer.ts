@@ -12,35 +12,42 @@ const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
 /**
  * Describes the behavior of the player when an audio packet is played but there are no available
  * voice connections to play to.
- *
- * @remarks
- * - `Pause` - pauses playing the stream until a voice connection becomes available
- *
- * - `Play` - continues to play through the resource regardless
- *
- * - `Stop` - the player stops and enters the Idle state.
  */
 export enum NoSubscriberBehavior {
+	/**
+	 * Pauses playing the stream until a voice connection becomes available
+	 */
 	Pause = 'pause',
+	/**
+	 * Continues to play through the resource regardless
+	 */
 	Play = 'play',
+	/**
+	 * The player stops and enters the Idle state
+	 */
 	Stop = 'stop',
 }
 
-/**
- * The various statuses that a player can hold.
- *
- * @remarks
- * - `Idle` - when there is currently no resource for the player to be playing
- *
- * - `Pause` - when the player has been manually paused
- *
- * - `AutoPaused` - when the player has paused itself. Only possible with the "pause" no subscriber behavior.
- */
 export enum AudioPlayerStatus {
+	/**
+	 * When there is currently no resource for the player to be playing
+	 */
 	Idle = 'idle',
+	/**
+	 * When the player is waiting for an audio resource to become readable before transitioning to Playing
+	 */
 	Buffering = 'buffering',
+	/**
+	 * When the player has been manually paused
+	 */
 	Paused = 'paused',
+	/**
+	 * When the player is actively playing an audio resource
+	 */
 	Playing = 'playing',
+	/**
+	 * When the player has paused itself. Only possible with the "pause" no subscriber behavior.
+	 */
 	AutoPaused = 'autopaused',
 }
 
@@ -125,7 +132,7 @@ export interface AudioPlayerPausedState {
 /**
  * The various states that the player can be in.
  */
-type AudioPlayerState =
+export type AudioPlayerState =
 	| AudioPlayerIdleState
 	| AudioPlayerBufferingState
 	| AudioPlayerPlayingState
@@ -135,7 +142,8 @@ type AudioPlayerState =
  * Used to play audio resources (i.e. tracks, streams) to voice connections.
  *
  * @remarks
- * It is designed to be re-used - even if a resource has finished playing, the player itself can still be used.
+ * Audio players are designed to be re-used - even if a resource has finished playing, the player itself
+ * can still be used.
  *
  * The AudioPlayer drives the timing of playback, and therefore is unaffected by voice connections
  * becoming unavailable. Its behavior in these scenarios can be configured.
@@ -203,15 +211,7 @@ export class AudioPlayer extends EventEmitter {
 		if (!existingSubscription) {
 			const subscription = new PlayerSubscription(connection, this);
 			this.subscribers.push(subscription);
-
-			/**
-			 * Emitted when a new subscriber is added to the audio player.
-			 *
-			 * @event AudioPlayer#subscribe
-			 * @type {PlayerSubscription}
-			 */
 			setImmediate(() => this.emit('subscribe', subscription));
-
 			return subscription;
 		}
 		return existingSubscription;
@@ -232,13 +232,6 @@ export class AudioPlayer extends EventEmitter {
 		if (exists) {
 			this.subscribers.splice(index, 1);
 			subscription.connection.setSpeaking(false);
-
-			/**
-			 * Emitted when a subscription is removed from the audio player.
-			 *
-			 * @event AudioPlayer#unsubscribe
-			 * @type {PlayerSubscription}
-			 */
 			this.emit('unsubscribe', subscription);
 		}
 		return exists;
@@ -300,13 +293,6 @@ export class AudioPlayer extends EventEmitter {
 		if (oldState.status !== newState.status || didChangeResources) {
 			this.emit(newState.status, oldState, this._state);
 		}
-
-		/**
-		 * Debug event for AudioPlayer.
-		 *
-		 * @event AudioPlayer#debug
-		 * @type {string}
-		 */
 		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
 
