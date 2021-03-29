@@ -63,6 +63,7 @@
 		"lint-staged": "^10.5.4",
 		"mock-socket": "^9.0.3",
 		"prettier": "^2.2.1",
+		"typedoc": "^0.20.34",
 		"typescript": "^4.2.2"
 	},
 	"husky": {
