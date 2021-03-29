@@ -11,13 +11,13 @@ export interface DiscordGatewayAdapterLibraryMethods {
 	/**
 	 * Call this when you receive a VOICE_SERVER_UPDATE payload that is relevant to the adapter.
 	 *
-	 * @param data The inner data of the VOICE_SERVER_UPDATE payload
+	 * @param data - The inner data of the VOICE_SERVER_UPDATE payload
 	 */
 	onVoiceServerUpdate(data: GatewayVoiceServerUpdateDispatchData): void;
 	/**
 	 * Call this when you receive a VOICE_STATE_UPDATE payload that is relevant to the adapter.
 	 *
-	 * @param data The inner data of the VOICE_STATE_UPDATE payload
+	 * @param data - The inner data of the VOICE_STATE_UPDATE payload
 	 */
 	onVoiceStateUpdate(data: GatewayVoiceStateUpdateDispatchData): void;
 	/**
@@ -33,7 +33,7 @@ export interface DiscordGatewayAdapterImplementerMethods {
 	/**
 	 * Implement this method such that the given payload is sent to the main Discord gateway connection.
 	 *
-	 * @param payload The payload to send to the main Discord gateway connection
+	 * @param payload - The payload to send to the main Discord gateway connection
 	 */
 	sendPayload(payload: any): void;
 	/**

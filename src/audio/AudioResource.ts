@@ -7,7 +7,7 @@ import type { AudioPlayer } from './AudioPlayer';
 /**
  * Options that are set when creating a new audio resource.
  *
- * @template T the type for the metadata (if any) of the audio resource.
+ * @template T - the type for the metadata (if any) of the audio resource.
  */
 interface CreateAudioResourceOptions<T> {
 	/**
@@ -32,7 +32,7 @@ interface CreateAudioResourceOptions<T> {
 /**
  * Represents an audio resource that can be played by an audio player.
  *
- * @template T the type for the metadata (if any) of the audio resource.
+ * @template T - the type for the metadata (if any) of the audio resource.
  */
 export class AudioResource<T = unknown> {
 	/**
@@ -113,7 +113,7 @@ const VOLUME_CONSTRAINT = (path: Edge[]) => path.some((edge) => edge.type === Tr
  * @param input - The resource to play.
  * @param options - Configurable options for creating the resource.
  *
- * @template T the type for the metadata (if any) of the audio resource.
+ * @template T - the type for the metadata (if any) of the audio resource.
  */
 export function createAudioResource<T>(
 	input: string | Readable,
