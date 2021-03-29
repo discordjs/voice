@@ -67,10 +67,7 @@ export class VoiceReceiver {
 			const connectionData = Reflect.get(networking.state, 'connectionData') as Partial<ConnectionData> | undefined;
 			ws?.on('packet', onWsPacket);
 			udp?.on('message', onUdpMessage);
-			this.connectionData = {
-				...this.connectionData,
-				...connectionData,
-			};
+			this.connectionData = connectionData ?? {};
 		}
 	}
 
