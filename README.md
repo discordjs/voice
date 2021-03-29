@@ -41,4 +41,4 @@ try installing another.
 
 ## Contribution
 
-See [Contributing Guide](https://github.com/discordjs/voice/blob/master/.github/CONTRIBUTING.md).
+See [Contributing Guide](https://github.com/discordjs/voice/blob/main/.github/CONTRIBUTING.md).
