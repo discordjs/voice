@@ -11,6 +11,8 @@ export {
 	CreateAudioPlayerOptions,
 } from './AudioPlayer';
 
+export { AudioPlayerError } from './AudioPlayerError';
+
 export { AudioResource, createAudioResource } from './AudioResource';
 
 export { PlayerSubscription } from './PlayerSubscription';
