@@ -14,9 +14,26 @@ export interface CreateVoiceConnectionOptions {
 	adapterCreator: DiscordGatewayAdapterCreator;
 }
 
+/**
+ * The options specified when joining a voice channel
+ */
 export interface JoinVoiceChannelOptions {
+	/**
+	 * The ID of the Discord voice channel to join
+	 */
 	channelId: string;
+	/**
+	 * The ID of the guild that the voice channel belongs to
+	 */
 	guildId: string;
+	/**
+	 * Whether to join the channel deafened (defaults to true)
+	 */
+	selfDeaf?: boolean;
+	/**
+	 * Whether to join the channel muted (defaults to true)
+	 */
+	selfMute?: boolean;
 }
 
 /**
@@ -27,10 +44,9 @@ export interface JoinVoiceChannelOptions {
  */
 export function joinVoiceChannel(options: JoinVoiceChannelOptions & CreateVoiceConnectionOptions) {
 	const joinConfig: JoinConfig = {
-		channelId: options.channelId,
-		guildId: options.guildId,
 		selfDeaf: true,
 		selfMute: false,
+		...options,
 	};
 
 	return createVoiceConnection(joinConfig, {
