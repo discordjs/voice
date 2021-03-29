@@ -13,6 +13,7 @@ import {
 import { DiscordGatewayAdapterImplementerMethods } from './util/adapter';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
+import TypedEmitter from 'typed-emitter';
 
 /**
  * The various status codes a voice connection can hold at any one time.
@@ -108,10 +109,18 @@ export type VoiceConnectionState =
 	| VoiceConnectionReadyState
 	| VoiceConnectionDestroyedState;
 
+export type VoiceConnectionEvents = {
+	error: (error: Error) => void;
+	debug: (message: string) => void;
+	stateChange: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
+} & {
+	[status in VoiceConnectionStatus]: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
+};
+
 /**
  * A connection to the voice server of a Guild, can be used to play audio in voice channels.
  */
-export class VoiceConnection extends EventEmitter {
+export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<VoiceConnectionEvents>) {
 	/**
 	 * The number of consecutive reconnect attempts. Initially 0, and increments for each reconnect.
 	 * When a connection is successfully established, it resets to 0.
@@ -152,7 +161,7 @@ export class VoiceConnection extends EventEmitter {
 	public constructor(joinConfig: JoinConfig, { debug, adapterCreator }: CreateVoiceConnectionOptions) {
 		super();
 
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
 		this.reconnectAttempts = 0;
 
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);

@@ -45,12 +45,12 @@ export function entersState<T extends VoiceConnection | AudioPlayer>(
 			maxTime,
 		);
 
-		target.once(status, resolve);
+		target.once(status as any, resolve);
 		target.once('error', reject);
 
 		cleanup = () => {
 			clearTimeout(timeout);
-			target.off(status, resolve);
+			target.off(status as any, resolve);
 			target.off('error', reject);
 		};
 	})
