@@ -5,6 +5,7 @@ import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayerError } from './AudioPlayerError';
 import { AudioResource } from './AudioResource';
 import { PlayerSubscription } from './PlayerSubscription';
+import TypedEmitter from 'typed-emitter';
 
 // The Opus "silent" frame
 const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
@@ -138,6 +139,16 @@ export type AudioPlayerState =
 	| AudioPlayerPlayingState
 	| AudioPlayerPausedState;
 
+export type AudioPlayerEvents = {
+	error: (error: Error) => void;
+	debug: (message: string) => void;
+	stateChange: (oldState: AudioPlayerState, newState: AudioPlayerState) => void;
+	subscribe: (subscription: PlayerSubscription) => void;
+	unsubscribe: (subscription: PlayerSubscription) => void;
+} & {
+	[status in AudioPlayerStatus]: (oldState: AudioPlayerState, newState: AudioPlayerState) => void;
+};
+
 /**
  * Used to play audio resources (i.e. tracks, streams) to voice connections.
  *
@@ -148,7 +159,7 @@ export type AudioPlayerState =
  * The AudioPlayer drives the timing of playback, and therefore is unaffected by voice connections
  * becoming unavailable. Its behavior in these scenarios can be configured.
  */
-export class AudioPlayer extends EventEmitter {
+export class AudioPlayer extends (EventEmitter as new () => TypedEmitter<AudioPlayerEvents>) {
 	/**
 	 * The state that the AudioPlayer is in
 	 */
@@ -184,7 +195,7 @@ export class AudioPlayer extends EventEmitter {
 			maxMissedFrames: 5,
 			...options.behaviors,
 		};
-		this.debug = options.debug === false ? null : this.emit.bind(this, 'debug');
+		this.debug = options.debug === false ? null : (message: string) => this.emit('debug', message);
 	}
 
 	/**

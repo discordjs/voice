@@ -9,6 +9,7 @@ export {
 	AudioPlayerPausedState,
 	AudioPlayerPlayingState,
 	CreateAudioPlayerOptions,
+	AudioPlayerEvents,
 } from './AudioPlayer';
 
 export { AudioPlayerError } from './AudioPlayerError';

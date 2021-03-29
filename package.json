@@ -16,7 +16,8 @@
 		"lint:fix": "eslint src --ext .ts --fix",
 		"prettier": "prettier --write **/*.{ts,js,json,yml,yaml}",
 		"build": "tsc",
-		"build:check": "tsc --noEmit --incremental false"
+		"build:check": "tsc --noEmit --incremental false",
+		"docs": "typedoc src/index.ts"
 	},
 	"repository": {
 		"type": "git",
