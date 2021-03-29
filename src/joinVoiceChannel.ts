@@ -3,7 +3,7 @@ import { JoinConfig } from './DataStore';
 import { DiscordGatewayAdapterCreator } from './util/adapter';
 
 /**
- * The options that can be given when joining a voice channel
+ * The options that can be given when creating a voice connection.
  */
 export interface CreateVoiceConnectionOptions {
 	/**
@@ -14,13 +14,16 @@ export interface CreateVoiceConnectionOptions {
 	adapterCreator: DiscordGatewayAdapterCreator;
 }
 
+/**
+ * The options that can be given when joining a voice channel.
+ */
 export interface JoinVoiceChannelOptions {
 	channelId: string;
 	guildId: string;
 }
 
 /**
- * Creates a VoiceConnection to a Discord.js Voice Channel.
+ * Creates a VoiceConnection to a Discord voice channel.
  *
  * @param voiceChannel - the voice channel to connect to
  * @param options - the options for joining the voice channel
