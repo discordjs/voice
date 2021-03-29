@@ -113,6 +113,8 @@ export function inferStreamType(
 		return { streamType: StreamType.Raw, hasVolume: false };
 	} else if (stream instanceof VolumeTransformer) {
 		return { streamType: StreamType.Raw, hasVolume: true };
+	} else if (stream instanceof opus.OggDemuxer) {
+		return { streamType: StreamType.Opus, hasVolume: false };
 	}
 	return { streamType: StreamType.Arbitrary, hasVolume: false };
 }
