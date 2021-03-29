@@ -1,3 +1,4 @@
+import { VoiceOPCodes } from 'discord-api-types/v8';
 import type { Networking, NetworkingState } from '../networking/Networking';
 import { VoiceUDPSocket } from '../networking/VoiceUDPSocket';
 import { VoiceWebSocket } from '../networking/VoiceWebSocket';
@@ -6,8 +7,14 @@ import type { VoiceConnection } from '../VoiceConnection';
 export class VoiceReceiver {
 	public readonly voiceConnection;
 
+	/**
+	 * Maps SSRCs to user IDs
+	 */
+	public readonly ssrcMap: Map<number, string>;
+
 	public constructor(voiceConnection: VoiceConnection) {
 		this.voiceConnection = voiceConnection;
+		this.ssrcMap = new Map();
 
 		const onWsPacket = (packet: any) => this.onWsPacket(packet);
 		const onUdpMessage = (msg: Buffer) => this.onUdpMessage(msg);
@@ -51,7 +58,19 @@ export class VoiceReceiver {
 	}
 
 	private onWsPacket(packet: any) {
-		console.log(packet);
+		if (packet?.op === VoiceOPCodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
+			this.ssrcMap.forEach((userID, ssrc) => {
+				if (userID === packet.d.user_id) {
+					this.ssrcMap.delete(ssrc);
+				}
+			});
+		} else if (packet.d) {
+			const ssrc = packet.d.ssrc ?? packet.d.audio_ssrc;
+			const userID = packet.d.user_id;
+			if (typeof ssrc === 'number' && typeof userID === 'string') {
+				this.ssrcMap.set(ssrc, userID);
+			}
+		}
 	}
 
 	private onUdpMessage(msg: Buffer) {
