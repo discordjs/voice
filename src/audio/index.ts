@@ -1,6 +1,7 @@
 export {
 	AudioPlayer,
 	AudioPlayerStatus,
+	AudioPlayerState,
 	NoSubscriberBehavior,
 	createAudioPlayer,
 	AudioPlayerBufferingState,
@@ -8,7 +9,10 @@ export {
 	AudioPlayerPausedState,
 	AudioPlayerPlayingState,
 	CreateAudioPlayerOptions,
+	AudioPlayerEvents,
 } from './AudioPlayer';
+
+export { AudioPlayerError } from './AudioPlayerError';
 
 export { AudioResource, createAudioResource } from './AudioResource';
 

@@ -20,3 +20,6 @@ pids
 
 # Coverage
 coverage/
+
+# Documentation
+docs/

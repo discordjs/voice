@@ -5,7 +5,10 @@ import type { AudioResource } from './AudioResource';
  * debugging and identifying where the error came from.
  */
 export class AudioPlayerError extends Error {
-	private readonly resource: AudioResource;
+	/**
+	 * The resource associated with the audio player at the time the error was thrown.
+	 */
+	public readonly resource: AudioResource;
 	public constructor(error: Error, resource: AudioResource) {
 		super(error.message);
 		this.resource = resource;

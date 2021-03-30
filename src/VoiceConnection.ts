@@ -13,26 +13,31 @@ import {
 import { DiscordGatewayAdapterImplementerMethods } from './util/adapter';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
+import TypedEmitter from 'typed-emitter';
 
 /**
- * The different statuses that a voice connection can hold.
- *
- * @remarks
- * - `Signalling` - sending a packet to the main Discord gateway to indicate we want to change our voice state.
- *
- * - `Connecting` - the `VOICE_SERVER_UPDATE` and `VOICE_STATE_UPDATE` packets have been received, now attempting to establish a voice connection.
- *
- * - `Ready` - a voice connection has been established, and is ready to be used
- *
- * - `Disconnected` - the voice connection has either been severed or not established.
- *
- * - `Destroyed` - the voice connection has been destroyed and untracked, it cannot be reused.
+ * The various status codes a voice connection can hold at any one time.
  */
 export enum VoiceConnectionStatus {
+	/**
+	 * Sending a packet to the main Discord gateway to indicate we want to change our voice state.
+	 */
 	Signalling = 'signalling',
+	/**
+	 * The `VOICE_SERVER_UPDATE` and `VOICE_STATE_UPDATE` packets have been received, now attempting to establish a voice connection.
+	 */
 	Connecting = 'connecting',
+	/**
+	 * A voice connection has been established, and is ready to be used
+	 */
 	Ready = 'ready',
+	/**
+	 * The voice connection has either been severed or not established.
+	 */
 	Disconnected = 'disconnected',
+	/**
+	 * The voice connection has been destroyed and untracked, it cannot be reused.
+	 */
 	Destroyed = 'destroyed',
 }
 
@@ -104,10 +109,18 @@ export type VoiceConnectionState =
 	| VoiceConnectionReadyState
 	| VoiceConnectionDestroyedState;
 
+export type VoiceConnectionEvents = {
+	error: (error: Error) => void;
+	debug: (message: string) => void;
+	stateChange: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
+} & {
+	[status in VoiceConnectionStatus]: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
+};
+
 /**
  * A connection to the voice server of a Guild, can be used to play audio in voice channels.
  */
-export class VoiceConnection extends EventEmitter {
+export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<VoiceConnectionEvents>) {
 	/**
 	 * The number of consecutive reconnect attempts. Initially 0, and increments for each reconnect.
 	 * When a connection is successfully established, it resets to 0.
@@ -143,11 +156,12 @@ export class VoiceConnection extends EventEmitter {
 	 * Creates a new voice connection.
 	 *
 	 * @param joinConfig - The data required to establish the voice connection
+	 * @param options - The options used to create this voice connection
 	 */
 	public constructor(joinConfig: JoinConfig, { debug, adapterCreator }: CreateVoiceConnectionOptions) {
 		super();
 
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
 		this.reconnectAttempts = 0;
 
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
