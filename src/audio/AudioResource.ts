@@ -1,7 +1,7 @@
 import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGraph';
 import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
-import { VolumeTransformer } from 'prism-media';
+import { VolumeTransformer, opus } from 'prism-media';
 import type { AudioPlayer } from './AudioPlayer';
 
 /**
@@ -94,7 +94,34 @@ export class AudioResource<T = unknown> {
  *
  * @param path - The path to validate constraints on
  */
-const VOLUME_CONSTRAINT = (path: Edge[]) => path.some((edge) => edge.type === TransformerType.InlineVolume);
+export const VOLUME_CONSTRAINT = (path: Edge[]) => path.some((edge) => edge.type === TransformerType.InlineVolume);
+
+export const NO_CONSTRAINT = () => true;
+
+/**
+ * Tries to infer the type of a stream to aid with transcoder pipelining.
+ *
+ * @param stream - The stream to infer the type of
+ */
+export function inferStreamType(
+	stream: Readable,
+): {
+	streamType: StreamType;
+	hasVolume: boolean;
+} {
+	if (stream instanceof opus.Encoder) {
+		return { streamType: StreamType.Opus, hasVolume: false };
+	} else if (stream instanceof opus.Decoder) {
+		return { streamType: StreamType.Raw, hasVolume: false };
+	} else if (stream instanceof VolumeTransformer) {
+		return { streamType: StreamType.Raw, hasVolume: true };
+	} else if (stream instanceof opus.OggDemuxer) {
+		return { streamType: StreamType.Opus, hasVolume: false };
+	} else if (stream instanceof opus.WebmDemuxer) {
+		return { streamType: StreamType.Opus, hasVolume: false };
+	}
+	return { streamType: StreamType.Arbitrary, hasVolume: false };
+}
 
 /**
  * Creates an audio resource that can be played be audio players.
@@ -113,25 +140,30 @@ export function createAudioResource<T>(
 	input: string | Readable,
 	options: CreateAudioResourceOptions<T> = {},
 ): AudioResource<T> {
-	let inputType = options.inputType ?? StreamType.Arbitrary;
+	let inputType = options.inputType;
+	let needsInlineVolume = Boolean(options.inlineVolume);
 
 	// string inputs can only be used with FFmpeg
 	if (typeof input === 'string') {
 		inputType = StreamType.Arbitrary;
+	} else if (typeof inputType === 'undefined') {
+		const analysis = inferStreamType(input);
+		inputType = analysis.streamType;
+		needsInlineVolume = needsInlineVolume && !analysis.hasVolume;
 	}
 
-	const transformerPipeline = findPipeline(inputType, options.inlineVolume ? VOLUME_CONSTRAINT : () => true);
+	const transformerPipeline = findPipeline(inputType, needsInlineVolume ? VOLUME_CONSTRAINT : NO_CONSTRAINT);
 
 	if (transformerPipeline.length === 0) {
 		if (typeof input === 'string') throw new Error(`Invalid pipeline constructed for string resource '${input}'`);
 		// No adjustments required
 		return new AudioResource([], input, options.metadata);
 	}
-	const streams = transformerPipeline.map((pipe) => pipe.transformer(input));
+	const streams = transformerPipeline.map((edge) => edge.transformer(input));
 	if (typeof input !== 'string') streams.unshift(input);
 
 	// the callback is called once the stream ends
-	const playStream = pipeline(streams, noop);
+	const playStream = streams.length > 1 ? pipeline(streams, noop) : streams[0];
 
 	// attempt to find the volume transformer in the pipeline (if one exists)
 	const volume = streams.find((stream) => stream instanceof VolumeTransformer) as VolumeTransformer | undefined;
