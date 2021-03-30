@@ -81,4 +81,10 @@ describe('createAudioResource', () => {
 		expect(findPipeline).toHaveBeenCalledWith(StreamType.Raw, NO_CONSTRAINT);
 		expect(resource.volume).toBe(stream);
 	});
+
+	test('Falls back to Arbitrary for unknown stream type', () => {
+		const resource = createAudioResource(new PassThrough());
+		expect(findPipeline).toHaveBeenCalledWith(StreamType.Arbitrary, NO_CONSTRAINT);
+		expect(resource.volume).toBeUndefined();
+	});
 });
