@@ -5,7 +5,7 @@ import { Edge, findPipeline as _findPipeline, StreamType, TransformerType } from
 jest.mock('prism-media');
 jest.mock('../TransformerGraph');
 
-const findPipeline = (_findPipeline as unknown) as jest.Mock<typeof _findPipeline>;
+const findPipeline = (_findPipeline as unknown) as jest.MockedFunction<typeof _findPipeline>;
 
 beforeEach(() => {
 	findPipeline.mockReset();
