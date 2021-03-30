@@ -16,7 +16,8 @@
 		"lint:fix": "eslint src --ext .ts --fix",
 		"prettier": "prettier --write **/*.{ts,js,json,yml,yaml}",
 		"build": "tsc",
-		"build:check": "tsc --noEmit --incremental false"
+		"build:check": "tsc --noEmit --incremental false",
+		"docs": "typedoc src/index.ts"
 	},
 	"repository": {
 		"type": "git",
@@ -63,6 +64,8 @@
 		"lint-staged": "^10.5.4",
 		"mock-socket": "^9.0.3",
 		"prettier": "^2.2.1",
+		"typed-emitter": "^1.3.1",
+		"typedoc": "^0.20.34",
 		"typescript": "^4.2.2"
 	},
 	"husky": {

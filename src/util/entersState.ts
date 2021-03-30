@@ -1,12 +1,26 @@
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayer, AudioPlayerStatus } from '../audio/AudioPlayer';
 
+/**
+ * Allows a voice connection a specified amount of time to enter a given state, otherwise rejects with an error.
+ *
+ * @param target - The voice connection that we want to observe the state change for
+ * @param status - The status that the voice connection should be in
+ * @param maxTime - The maximum time we are allowing for this to occur
+ */
 export function entersState(
 	target: VoiceConnection,
 	status: VoiceConnectionStatus,
 	maxTime: number,
 ): Promise<VoiceConnection>;
 
+/**
+ * Allows an audio player a specified amount of time to enter a given state, otherwise rejects with an error.
+ *
+ * @param target - The audio player that we want to observe the state change for
+ * @param status - The status that the audio player should be in
+ * @param maxTime - The maximum time we are allowing for this to occur
+ */
 export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxTime: number): Promise<AudioPlayer>;
 
 /**
@@ -31,13 +45,13 @@ export function entersState<T extends VoiceConnection | AudioPlayer>(
 			maxTime,
 		);
 
-		target.once(status, resolve);
-		target.once('error', reject);
+		(target as any).once(status as any, resolve);
+		(target as any).once('error', reject);
 
 		cleanup = () => {
 			clearTimeout(timeout);
-			target.off(status, resolve);
-			target.off('error', reject);
+			(target as any).off(status as any, resolve);
+			(target as any).off('error', reject);
 		};
 	})
 		.then(() => target)

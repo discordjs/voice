@@ -11,6 +11,7 @@ export {
 	VoiceConnectionDisconnectedState,
 	VoiceConnectionReadyState,
 	VoiceConnectionSignallingState,
+	VoiceConnectionEvents,
 } from './VoiceConnection';
 
 export { getVoiceConnection } from './DataStore';
