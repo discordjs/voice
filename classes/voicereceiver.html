@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PlayerSubscription | @discordjs/voice</title>
+	<title>VoiceReceiver | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,29 +55,21 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="playersubscription.html">PlayerSubscription</a>
+					<a href="voicereceiver.html">VoiceReceiver</a>
 				</li>
 			</ul>
-			<h1>Class PlayerSubscription</h1>
+			<h1>Class VoiceReceiver</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Represents a subscription of a voice connection to an audio player, allowing
-						the audio player to play audio on the voice connection.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">PlayerSubscription</span>
+						<span class="target">VoiceReceiver</span>
 					</li>
 				</ul>
 			</section>
@@ -88,20 +80,23 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="playersubscription.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="voicereceiver.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="playersubscription.html#connection" class="tsd-kind-icon">connection</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="playersubscription.html#player" class="tsd-kind-icon">player</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#connectiondata" class="tsd-kind-icon">connection<wbr>Data</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voicereceiver.html#ssrcmap" class="tsd-kind-icon">ssrc<wbr>Map</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voicereceiver.html#voiceconnection" class="tsd-kind-icon">voice<wbr>Connection</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="playersubscription.html#unsubscribe" class="tsd-kind-icon">unsubscribe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#onudpmessage" class="tsd-kind-icon">on<wbr>Udp<wbr>Message</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#onwspacket" class="tsd-kind-icon">on<wbr>WsPacket</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#parsebuffer" class="tsd-kind-icon">parse<wbr>Buffer</a></li>
 							</ul>
 						</section>
 					</div>
@@ -113,84 +108,141 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Player<wbr>Subscription<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a>, player<span class="tsd-signature-symbol">: </span><a href="audioplayer.html" class="tsd-signature-type" data-tsd-kind="Class">AudioPlayer</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Voice<wbr>Receiver<span class="tsd-signature-symbol">(</span>voiceConnection<span class="tsd-signature-symbol">: </span><a href="voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="voicereceiver.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceReceiver</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/audio/PlayerSubscription.ts#L18">src/audio/PlayerSubscription.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/receive/VoiceReceiver.ts#L16">src/receive/VoiceReceiver.ts:16</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>connection: <a href="voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a></h5>
-								</li>
-								<li>
-									<h5>player: <a href="audioplayer.html" class="tsd-signature-type" data-tsd-kind="Class">AudioPlayer</a></h5>
+									<h5>voiceConnection: <a href="voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="voicereceiver.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceReceiver</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="connection" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> connection</h3>
-					<div class="tsd-signature tsd-kind-icon">connection<span class="tsd-signature-symbol">:</span> <a href="voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="connectiondata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> connection<wbr>Data</h3>
+					<div class="tsd-signature tsd-kind-icon">connection<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ConnectionData</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/audio/PlayerSubscription.ts#L13">src/audio/PlayerSubscription.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/receive/VoiceReceiver.ts#L16">src/receive/VoiceReceiver.ts:16</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="ssrcmap" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> ssrc<wbr>Map</h3>
+					<div class="tsd-signature tsd-kind-icon">ssrc<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/receive/VoiceReceiver.ts#L14">src/receive/VoiceReceiver.ts:14</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The voice connection of this subscription</p>
+							<p>Maps SSRCs to user IDs</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="player" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> player</h3>
-					<div class="tsd-signature tsd-kind-icon">player<span class="tsd-signature-symbol">:</span> <a href="audioplayer.html" class="tsd-signature-type" data-tsd-kind="Class">AudioPlayer</a></div>
+					<a name="voiceconnection" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> voice<wbr>Connection</h3>
+					<div class="tsd-signature tsd-kind-icon">voice<wbr>Connection<span class="tsd-signature-symbol">:</span> <a href="voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/audio/PlayerSubscription.ts#L18">src/audio/PlayerSubscription.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/receive/VoiceReceiver.ts#L9">src/receive/VoiceReceiver.ts:9</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The audio player of this subscription</p>
-						</div>
-					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="unsubscribe" class="tsd-anchor"></a>
-					<h3>unsubscribe</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">unsubscribe<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="onudpmessage" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> on<wbr>Udp<wbr>Message</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Udp<wbr>Message<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/audio/PlayerSubscription.ts#L29">src/audio/PlayerSubscription.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/receive/VoiceReceiver.ts#L128">src/receive/VoiceReceiver.ts:128</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Unsubscribes the connection from the audio player, meaning that the
-									audio player cannot stream audio to it until a new subscription is made.</p>
-								</div>
-							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>msg: <span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="onwspacket" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> on<wbr>WsPacket</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>WsPacket<span class="tsd-signature-symbol">(</span>packet<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/receive/VoiceReceiver.ts#L74">src/receive/VoiceReceiver.ts:74</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>packet: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="parsebuffer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> parse<wbr>Buffer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">parse<wbr>Buffer<span class="tsd-signature-symbol">(</span>buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, nonce<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, secretKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/2770704/src/receive/VoiceReceiver.ts#L90">src/receive/VoiceReceiver.ts:90</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>buffer: <span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+								<li>
+									<h5>mode: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>nonce: <span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+								<li>
+									<h5>secretKey: <span class="tsd-signature-type">Uint8Array</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -227,33 +279,42 @@
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="audioresource.html" class="tsd-kind-icon">Audio<wbr>Resource</a>
 					</li>
+					<li class=" tsd-kind-class">
+						<a href="playersubscription.html" class="tsd-kind-icon">Player<wbr>Subscription</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="voiceconnection.html" class="tsd-kind-icon">Voice<wbr>Connection</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="playersubscription.html" class="tsd-kind-icon">Player<wbr>Subscription</a>
+						<a href="voicereceiver.html" class="tsd-kind-icon">Voice<wbr>Receiver</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="playersubscription.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="voicereceiver.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="voicereceiver.html#connectiondata" class="tsd-kind-icon">connection<wbr>Data</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="playersubscription.html#connection" class="tsd-kind-icon">connection</a>
+								<a href="voicereceiver.html#ssrcmap" class="tsd-kind-icon">ssrc<wbr>Map</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="playersubscription.html#player" class="tsd-kind-icon">player</a>
+								<a href="voicereceiver.html#voiceconnection" class="tsd-kind-icon">voice<wbr>Connection</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="playersubscription.html#unsubscribe" class="tsd-kind-icon">unsubscribe</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="voicereceiver.html#onudpmessage" class="tsd-kind-icon">on<wbr>Udp<wbr>Message</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="voicereceiver.html#onwspacket" class="tsd-kind-icon">on<wbr>WsPacket</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="voicereceiver.html#parsebuffer" class="tsd-kind-icon">parse<wbr>Buffer</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-class">
-						<a href="voiceconnection.html" class="tsd-kind-icon">Voice<wbr>Connection</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="voicereceiver.html" class="tsd-kind-icon">Voice<wbr>Receiver</a>
-					</li>
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/audioplayerbufferingstate.html" class="tsd-kind-icon">Audio<wbr>Player<wbr>Buffering<wbr>State</a>
 					</li>
