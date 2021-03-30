@@ -94,7 +94,9 @@ export class AudioResource<T = unknown> {
  *
  * @param path - The path to validate constraints on
  */
-const VOLUME_CONSTRAINT = (path: Edge[]) => path.some((edge) => edge.type === TransformerType.InlineVolume);
+export const VOLUME_CONSTRAINT = (path: Edge[]) => path.some((edge) => edge.type === TransformerType.InlineVolume);
+
+export const NO_CONSTRAINT = () => true;
 
 /**
  * Tries to infer the type of a stream to aid with transcoder pipelining.
@@ -148,7 +150,7 @@ export function createAudioResource<T>(
 		needsInlineVolume = needsInlineVolume && !analysis.hasVolume;
 	}
 
-	const transformerPipeline = findPipeline(inputType, needsInlineVolume ? VOLUME_CONSTRAINT : () => true);
+	const transformerPipeline = findPipeline(inputType, needsInlineVolume ? VOLUME_CONSTRAINT : NO_CONSTRAINT);
 
 	if (transformerPipeline.length === 0) {
 		if (typeof input === 'string') throw new Error(`Invalid pipeline constructed for string resource '${input}'`);
@@ -159,7 +161,7 @@ export function createAudioResource<T>(
 	if (typeof input !== 'string') streams.unshift(input);
 
 	// the callback is called once the stream ends
-	const playStream = pipeline(streams, noop);
+	const playStream = streams.length > 1 ? pipeline(streams, noop) : streams[0];
 
 	// attempt to find the volume transformer in the pipeline (if one exists)
 	const volume = streams.find((stream) => stream instanceof VolumeTransformer) as VolumeTransformer | undefined;
