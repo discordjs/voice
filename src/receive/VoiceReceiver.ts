@@ -4,20 +4,22 @@ import { VoiceUDPSocket } from '../networking/VoiceUDPSocket';
 import { VoiceWebSocket } from '../networking/VoiceWebSocket';
 import { methods } from '../util/Secretbox';
 import type { VoiceConnection } from '../VoiceConnection';
+import { AudioSubscription } from './AudioSubscription';
+import { SSRCMap } from './SSRCMap';
 
 export class VoiceReceiver {
 	public readonly voiceConnection;
 
-	/**
-	 * Maps SSRCs to user IDs
-	 */
-	public readonly ssrcMap: Map<number, string>;
+	public readonly ssrcMap: SSRCMap;
+
+	private readonly subscriptions: Map<number, AudioSubscription>;
 
 	private connectionData: Partial<ConnectionData>;
 
 	public constructor(voiceConnection: VoiceConnection) {
 		this.voiceConnection = voiceConnection;
-		this.ssrcMap = new Map();
+		this.ssrcMap = new SSRCMap();
+		this.subscriptions = new Map();
 		this.connectionData = {};
 
 		const onWsPacket = (packet: any) => this.onWsPacket(packet);
@@ -72,22 +74,28 @@ export class VoiceReceiver {
 	}
 
 	private onWsPacket(packet: any) {
-		if (packet?.op === VoiceOPCodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
-			this.ssrcMap.forEach((userID, ssrc) => {
-				if (userID === packet.d.user_id) {
-					this.ssrcMap.delete(ssrc);
-				}
+		if (packet.op === VoiceOPCodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
+			this.ssrcMap.deleteByUserId(packet.d.user_id);
+		} else if (
+			packet.op === VoiceOPCodes.Speaking &&
+			typeof packet.d?.user_id === 'string' &&
+			typeof packet.d?.ssrc === 'number'
+		) {
+			this.ssrcMap.add({ userId: packet.d.user_id, audioSSRC: packet.d.ssrc });
+		} else if (
+			packet.op === VoiceOPCodes.ClientConnect &&
+			typeof packet.d?.user_id === 'string' &&
+			typeof packet.d?.audio_ssrc === 'number'
+		) {
+			this.ssrcMap.add({
+				userId: packet.d.user_id,
+				audioSSRC: packet.d.audio_ssrc,
+				videoSSRC: packet.d.video_ssrc === 0 ? undefined : packet.d.video_ssrc,
 			});
-		} else if (packet.d) {
-			const ssrc = packet.d.ssrc ?? packet.d.audio_ssrc;
-			const userID = packet.d.user_id;
-			if (typeof ssrc === 'number' && typeof userID === 'string') {
-				this.ssrcMap.set(ssrc, userID);
-			}
 		}
 	}
 
-	private parseBuffer(buffer: Buffer, mode: string, nonce: Buffer, secretKey: Uint8Array) {
+	private parsePacket(buffer: Buffer, mode: string, nonce: Buffer, secretKey: Uint8Array) {
 		// Choose correct nonce depending on encryption
 		let end;
 		if (mode === 'xsalsa20_poly1305_lite') {
@@ -126,13 +134,25 @@ export class VoiceReceiver {
 	}
 
 	private onUdpMessage(msg: Buffer) {
+		const ssrc = msg.readUInt32BE(8);
+		const subscription = this.subscriptions.get(ssrc);
+		if (!subscription) return;
+
+		const userData = this.ssrcMap.getBySSRC(ssrc);
+		if (!userData) return;
+
 		if (this.connectionData.encryptionMode && this.connectionData.nonceBuffer && this.connectionData.secretKey) {
-			this.parseBuffer(
+			const packet = this.parsePacket(
 				msg,
 				this.connectionData.encryptionMode,
 				this.connectionData.nonceBuffer,
 				this.connectionData.secretKey,
 			);
+			if (packet) {
+				subscription.addPacket(packet);
+			} else {
+				// an error decrypting
+			}
 		}
 	}
 }
