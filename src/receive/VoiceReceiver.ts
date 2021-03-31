@@ -150,6 +150,8 @@ export class VoiceReceiver {
 			);
 			if (packet) {
 				stream.push(packet);
+			} else {
+				stream.destroy(new Error('Failed to parse packet'));
 			}
 		}
 	}
