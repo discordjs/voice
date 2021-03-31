@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import TypedEmitter from 'typed-emitter';
 
 /**
  * The known data for a user in a Discord voice connection
@@ -20,9 +21,17 @@ export interface VoiceUserData {
 }
 
 /**
+ * The events that an SSRCMap may emit.
+ */
+export interface SSRCMapEvents {
+	update: (oldData: VoiceUserData | undefined, newData: VoiceUserData) => void;
+	delete: (deletedData: VoiceUserData) => void;
+}
+
+/**
  * Maps audio SSRCs to data of users in voice connections.
  */
-export class SSRCMap extends EventEmitter {
+export class SSRCMap extends (EventEmitter as new () => TypedEmitter<SSRCMapEvents>) {
 	/**
 	 * The underlying map
 	 */
