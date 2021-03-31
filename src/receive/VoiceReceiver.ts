@@ -164,7 +164,7 @@ export class VoiceReceiver {
 		if (existing) return existing;
 
 		const stream = new AudioReceiveStream();
-		stream.once('end', () => this.subscriptions.delete(ssrc));
+		stream.once('close', () => this.subscriptions.delete(ssrc));
 		this.subscriptions.set(ssrc, stream);
 		return stream;
 	}
