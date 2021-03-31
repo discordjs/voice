@@ -36,6 +36,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		});
 		createSocket.mockImplementation((type) => fake as any);
 		const socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
+		expect(fake.listenerCount('message')).toBe(1);
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
 		await expect(socket.performIPDiscovery(1234)).resolves.toEqual({
@@ -43,7 +44,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 			port: 42381,
 		});
 		// Ensure clean up occurs
-		expect(fake.listenerCount('message')).toBe(0);
+		expect(fake.listenerCount('message')).toBe(1);
 	});
 
 	/*
@@ -59,6 +60,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		});
 		createSocket.mockImplementation((type) => fake as any);
 		const socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
+		expect(fake.listenerCount('message')).toBe(1);
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
 		await expect(socket.performIPDiscovery(1234)).resolves.toEqual({
@@ -66,7 +68,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 			port: 42381,
 		});
 		// Ensure clean up occurs
-		expect(fake.listenerCount('message')).toBe(0);
+		expect(fake.listenerCount('message')).toBe(1);
 	});
 
 	test('Rejects if socket closes before IP discovery can be completed', async () => {
