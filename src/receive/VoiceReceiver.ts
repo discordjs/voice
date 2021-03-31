@@ -155,6 +155,16 @@ export class VoiceReceiver {
 			}
 		}
 	}
+
+	public subscribe(ssrc: number) {
+		const existing = this.subscriptions.get(ssrc);
+		if (existing) return existing;
+
+		const subscription = new AudioSubscription();
+		subscription.once('destroy', () => this.subscriptions.delete(ssrc));
+		this.subscriptions.set(ssrc, subscription);
+		return subscription;
+	}
 }
 
 export function createVoiceReceiver(voiceConnection: VoiceConnection) {

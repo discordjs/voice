@@ -6,7 +6,10 @@ export class ReceiveAudioStream extends Readable {
 	private readonly queue: Buffer[];
 
 	public constructor(options?: ReadableOptions) {
-		super(options);
+		super({
+			...options,
+			objectMode: true,
+		});
 		this.queue = [];
 	}
 
@@ -37,9 +40,10 @@ export class AudioSubscription extends EventEmitter {
 		this.stream?.addPacket(packet);
 	}
 
-	public intoStream() {
+	public createStream() {
 		if (this.stream) return this.stream;
 		this.stream = new ReceiveAudioStream();
+		return this.stream;
 	}
 
 	public destroy() {
