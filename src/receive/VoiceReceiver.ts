@@ -98,7 +98,7 @@ export class VoiceReceiver {
 	 */
 	private onWsPacket(packet: any) {
 		if (packet.op === VoiceOPCodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
-			this.ssrcMap.deleteByUserId(packet.d.user_id);
+			this.ssrcMap.delete(packet.d.user_id);
 		} else if (
 			packet.op === VoiceOPCodes.Speaking &&
 			typeof packet.d?.user_id === 'string' &&
@@ -175,7 +175,7 @@ export class VoiceReceiver {
 		const stream = this.subscriptions.get(ssrc);
 		if (!stream) return;
 
-		const userData = this.ssrcMap.getBySSRC(ssrc);
+		const userData = this.ssrcMap.get(ssrc);
 		if (!userData) return;
 
 		if (this.connectionData.encryptionMode && this.connectionData.nonceBuffer && this.connectionData.secretKey) {
@@ -200,7 +200,7 @@ export class VoiceReceiver {
 	 * @returns A readable stream of Opus packets received from the target
 	 */
 	public subscribe(target: string | number) {
-		const ssrc = typeof target === 'string' ? this.ssrcMap.getByUserId(target)?.audioSSRC : target;
+		const ssrc = this.ssrcMap.get(target)?.audioSSRC;
 		if (!ssrc) {
 			throw new Error(`No known SSRC for ${target}`);
 		}
