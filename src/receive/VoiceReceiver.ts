@@ -7,13 +7,31 @@ import type { VoiceConnection } from '../VoiceConnection';
 import { AudioReceiveStream } from './AudioReceiveStream';
 import { SSRCMap } from './SSRCMap';
 
+/**
+ * Attaches to a VoiceConnection, allowing you to receive audio packets from other
+ * users that are speaking.
+ *
+ * @beta
+ */
 export class VoiceReceiver {
+	/**
+	 * The attached connection of this receiver.
+	 */
 	public readonly voiceConnection;
 
+	/**
+	 * Maps SSRCs to Discord user IDs.
+	 */
 	public readonly ssrcMap: SSRCMap;
 
-	private readonly subscriptions: Map<number, AudioReceiveStream>;
+	/**
+	 * The current audio subscriptions of this receiver.
+	 */
+	public readonly subscriptions: Map<number, AudioReceiveStream>;
 
+	/**
+	 * The connection information for this receiver. Used to decrypt incoming packets.
+	 */
 	private connectionData: Partial<ConnectionData>;
 
 	public constructor(voiceConnection: VoiceConnection) {
@@ -73,6 +91,11 @@ export class VoiceReceiver {
 		}
 	}
 
+	/**
+	 * Called when a packet is received on the attached connection's WebSocket.
+	 *
+	 * @param packet The received packet
+	 */
 	private onWsPacket(packet: any) {
 		if (packet.op === VoiceOPCodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
 			this.ssrcMap.deleteByUserId(packet.d.user_id);
@@ -95,6 +118,15 @@ export class VoiceReceiver {
 		}
 	}
 
+	/**
+	 * Parses an audio packet, decrypting it to yield an Opus packet.
+	 *
+	 * @param buffer The buffer to parse
+	 * @param mode The encryption mode
+	 * @param nonce The nonce buffer used by the connection for encryption
+	 * @param secretKey The secret key used by the connection for encryption
+	 * @returns The parsed Opus packet
+	 */
 	private parsePacket(buffer: Buffer, mode: string, nonce: Buffer, secretKey: Uint8Array) {
 		// Choose correct nonce depending on encryption
 		let end;
@@ -121,7 +153,7 @@ export class VoiceReceiver {
 				const byte = packet[offset];
 				offset++;
 				if (byte === 0) continue;
-				offset += 1 + (0b1111 & (byte >> 4));
+				offset += 1 + (byte >> 4);
 			}
 			// Skip over undocumented Discord byte (if present)
 			const byte = packet.readUInt8(offset);
@@ -133,6 +165,11 @@ export class VoiceReceiver {
 		return packet;
 	}
 
+	/**
+	 * Called when the UDP socket of the attached connection receives a message.
+	 *
+	 * @param msg The received message
+	 */
 	private onUdpMessage(msg: Buffer) {
 		const ssrc = msg.readUInt32BE(8);
 		const stream = this.subscriptions.get(ssrc);
@@ -156,6 +193,12 @@ export class VoiceReceiver {
 		}
 	}
 
+	/**
+	 * Creates a subscription for the given target, specified either by their SSRC or user ID.
+	 *
+	 * @param target The audio SSRC or user ID to subscribe to
+	 * @returns A readable stream of Opus packets received from the target
+	 */
 	public subscribe(target: string | number) {
 		const ssrc = typeof target === 'string' ? this.ssrcMap.getByUserId(target)?.audioSSRC : target;
 		if (!ssrc) {
@@ -172,6 +215,15 @@ export class VoiceReceiver {
 	}
 }
 
+/**
+ * Creates a new voice receiver for the given voice connection.
+ *
+ * @param voiceConnection The voice connection to attach to
+ * @beta
+ * @remarks
+ * Voice receive is an undocumented part of the Discord API - voice receive is not guaranteed
+ * to be stable and may break without notice.
+ */
 export function createVoiceReceiver(voiceConnection: VoiceConnection) {
 	return new VoiceReceiver(voiceConnection);
 }
