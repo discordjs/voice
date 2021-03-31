@@ -1,5 +1,9 @@
 import { Readable, ReadableOptions } from 'stream';
 
+/**
+ * A readable stream of Opus packets received from a specific entity
+ * in a Discord voice connection.
+ */
 export class AudioReceiveStream extends Readable {
 	public constructor(options?: ReadableOptions) {
 		super({
