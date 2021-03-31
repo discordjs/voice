@@ -4,7 +4,7 @@ import { VoiceUDPSocket } from '../networking/VoiceUDPSocket';
 import { VoiceWebSocket } from '../networking/VoiceWebSocket';
 import { methods } from '../util/Secretbox';
 import type { VoiceConnection } from '../VoiceConnection';
-import { AudioSubscription } from './AudioSubscription';
+import { AudioReceiveStream } from './AudioReceiveStream';
 import { SSRCMap } from './SSRCMap';
 
 export class VoiceReceiver {
@@ -12,7 +12,7 @@ export class VoiceReceiver {
 
 	public readonly ssrcMap: SSRCMap;
 
-	private readonly subscriptions: Map<number, AudioSubscription>;
+	private readonly subscriptions: Map<number, AudioReceiveStream>;
 
 	private connectionData: Partial<ConnectionData>;
 
@@ -81,13 +81,13 @@ export class VoiceReceiver {
 			typeof packet.d?.user_id === 'string' &&
 			typeof packet.d?.ssrc === 'number'
 		) {
-			this.ssrcMap.add({ userId: packet.d.user_id, audioSSRC: packet.d.ssrc });
+			this.ssrcMap.update({ userId: packet.d.user_id, audioSSRC: packet.d.ssrc });
 		} else if (
 			packet.op === VoiceOPCodes.ClientConnect &&
 			typeof packet.d?.user_id === 'string' &&
 			typeof packet.d?.audio_ssrc === 'number'
 		) {
-			this.ssrcMap.add({
+			this.ssrcMap.update({
 				userId: packet.d.user_id,
 				audioSSRC: packet.d.audio_ssrc,
 				videoSSRC: packet.d.video_ssrc === 0 ? undefined : packet.d.video_ssrc,
@@ -135,8 +135,8 @@ export class VoiceReceiver {
 
 	private onUdpMessage(msg: Buffer) {
 		const ssrc = msg.readUInt32BE(8);
-		const subscription = this.subscriptions.get(ssrc);
-		if (!subscription) return;
+		const stream = this.subscriptions.get(ssrc);
+		if (!stream) return;
 
 		const userData = this.ssrcMap.getBySSRC(ssrc);
 		if (!userData) return;
@@ -149,21 +149,24 @@ export class VoiceReceiver {
 				this.connectionData.secretKey,
 			);
 			if (packet) {
-				subscription.addPacket(packet);
-			} else {
-				// an error decrypting
+				stream.push(packet);
 			}
 		}
 	}
 
-	public subscribe(ssrc: number) {
+	public subscribe(target: string | number) {
+		const ssrc = typeof target === 'string' ? this.ssrcMap.getByUserId(target)?.audioSSRC : target;
+		if (!ssrc) {
+			throw new Error(`No known SSRC for ${target}`);
+		}
+
 		const existing = this.subscriptions.get(ssrc);
 		if (existing) return existing;
 
-		const subscription = new AudioSubscription();
-		subscription.once('destroy', () => this.subscriptions.delete(ssrc));
-		this.subscriptions.set(ssrc, subscription);
-		return subscription;
+		const stream = new AudioReceiveStream();
+		stream.once('end', () => this.subscriptions.delete(ssrc));
+		this.subscriptions.set(ssrc, stream);
+		return stream;
 	}
 }
 

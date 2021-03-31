@@ -1,3 +1,5 @@
+import EventEmitter from 'events';
+
 type SSRC = number;
 
 export interface VoiceUserData {
@@ -7,18 +9,24 @@ export interface VoiceUserData {
 	subscribed?: boolean;
 }
 
-export class SSRCMap {
+export class SSRCMap extends EventEmitter {
 	private readonly map: Map<SSRC, VoiceUserData>;
 
 	public constructor() {
+		super();
 		this.map = new Map();
 	}
 
-	public add(data: VoiceUserData) {
-		this.map.set(data.audioSSRC, {
-			...(this.map.get(data.audioSSRC) ?? {}),
+	public update(data: VoiceUserData) {
+		const existing = this.map.get(data.audioSSRC);
+
+		const newValue = {
+			...this.map.get(data.audioSSRC),
 			...data,
-		});
+		};
+
+		this.map.set(data.audioSSRC, newValue);
+		this.emit('update', existing, newValue);
 	}
 
 	public getBySSRC(target: SSRC) {
@@ -34,13 +42,18 @@ export class SSRCMap {
 	}
 
 	public deleteBySSRC(target: SSRC) {
-		this.map.delete(target);
+		const existing = this.map.get(target);
+		if (existing) {
+			this.map.delete(target);
+			this.emit('delete', existing);
+		}
 	}
 
 	public deleteByUserId(target: string) {
 		for (const [ssrc, data] of this.map.entries()) {
 			if (data.userId === target) {
 				this.map.delete(ssrc);
+				this.emit('delete', data);
 			}
 		}
 	}
