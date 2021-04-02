@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSocket as _createSocket } from 'dgram';
-import EventEmitter from 'events';
-import { parseLocalPacket, VoiceUDPSocket } from '../VoiceUDPSocket';
+import EventEmitter, { once } from 'events';
+import { VoiceUDPSocket } from '../VoiceUDPSocket';
+
 jest.mock('dgram');
+jest.useFakeTimers();
 
 const createSocket = (_createSocket as unknown) as jest.Mock<typeof _createSocket>;
 
@@ -24,6 +26,10 @@ const VALID_RESPONSE = Buffer.concat([
 	Buffer.alloc(52),
 	Buffer.from([0x8d, 0xa5]),
 ]);
+
+function wait() {
+	return new Promise((resolve) => process.nextTick(resolve));
+}
 
 describe('VoiceUDPSocket#performIPDiscovery', () => {
 	let socket: VoiceUDPSocket;
@@ -64,7 +70,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 			fake.emit('message', fakeResponse);
 			setImmediate(() => fake.emit('message', VALID_RESPONSE));
 		});
-		createSocket.mockImplementation((type) => fake as any);
+		createSocket.mockImplementation(() => fake as any);
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
@@ -82,10 +88,67 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		fake.send = jest.fn().mockImplementation((buffer: Buffer, port: number, address: string) => {
 			setImmediate(() => fake.close());
 		});
-		createSocket.mockImplementation((type) => fake as any);
+		createSocket.mockImplementation(() => fake as any);
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
 		await expect(socket.performIPDiscovery(1234)).rejects.toThrowError();
+	});
+
+	test('Stays alive when messages are echoed back', async () => {
+		const fake = new FakeSocket();
+		fake.send = jest.fn().mockImplementation((buffer: Buffer) => process.nextTick(() => fake.emit('message', buffer)));
+		createSocket.mockImplementation(() => fake as any);
+		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
+
+		let errorCount = 0;
+		socket.on('error', () => errorCount++);
+
+		for (let i = 0; i < 30; i++) {
+			jest.advanceTimersToNextTimer();
+			await wait();
+		}
+
+		expect(errorCount).toBe(0);
+	});
+
+	test('Emits an error when no response received to keep alive messages', async () => {
+		const fake = new FakeSocket();
+		fake.send = jest.fn();
+		createSocket.mockImplementation(() => fake as any);
+		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
+
+		let errorCount = 0;
+		socket.on('error', () => errorCount++);
+
+		for (let i = 0; i < 15; i++) {
+			jest.advanceTimersToNextTimer();
+			await wait();
+		}
+
+		expect(errorCount).toBe(1);
+	});
+
+	test('Recovers from intermittent responses', async () => {
+		const fake = new FakeSocket();
+		const fakeSend = jest.fn();
+		fake.send = fakeSend;
+		createSocket.mockImplementation(() => fake as any);
+		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
+
+		let errorCount = 0;
+		socket.on('error', () => errorCount++);
+
+		for (let i = 0; i < 10; i++) {
+			jest.advanceTimersToNextTimer();
+			await wait();
+		}
+		fakeSend.mockImplementation((buffer: Buffer) => process.nextTick(() => fake.emit('message', buffer)));
+		expect(errorCount).toBe(0);
+		for (let i = 0; i < 30; i++) {
+			jest.advanceTimersToNextTimer();
+			await wait();
+		}
+		expect(errorCount).toBe(0);
 	});
 });

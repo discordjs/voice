@@ -1,7 +1,6 @@
 import { createSocket, Socket } from 'dgram';
 import { EventEmitter } from 'events';
 import { isIPv4 } from 'net';
-import { clearInterval } from 'timers';
 
 /**
  * Stores an IP address and port. Used to store socket details for the local client as well as
