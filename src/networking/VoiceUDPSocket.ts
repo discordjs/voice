@@ -85,14 +85,14 @@ export class VoiceUDPSocket extends EventEmitter {
  */
 export function parseLocalPacket(message: Buffer): SocketConfig {
 	const packet = Buffer.from(message);
-	let ip = '';
-	for (let i = 4; i < packet.indexOf(0, i); i++) ip += String.fromCharCode(packet[i]);
+
+	const ip = packet.slice(4, packet.indexOf(0, 4)).toString('utf-8');
 
 	if (!isIPv4(ip)) {
 		throw new Error('Malformed IP address');
 	}
 
-	const port = parseInt(packet.readUIntLE(packet.length - 2, 2).toString(10), 10);
+	const port = packet.readUInt16LE(packet.length - 2);
 
 	return { ip, port };
 }
