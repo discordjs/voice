@@ -118,16 +118,7 @@ export class VoiceReceiver {
 		}
 	}
 
-	/**
-	 * Parses an audio packet, decrypting it to yield an Opus packet.
-	 *
-	 * @param buffer The buffer to parse
-	 * @param mode The encryption mode
-	 * @param nonce The nonce buffer used by the connection for encryption
-	 * @param secretKey The secret key used by the connection for encryption
-	 * @returns The parsed Opus packet
-	 */
-	private parsePacket(buffer: Buffer, mode: string, nonce: Buffer, secretKey: Uint8Array) {
+	private decrypt(buffer: Buffer, mode: string, nonce: Buffer, secretKey: Uint8Array) {
 		// Choose correct nonce depending on encryption
 		let end;
 		if (mode === 'xsalsa20_poly1305_lite') {
@@ -143,7 +134,21 @@ export class VoiceReceiver {
 		// Open packet
 		const decrypted = methods.open(buffer.slice(12, end), nonce, secretKey);
 		if (!decrypted) return;
-		let packet = Buffer.from(decrypted);
+		return Buffer.from(decrypted);
+	}
+
+	/**
+	 * Parses an audio packet, decrypting it to yield an Opus packet.
+	 *
+	 * @param buffer The buffer to parse
+	 * @param mode The encryption mode
+	 * @param nonce The nonce buffer used by the connection for encryption
+	 * @param secretKey The secret key used by the connection for encryption
+	 * @returns The parsed Opus packet
+	 */
+	private parsePacket(buffer: Buffer, mode: string, nonce: Buffer, secretKey: Uint8Array) {
+		let packet = this.decrypt(buffer, mode, nonce, secretKey);
+		if (!packet) return;
 
 		// Strip RTP Header Extensions (one-byte only)
 		if (packet[0] === 0xbe && packet[1] === 0xde && packet.length > 4) {
