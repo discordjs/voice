@@ -171,6 +171,7 @@ export class VoiceReceiver {
 	 * @param msg The received message
 	 */
 	private onUdpMessage(msg: Buffer) {
+		if (msg.length <= 8) return;
 		const ssrc = msg.readUInt32BE(8);
 		const stream = this.subscriptions.get(ssrc);
 		if (!stream) return;
