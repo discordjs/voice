@@ -11,6 +11,26 @@ export interface SocketConfig {
 	port: number;
 }
 
+interface KeepAlive {
+	value: number;
+	timestamp: number;
+}
+
+/**
+ * The interval in milliseconds at which keep alive datagrams are sent
+ */
+const KEEP_ALIVE_INTERVAL = 5e3;
+
+/**
+ * The maximum number of keep alive packets which can be missed
+ */
+const KEEP_ALIVE_LIMIT = 12;
+
+/**
+ * The maximum value of the keep alive counter
+ */
+const MAX_COUNTER_VALUE = 2 ** 32 - 1;
+
 /**
  * Manages the UDP networking for a voice connection.
  */
@@ -26,15 +46,91 @@ export class VoiceUDPSocket extends EventEmitter {
 	private readonly remote: SocketConfig;
 
 	/**
+	 * A list of keep alives that are waiting to be acknowledged.
+	 */
+	private readonly keepAlives: KeepAlive[];
+
+	/**
+	 * The counter used in the keep alive mechanism
+	 */
+	private keepAliveCounter = 0;
+
+	/**
+	 * The buffer used to write the keep alive counter into
+	 */
+	private readonly keepAliveBuffer: Buffer;
+
+	/**
+	 * The Node.js interval for the keep-alive mechanism
+	 */
+	private readonly keepAliveInterval: NodeJS.Timeout;
+
+	/**
+	 * The time taken to receive a response to keep alive messages
+	 */
+	public ping?: number;
+
+	/**
+	 * The debug logger function, if debugging is enabled.
+	 */
+	private readonly debug: null | ((message: string) => void);
+
+	/**
 	 * Creates a new VoiceUDPSocket.
 	 *
 	 * @param remote - Details of the remote socket
 	 */
-	public constructor(remote: SocketConfig) {
+	public constructor(remote: SocketConfig, debug = false) {
 		super();
 		this.socket = createSocket('udp4');
 		this.socket.on('error', (error: Error) => this.emit('error', error));
+		this.socket.on('message', (buffer: Buffer) => this.onMessage(buffer));
+		this.socket.on('close', () => this.emit('close'));
 		this.remote = remote;
+		this.keepAlives = [];
+		this.keepAliveBuffer = Buffer.alloc(8);
+		this.keepAliveInterval = setInterval(() => this.keepAlive(), KEEP_ALIVE_INTERVAL);
+		setImmediate(() => this.keepAlive());
+
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+	}
+
+	/**
+	 * Called when a message is received on the UDP socket
+	 * @param buffer The received buffer
+	 */
+	private onMessage(buffer: Buffer): void {
+		// Handle keep alive message
+		if (buffer.length === 8) {
+			const counter = buffer.readUInt32LE(0);
+			const index = this.keepAlives.findIndex(({ value }) => value === counter);
+			if (index === -1) return;
+			this.ping = Date.now() - this.keepAlives[index].timestamp;
+			// Delete all keep alives up to and including the received one
+			this.keepAlives.splice(0, index);
+		}
+	}
+
+	/**
+	 * Called at a regular interval to check whether we are still able to send datagrams to Discord
+	 */
+	private keepAlive() {
+		if (this.keepAlives.length >= KEEP_ALIVE_LIMIT) {
+			this.debug?.('UDP socket has not received enough responses from Discord - closing socket');
+			this.destroy();
+			return;
+		}
+
+		this.keepAliveBuffer.writeUInt32LE(this.keepAliveCounter, 0);
+		this.send(this.keepAliveBuffer);
+		this.keepAlives.push({
+			value: this.keepAliveCounter,
+			timestamp: Date.now(),
+		});
+		this.keepAliveCounter++;
+		if (this.keepAliveCounter > MAX_COUNTER_VALUE) {
+			this.keepAliveCounter = 0;
+		}
 	}
 
 	/**
@@ -51,6 +147,7 @@ export class VoiceUDPSocket extends EventEmitter {
 	 */
 	public destroy() {
 		this.socket.close();
+		clearInterval(this.keepAliveInterval);
 	}
 
 	/**
@@ -85,14 +182,14 @@ export class VoiceUDPSocket extends EventEmitter {
  */
 export function parseLocalPacket(message: Buffer): SocketConfig {
 	const packet = Buffer.from(message);
-	let ip = '';
-	for (let i = 4; i < packet.indexOf(0, i); i++) ip += String.fromCharCode(packet[i]);
+
+	const ip = packet.slice(4, packet.indexOf(0, 4)).toString('utf-8');
 
 	if (!isIPv4(ip)) {
 		throw new Error('Malformed IP address');
 	}
 
-	const port = parseInt(packet.readUIntLE(packet.length - 2, 2).toString(10), 10);
+	const port = packet.readUInt16LE(packet.length - 2);
 
 	return { ip, port };
 }
