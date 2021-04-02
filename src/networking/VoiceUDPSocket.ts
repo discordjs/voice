@@ -99,7 +99,6 @@ export class VoiceUDPSocket extends EventEmitter {
 			const index = this.keepAlives.findIndex(({ value }) => value === counter);
 			if (index === -1) return;
 			this.ping = Date.now() - this.keepAlives[index].timestamp;
-			console.log(this.ping);
 			// Delete all keep alives up to and including the received one
 			this.keepAlives.splice(0, index);
 		}
