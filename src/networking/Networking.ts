@@ -171,6 +171,7 @@ export class Networking extends EventEmitter {
 		this.onWsPacket = this.onWsPacket.bind(this);
 		this.onWsClose = this.onWsClose.bind(this);
 		this.onWsDebug = this.onWsDebug.bind(this);
+		this.onUdpClose = this.onUdpClose.bind(this);
 
 		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 
@@ -220,6 +221,7 @@ export class Networking extends EventEmitter {
 		if (oldUdp && oldUdp !== newUdp) {
 			oldUdp.on('error', noop);
 			oldUdp.off('error', this.onChildError);
+			oldUdp.off('close', this.onUdpClose);
 			oldUdp.destroy();
 		}
 
@@ -318,6 +320,19 @@ export class Networking extends EventEmitter {
 	}
 
 	/**
+	 * Called when the UDP socket has closed itself if it has stopped receiving replies from Discord
+	 */
+	private onUdpClose() {
+		if (this.state.code === NetworkingStatusCode.Ready) {
+			this.state = {
+				...this.state,
+				code: NetworkingStatusCode.Resuming,
+				ws: this.createWebSocket(this.state.connectionOptions.endpoint),
+			};
+		}
+	}
+
+	/**
 	 * Called when a packet is received on the connection's WebSocket
 	 * @param packet - The received packet
 	 */
@@ -329,6 +344,7 @@ export class Networking extends EventEmitter {
 
 			const udp = new VoiceUDPSocket({ ip, port });
 			udp.on('error', this.onChildError);
+			udp.once('close', this.onUdpClose);
 			udp
 				.performIPDiscovery(ssrc)
 				.then((localConfig) => {

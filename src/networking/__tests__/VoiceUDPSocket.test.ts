@@ -101,15 +101,15 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		createSocket.mockImplementation(() => fake as any);
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
-		let errorCount = 0;
-		socket.on('error', () => errorCount++);
+		let closed = false;
+		socket.on('close', () => (closed = true));
 
 		for (let i = 0; i < 30; i++) {
 			jest.advanceTimersToNextTimer();
 			await wait();
 		}
 
-		expect(errorCount).toBe(0);
+		expect(closed).toBe(false);
 	});
 
 	test('Emits an error when no response received to keep alive messages', async () => {
@@ -118,15 +118,15 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		createSocket.mockImplementation(() => fake as any);
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
-		let errorCount = 0;
-		socket.on('error', () => errorCount++);
+		let closed = false;
+		socket.on('close', () => (closed = true));
 
 		for (let i = 0; i < 15; i++) {
 			jest.advanceTimersToNextTimer();
 			await wait();
 		}
 
-		expect(errorCount).toBe(1);
+		expect(closed).toBe(true);
 	});
 
 	test('Recovers from intermittent responses', async () => {
@@ -136,19 +136,19 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		createSocket.mockImplementation(() => fake as any);
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
-		let errorCount = 0;
-		socket.on('error', () => errorCount++);
+		let closed = false;
+		socket.on('close', () => (closed = true));
 
 		for (let i = 0; i < 10; i++) {
 			jest.advanceTimersToNextTimer();
 			await wait();
 		}
 		fakeSend.mockImplementation((buffer: Buffer) => process.nextTick(() => fake.emit('message', buffer)));
-		expect(errorCount).toBe(0);
+		expect(closed).toBe(false);
 		for (let i = 0; i < 30; i++) {
 			jest.advanceTimersToNextTimer();
 			await wait();
 		}
-		expect(errorCount).toBe(0);
+		expect(closed).toBe(false);
 	});
 });

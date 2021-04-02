@@ -80,6 +80,7 @@ export class VoiceUDPSocket extends EventEmitter {
 		this.socket = createSocket('udp4');
 		this.socket.on('error', (error: Error) => this.emit('error', error));
 		this.socket.on('message', (buffer: Buffer) => this.onMessage(buffer));
+		this.socket.on('close', () => this.emit('close'));
 		this.remote = remote;
 		this.keepAlives = [];
 		this.keepAliveBuffer = Buffer.alloc(8);
@@ -108,8 +109,8 @@ export class VoiceUDPSocket extends EventEmitter {
 	 */
 	private keepAlive() {
 		if (this.keepAlives.length >= KEEP_ALIVE_LIMIT) {
-			this.emit('error', new Error('UDP: Unable to ping Discord - connection has likely been lost'));
-			clearInterval(this.keepAliveInterval);
+			this.destroy();
+			return;
 		}
 
 		this.keepAliveBuffer.writeUInt32LE(this.keepAliveCounter, 0);
