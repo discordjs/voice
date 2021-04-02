@@ -26,6 +26,12 @@ const VALID_RESPONSE = Buffer.concat([
 ]);
 
 describe('VoiceUDPSocket#performIPDiscovery', () => {
+	let socket: VoiceUDPSocket;
+
+	afterEach(() => {
+		socket.destroy();
+	});
+
 	/*
 		Ensures that the UDP socket sends data and parses the response correctly
 	*/
@@ -35,7 +41,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 			fake.emit('message', VALID_RESPONSE);
 		});
 		createSocket.mockImplementation((type) => fake as any);
-		const socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
+		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
 		await expect(socket.performIPDiscovery(1234)).resolves.toEqual({
@@ -58,7 +64,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 			setImmediate(() => fake.emit('message', VALID_RESPONSE));
 		});
 		createSocket.mockImplementation((type) => fake as any);
-		const socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
+		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
 		await expect(socket.performIPDiscovery(1234)).resolves.toEqual({
@@ -75,7 +81,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 			setImmediate(() => fake.close());
 		});
 		createSocket.mockImplementation((type) => fake as any);
-		const socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
+		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
 		await expect(socket.performIPDiscovery(1234)).rejects.toThrowError();
