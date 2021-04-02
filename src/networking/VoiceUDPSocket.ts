@@ -71,11 +71,16 @@ export class VoiceUDPSocket extends EventEmitter {
 	public ping?: number;
 
 	/**
+	 * The debug logger function, if debugging is enabled.
+	 */
+	private readonly debug: null | ((message: string) => void);
+
+	/**
 	 * Creates a new VoiceUDPSocket.
 	 *
 	 * @param remote - Details of the remote socket
 	 */
-	public constructor(remote: SocketConfig) {
+	public constructor(remote: SocketConfig, debug = false) {
 		super();
 		this.socket = createSocket('udp4');
 		this.socket.on('error', (error: Error) => this.emit('error', error));
@@ -86,6 +91,8 @@ export class VoiceUDPSocket extends EventEmitter {
 		this.keepAliveBuffer = Buffer.alloc(8);
 		this.keepAliveInterval = setInterval(() => this.keepAlive(), KEEP_ALIVE_INTERVAL);
 		setImmediate(() => this.keepAlive());
+
+		this.debug = debug ? this.emit.bind(this, 'debug') : null;
 	}
 
 	/**
@@ -109,6 +116,7 @@ export class VoiceUDPSocket extends EventEmitter {
 	 */
 	private keepAlive() {
 		if (this.keepAlives.length >= KEEP_ALIVE_LIMIT) {
+			this.debug?.('UDP socket has not received enough responses from Discord - closing socket');
 			this.destroy();
 			return;
 		}

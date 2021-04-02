@@ -171,6 +171,7 @@ export class Networking extends EventEmitter {
 		this.onWsPacket = this.onWsPacket.bind(this);
 		this.onWsClose = this.onWsClose.bind(this);
 		this.onWsDebug = this.onWsDebug.bind(this);
+		this.onUdpDebug = this.onUdpDebug.bind(this);
 		this.onUdpClose = this.onUdpClose.bind(this);
 
 		this.debug = debug ? this.emit.bind(this, 'debug') : null;
@@ -222,6 +223,7 @@ export class Networking extends EventEmitter {
 			oldUdp.on('error', noop);
 			oldUdp.off('error', this.onChildError);
 			oldUdp.off('close', this.onUdpClose);
+			oldUdp.off('debug', this.onUdpDebug);
 			oldUdp.destroy();
 		}
 
@@ -344,6 +346,7 @@ export class Networking extends EventEmitter {
 
 			const udp = new VoiceUDPSocket({ ip, port });
 			udp.on('error', this.onChildError);
+			udp.on('debug', this.onUdpDebug);
 			udp.once('close', this.onUdpClose);
 			udp
 				.performIPDiscovery(ssrc)
@@ -410,6 +413,15 @@ export class Networking extends EventEmitter {
 	 */
 	private onWsDebug(message: string) {
 		this.debug?.(`[WS] ${message}`);
+	}
+
+	/**
+	 * Propagates debug messages from the child UDPSocket.
+	 *
+	 * @param message - The emitted debug message
+	 */
+	private onUdpDebug(message: string) {
+		this.debug?.(`[UDP] ${message}`);
 	}
 
 	/**
