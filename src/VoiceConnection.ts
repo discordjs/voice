@@ -485,21 +485,27 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 	}
 
 	/**
-	 * The latest ping (in milliseconds) for the WebSocket connection for this voice connection, if this
-	 * data is available.
+	 * The latest ping (in milliseconds) for the WebSocket connection and audio playback for this voice
+	 * connection, if this data is available.
 	 *
 	 * @remarks
 	 * For this data to be available, the VoiceConnection must be in the Ready state, and its underlying
-	 * WebSocket connection must have had at least one ping-pong exchange.
+	 * WebSocket connection and UDP socket must have had at least one ping-pong exchange.
 	 */
 	public get ping() {
 		if (
 			this.state.status === VoiceConnectionStatus.Ready &&
-			this.state.networking.state.code === NetworkingStatusCode.Ready &&
-			typeof this.state.networking.state.ws.ping !== 'undefined'
+			this.state.networking.state.code === NetworkingStatusCode.Ready
 		) {
-			return this.state.networking.state.ws.ping;
+			return {
+				ws: this.state.networking.state.ws.ping,
+				udp: this.state.networking.state.udp.ping,
+			};
 		}
+		return {
+			ws: undefined,
+			udp: undefined,
+		};
 	}
 
 	/**
