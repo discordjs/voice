@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JoinVoiceChannelOptions | @discordjs/voice</title>
+	<title>SSRCMapEvents | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="joinvoicechanneloptions.html">JoinVoiceChannelOptions</a>
+					<a href="ssrcmapevents.html">SSRCMapEvents</a>
 				</li>
 			</ul>
-			<h1>Interface JoinVoiceChannelOptions</h1>
+			<h1>Interface SSRCMapEvents</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The options that can be given when joining a voice channel.</p>
+						<p>The events that an SSRCMap may emit.</p>
 					</div>
 				</div>
 			</section>
@@ -76,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">JoinVoiceChannelOptions</span>
+						<span class="target">SSRCMapEvents</span>
 					</li>
 				</ul>
 			</section>
@@ -87,10 +87,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="joinvoicechanneloptions.html#channelid" class="tsd-kind-icon">channel<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="joinvoicechanneloptions.html#guildid" class="tsd-kind-icon">guild<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="joinvoicechanneloptions.html#selfdeaf" class="tsd-kind-icon">self<wbr>Deaf</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="joinvoicechanneloptions.html#selfmute" class="tsd-kind-icon">self<wbr>Mute</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ssrcmapevents.html#delete" class="tsd-kind-icon">delete</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ssrcmapevents.html#update" class="tsd-kind-icon">update</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,63 +97,68 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="channelid" class="tsd-anchor"></a>
-					<h3>channel<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">channel<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="delete" class="tsd-anchor"></a>
+					<h3>delete</h3>
+					<div class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>deletedData<span class="tsd-signature-symbol">: </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/7039a6c/src/joinVoiceChannel.ts#L24">src/joinVoiceChannel.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/7039a6c/src/receive/SSRCMap.ts#L28">src/receive/SSRCMap.ts:28</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The ID of the Discord voice channel to join</p>
-						</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>deletedData<span class="tsd-signature-symbol">: </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>deletedData: <a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="guildid" class="tsd-anchor"></a>
-					<h3>guild<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">guild<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="update" class="tsd-anchor"></a>
+					<h3>update</h3>
+					<div class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>oldData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a>, newData<span class="tsd-signature-symbol">: </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/7039a6c/src/joinVoiceChannel.ts#L28">src/joinVoiceChannel.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/7039a6c/src/receive/SSRCMap.ts#L27">src/receive/SSRCMap.ts:27</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The ID of the guild that the voice channel belongs to</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="selfdeaf" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> self<wbr>Deaf</h3>
-					<div class="tsd-signature tsd-kind-icon">self<wbr>Deaf<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/7039a6c/src/joinVoiceChannel.ts#L32">src/joinVoiceChannel.ts:32</a></li>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>oldData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a>, newData<span class="tsd-signature-symbol">: </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>oldData: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a></h5>
+											</li>
+											<li>
+												<h5>newData: <a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
 						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether to join the channel deafened (defaults to true)</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="selfmute" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> self<wbr>Mute</h3>
-					<div class="tsd-signature tsd-kind-icon">self<wbr>Mute<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/7039a6c/src/joinVoiceChannel.ts#L36">src/joinVoiceChannel.ts:36</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether to join the channel muted (defaults to true)</p>
-						</div>
 					</div>
 				</section>
 			</section>
@@ -230,30 +233,24 @@
 					<li class=" tsd-kind-interface">
 						<a href="discordgatewayadapterlibrarymethods.html" class="tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Library<wbr>Methods</a>
 					</li>
+					<li class=" tsd-kind-interface">
+						<a href="joinvoicechanneloptions.html" class="tsd-kind-icon">Join<wbr>Voice<wbr>Channel<wbr>Options</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="joinvoicechanneloptions.html" class="tsd-kind-icon">Join<wbr>Voice<wbr>Channel<wbr>Options</a>
+						<a href="ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="joinvoicechanneloptions.html#channelid" class="tsd-kind-icon">channel<wbr>Id</a>
+								<a href="ssrcmapevents.html#delete" class="tsd-kind-icon">delete</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="joinvoicechanneloptions.html#guildid" class="tsd-kind-icon">guild<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="joinvoicechanneloptions.html#selfdeaf" class="tsd-kind-icon">self<wbr>Deaf</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="joinvoicechanneloptions.html#selfmute" class="tsd-kind-icon">self<wbr>Mute</a>
+								<a href="ssrcmapevents.html#update" class="tsd-kind-icon">update</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface">
-						<a href="ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a>
-					</li>
 					<li class=" tsd-kind-interface">
 						<a href="voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a>
 					</li>
