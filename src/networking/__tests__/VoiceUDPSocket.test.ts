@@ -44,12 +44,13 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
+		expect(fake.listenerCount('message')).toBe(1);
 		await expect(socket.performIPDiscovery(1234)).resolves.toEqual({
 			ip: '94.195.157.2',
 			port: 42381,
 		});
 		// Ensure clean up occurs
-		expect(fake.listenerCount('message')).toBe(0);
+		expect(fake.listenerCount('message')).toBe(1);
 	});
 
 	/*
@@ -67,12 +68,13 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		expect(createSocket).toHaveBeenCalledWith('udp4');
+		expect(fake.listenerCount('message')).toBe(1);
 		await expect(socket.performIPDiscovery(1234)).resolves.toEqual({
 			ip: '94.195.157.2',
 			port: 42381,
 		});
 		// Ensure clean up occurs
-		expect(fake.listenerCount('message')).toBe(0);
+		expect(fake.listenerCount('message')).toBe(1);
 	});
 
 	test('Rejects if socket closes before IP discovery can be completed', async () => {
