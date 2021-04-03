@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VoiceConnectionDestroyedState | @discordjs/voice</title>
+	<title>VoiceUserData | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="voiceconnectiondestroyedstate.html">VoiceConnectionDestroyedState</a>
+					<a href="voiceuserdata.html">VoiceUserData</a>
 				</li>
 			</ul>
-			<h1>Interface VoiceConnectionDestroyedState</h1>
+			<h1>Interface VoiceUserData</h1>
 		</div>
 	</div>
 </header>
@@ -68,9 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The state that a VoiceConnection will be in when it has been permanently been destroyed by the
-							user and untracked by the library. It cannot be reconnected, instead, a new VoiceConnection
-						needs to be established.</p>
+						<p>The known data for a user in a Discord voice connection</p>
 					</div>
 				</div>
 			</section>
@@ -78,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">VoiceConnectionDestroyedState</span>
+						<span class="target">VoiceUserData</span>
 					</li>
 				</ul>
 			</section>
@@ -89,7 +87,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectiondestroyedstate.html#status" class="tsd-kind-icon">status</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceuserdata.html#audiossrc" class="tsd-kind-icon">audioSSRC</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceuserdata.html#userid" class="tsd-kind-icon">user<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceuserdata.html#videossrc" class="tsd-kind-icon">videoSSRC</a></li>
 							</ul>
 						</section>
 					</div>
@@ -98,14 +98,50 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="status" class="tsd-anchor"></a>
-					<h3>status</h3>
-					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <a href="../enums/voiceconnectionstatus.html#destroyed" class="tsd-signature-type" data-tsd-kind="Enumeration member">Destroyed</a></div>
+					<a name="audiossrc" class="tsd-anchor"></a>
+					<h3>audioSSRC</h3>
+					<div class="tsd-signature tsd-kind-icon">audioSSRC<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/8f7a7bf/src/VoiceConnection.ts#L99">src/VoiceConnection.ts:99</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/8f7a7bf/src/receive/SSRCMap.ts#L11">src/receive/SSRCMap.ts:11</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The SSRC of the user&#39;s audio stream</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="userid" class="tsd-anchor"></a>
+					<h3>user<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">user<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/8f7a7bf/src/receive/SSRCMap.ts#L20">src/receive/SSRCMap.ts:20</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The Discord user ID of the user</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="videossrc" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> videoSSRC</h3>
+					<div class="tsd-signature tsd-kind-icon">videoSSRC<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/8f7a7bf/src/receive/SSRCMap.ts#L16">src/receive/SSRCMap.ts:16</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The SSRC of the user&#39;s video stream (if one exists).
+							Cannot be 0. If undefined, the user has no video stream.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -188,18 +224,9 @@
 					<li class=" tsd-kind-interface">
 						<a href="voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a>
 					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface">
+					<li class=" tsd-kind-interface">
 						<a href="voiceconnectiondestroyedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Destroyed<wbr>State</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectiondestroyedstate.html#status" class="tsd-kind-icon">status</a>
-							</li>
-						</ul>
 					</li>
-				</ul>
-				<ul class="after-current">
 					<li class=" tsd-kind-interface">
 						<a href="voiceconnectiondisconnectedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State</a>
 					</li>
@@ -209,9 +236,24 @@
 					<li class=" tsd-kind-interface">
 						<a href="voiceconnectionsignallingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Signalling<wbr>State</a>
 					</li>
-					<li class=" tsd-kind-interface">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface">
 						<a href="voiceuserdata.html" class="tsd-kind-icon">Voice<wbr>User<wbr>Data</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="voiceuserdata.html#audiossrc" class="tsd-kind-icon">audioSSRC</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="voiceuserdata.html#userid" class="tsd-kind-icon">user<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="voiceuserdata.html#videossrc" class="tsd-kind-icon">videoSSRC</a>
+							</li>
+						</ul>
 					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-type-alias">
 						<a href="../modules.html#audioplayerevents" class="tsd-kind-icon">Audio<wbr>Player<wbr>Events</a>
 					</li>

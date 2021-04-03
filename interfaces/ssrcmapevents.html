@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VoiceConnectionDestroyedState | @discordjs/voice</title>
+	<title>SSRCMapEvents | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="voiceconnectiondestroyedstate.html">VoiceConnectionDestroyedState</a>
+					<a href="ssrcmapevents.html">SSRCMapEvents</a>
 				</li>
 			</ul>
-			<h1>Interface VoiceConnectionDestroyedState</h1>
+			<h1>Interface SSRCMapEvents</h1>
 		</div>
 	</div>
 </header>
@@ -68,9 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The state that a VoiceConnection will be in when it has been permanently been destroyed by the
-							user and untracked by the library. It cannot be reconnected, instead, a new VoiceConnection
-						needs to be established.</p>
+						<p>The events that an SSRCMap may emit.</p>
 					</div>
 				</div>
 			</section>
@@ -78,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">VoiceConnectionDestroyedState</span>
+						<span class="target">SSRCMapEvents</span>
 					</li>
 				</ul>
 			</section>
@@ -89,7 +87,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectiondestroyedstate.html#status" class="tsd-kind-icon">status</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ssrcmapevents.html#delete" class="tsd-kind-icon">delete</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ssrcmapevents.html#update" class="tsd-kind-icon">update</a></li>
 							</ul>
 						</section>
 					</div>
@@ -98,14 +97,69 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="status" class="tsd-anchor"></a>
-					<h3>status</h3>
-					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <a href="../enums/voiceconnectionstatus.html#destroyed" class="tsd-signature-type" data-tsd-kind="Enumeration member">Destroyed</a></div>
+					<a name="delete" class="tsd-anchor"></a>
+					<h3>delete</h3>
+					<div class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>deletedData<span class="tsd-signature-symbol">: </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/8f7a7bf/src/VoiceConnection.ts#L99">src/VoiceConnection.ts:99</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/8f7a7bf/src/receive/SSRCMap.ts#L28">src/receive/SSRCMap.ts:28</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>deletedData<span class="tsd-signature-symbol">: </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>deletedData: <a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="update" class="tsd-anchor"></a>
+					<h3>update</h3>
+					<div class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>oldData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a>, newData<span class="tsd-signature-symbol">: </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/8f7a7bf/src/receive/SSRCMap.ts#L27">src/receive/SSRCMap.ts:27</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>oldData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a>, newData<span class="tsd-signature-symbol">: </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>oldData: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a></h5>
+											</li>
+											<li>
+												<h5>newData: <a href="voiceuserdata.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceUserData</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -182,24 +236,27 @@
 					<li class=" tsd-kind-interface">
 						<a href="joinvoicechanneloptions.html" class="tsd-kind-icon">Join<wbr>Voice<wbr>Channel<wbr>Options</a>
 					</li>
-					<li class=" tsd-kind-interface">
-						<a href="ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="voiceconnectiondestroyedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Destroyed<wbr>State</a>
+						<a href="ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectiondestroyedstate.html#status" class="tsd-kind-icon">status</a>
+								<a href="ssrcmapevents.html#delete" class="tsd-kind-icon">delete</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="ssrcmapevents.html#update" class="tsd-kind-icon">update</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface">
+						<a href="voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="voiceconnectiondestroyedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Destroyed<wbr>State</a>
+					</li>
 					<li class=" tsd-kind-interface">
 						<a href="voiceconnectiondisconnectedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State</a>
 					</li>
