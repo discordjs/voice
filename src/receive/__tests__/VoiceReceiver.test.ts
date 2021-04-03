@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { VoiceReceiver } from '../VoiceReceiver';
 import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
-import { RTP_PACKET } from './fixtures';
-import { once } from 'events';
+import { RTP_PACKET } from './fixtures/rtp';
+import EventEmitter, { once } from 'events';
 import { createVoiceReceiver } from '..';
 import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
+import * as fixtures from './fixtures/states';
 
 jest.mock('../../VoiceConnection');
 jest.mock('../SSRCMap');
@@ -144,4 +145,38 @@ describe('VoiceReceiver', () => {
 			});
 		});
 	});
+});
+
+test('Receiver tracks state changes', () => {
+	const voiceConnection: any = new EventEmitter();
+
+	voiceConnection.state = fixtures.state1;
+
+	const receiver = createVoiceReceiver(voiceConnection);
+
+	const onWsPacketSpy = jest.fn();
+	receiver['onWsPacket'] = onWsPacketSpy;
+
+	const onUdpMessageSpy = jest.fn();
+	receiver['onUdpMessage'] = onUdpMessageSpy;
+
+	const networking1 = fixtures.state2.vc.networking;
+	voiceConnection.state = fixtures.state2.vc;
+
+	voiceConnection.emit('stateChange', fixtures.state1.vc, voiceConnection.state);
+	fixtures.state2.networking.ws.emit('packet', Symbol('message'));
+	expect(onWsPacketSpy).toHaveBeenCalled();
+	onWsPacketSpy.mockClear();
+
+	networking1.state = fixtures.state3.networking;
+	networking1.emit('stateChange', fixtures.state2.networking, fixtures.state3.networking);
+
+	fixtures.state3.networking.ws.emit('packet', Symbol('message'));
+	expect(onWsPacketSpy).toHaveBeenCalled();
+
+	fixtures.state3.networking.udp.emit('message', Symbol('message'));
+	expect(onUdpMessageSpy).toHaveBeenCalled();
+
+	onWsPacketSpy.mockClear();
+	onUdpMessageSpy.mockClear();
 });

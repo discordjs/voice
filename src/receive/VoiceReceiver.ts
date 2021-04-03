@@ -65,7 +65,7 @@ export class VoiceReceiver {
 
 			if (newUdp !== oldUdp) {
 				oldUdp?.off('message', onUdpMessage);
-				oldUdp?.on('message', onUdpMessage);
+				newUdp?.on('message', onUdpMessage);
 			}
 		};
 
@@ -75,7 +75,13 @@ export class VoiceReceiver {
 
 			if (newNetworking !== oldNetworking) {
 				oldNetworking?.off('stateChange', onNetworkingChange);
-				oldNetworking?.on('stateChange', onNetworkingChange);
+				newNetworking?.on('stateChange', onNetworkingChange);
+				if (newNetworking) {
+					const ws = Reflect.get(newNetworking.state, 'ws') as VoiceWebSocket | undefined;
+					const udp = Reflect.get(newNetworking.state, 'udp') as VoiceUDPSocket | undefined;
+					ws?.on('packet', onWsPacket);
+					udp?.on('message', onUdpMessage);
+				}
 			}
 		});
 
