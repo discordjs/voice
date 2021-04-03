@@ -44,6 +44,16 @@ export class VoiceReceiver {
 		const onWsPacket = (packet: any) => this.onWsPacket(packet);
 		const onUdpMessage = (msg: Buffer) => this.onUdpMessage(msg);
 
+		const applyConnectionData = (connectionData: Partial<ConnectionData>) => {
+			this.connectionData = {
+				...this.connectionData,
+				...connectionData,
+			};
+			if (connectionData.packetsPlayed === 0) {
+				this.voiceConnection.playOpusPacket(SILENCE_FRAME);
+			}
+		};
+
 		// Bind listeners for updates
 		const onNetworkingChange = (oldState: NetworkingState, newState: NetworkingState) => {
 			const oldWs = Reflect.get(oldState, 'ws') as VoiceWebSocket | undefined;
@@ -52,15 +62,7 @@ export class VoiceReceiver {
 			const newUdp = Reflect.get(newState, 'udp') as VoiceUDPSocket | undefined;
 
 			const connectionData = Reflect.get(newState, 'connectionData') as Partial<ConnectionData> | undefined;
-			if (connectionData) {
-				this.connectionData = {
-					...this.connectionData,
-					...connectionData,
-				};
-				if (connectionData.packetsPlayed === 0) {
-					this.voiceConnection.playOpusPacket(SILENCE_FRAME);
-				}
-			}
+			if (connectionData) applyConnectionData(connectionData);
 
 			if (newWs !== oldWs) {
 				oldWs?.off('packet', onWsPacket);
@@ -88,13 +90,7 @@ export class VoiceReceiver {
 						| undefined;
 					ws?.on('packet', onWsPacket);
 					udp?.on('message', onUdpMessage);
-					this.connectionData = {
-						...this.connectionData,
-						...connectionData,
-					};
-					if (this.connectionData.packetsPlayed === 0) {
-						this.voiceConnection.playOpusPacket(SILENCE_FRAME);
-					}
+					if (connectionData) applyConnectionData(connectionData);
 				}
 			}
 		});
@@ -107,10 +103,7 @@ export class VoiceReceiver {
 			const connectionData = Reflect.get(networking.state, 'connectionData') as Partial<ConnectionData> | undefined;
 			ws?.on('packet', onWsPacket);
 			udp?.on('message', onUdpMessage);
-			this.connectionData = connectionData ?? {};
-			if (this.connectionData.packetsPlayed === 0) {
-				this.voiceConnection.playOpusPacket(SILENCE_FRAME);
-			}
+			if (connectionData) applyConnectionData(connectionData);
 		}
 	}
 
