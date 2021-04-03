@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { VoiceReceiver } from '../VoiceReceiver';
 import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
-import { RTP_PACKET } from './fixtures/rtp';
+import { RTP_PACKET_DESKTOP, RTP_PACKET_CHROME, RTP_PACKET_ANDROID } from './fixtures/rtp';
 import EventEmitter, { once } from 'events';
 import { createVoiceReceiver } from '..';
 import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
@@ -33,8 +33,12 @@ describe('VoiceReceiver', () => {
 		};
 	});
 
-	test('onUdpMessage: RTP packet', async () => {
-		receiver['decrypt'] = jest.fn().mockImplementationOnce(() => RTP_PACKET.opusFrame);
+	test.each([
+		['RTP Packet Desktop', RTP_PACKET_DESKTOP],
+		['RTP Packet Chrome', RTP_PACKET_CHROME],
+		['RTP Packet Android', RTP_PACKET_ANDROID],
+	])('onUdpMessage: %s', async (testName, RTP_PACKET) => {
+		receiver['decrypt'] = jest.fn().mockImplementationOnce(() => RTP_PACKET.decrypted);
 
 		const spy = jest.spyOn(receiver.ssrcMap, 'get');
 		spy.mockImplementation(() => ({
@@ -46,7 +50,7 @@ describe('VoiceReceiver', () => {
 
 		receiver['onUdpMessage'](RTP_PACKET.packet);
 		await nextTick();
-		expect(stream.read()).toBe(RTP_PACKET.opusFrame);
+		expect(stream.read()).toEqual(RTP_PACKET.opusFrame);
 	});
 
 	test('onUdpMessage: <8 bytes packet', () => {
@@ -58,15 +62,15 @@ describe('VoiceReceiver', () => {
 
 		const spy = jest.spyOn(receiver.ssrcMap, 'get');
 		spy.mockImplementation(() => ({
-			audioSSRC: RTP_PACKET.ssrc,
+			audioSSRC: RTP_PACKET_DESKTOP.ssrc,
 			userId: '123',
 		}));
 
-		const stream = receiver.subscribe(RTP_PACKET.ssrc);
+		const stream = receiver.subscribe(RTP_PACKET_DESKTOP.ssrc);
 
 		const errorEvent = once(stream, 'error');
 
-		receiver['onUdpMessage'](RTP_PACKET.packet);
+		receiver['onUdpMessage'](RTP_PACKET_DESKTOP.packet);
 		await nextTick();
 		await expect(errorEvent).resolves.toMatchObject([expect.any(Error)]);
 		expect(receiver.subscriptions.size).toBe(0);
@@ -75,16 +79,16 @@ describe('VoiceReceiver', () => {
 	test('subscribe: only allows one subscribe stream per SSRC', () => {
 		const spy = jest.spyOn(receiver.ssrcMap, 'get');
 		spy.mockImplementation(() => ({
-			audioSSRC: RTP_PACKET.ssrc,
+			audioSSRC: RTP_PACKET_DESKTOP.ssrc,
 			userId: '123',
 		}));
 
-		const stream = receiver.subscribe(RTP_PACKET.ssrc);
-		expect(receiver.subscribe(RTP_PACKET.ssrc)).toBe(stream);
+		const stream = receiver.subscribe(RTP_PACKET_DESKTOP.ssrc);
+		expect(receiver.subscribe(RTP_PACKET_DESKTOP.ssrc)).toBe(stream);
 	});
 
 	test('subscribe: refuses unknown SSRC or user IDs', () => {
-		expect(() => receiver.subscribe(RTP_PACKET.ssrc)).toThrow();
+		expect(() => receiver.subscribe(RTP_PACKET_DESKTOP.ssrc)).toThrow();
 	});
 
 	describe('onWsPacket', () => {
