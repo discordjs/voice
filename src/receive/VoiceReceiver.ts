@@ -1,4 +1,5 @@
 import { VoiceOPCodes } from 'discord-api-types/v8';
+import { SILENCE_FRAME } from '../audio/AudioPlayer';
 import { ConnectionData, Networking, NetworkingState } from '../networking/Networking';
 import { VoiceUDPSocket } from '../networking/VoiceUDPSocket';
 import { VoiceWebSocket } from '../networking/VoiceWebSocket';
@@ -56,6 +57,9 @@ export class VoiceReceiver {
 					...this.connectionData,
 					...connectionData,
 				};
+				if (connectionData.packetsPlayed === 0) {
+					this.voiceConnection.playOpusPacket(SILENCE_FRAME);
+				}
 			}
 
 			if (newWs !== oldWs) {
@@ -79,8 +83,18 @@ export class VoiceReceiver {
 				if (newNetworking) {
 					const ws = Reflect.get(newNetworking.state, 'ws') as VoiceWebSocket | undefined;
 					const udp = Reflect.get(newNetworking.state, 'udp') as VoiceUDPSocket | undefined;
+					const connectionData = Reflect.get(newNetworking.state, 'connectionData') as
+						| Partial<ConnectionData>
+						| undefined;
 					ws?.on('packet', onWsPacket);
 					udp?.on('message', onUdpMessage);
+					this.connectionData = {
+						...this.connectionData,
+						...connectionData,
+					};
+					if (this.connectionData.packetsPlayed === 0) {
+						this.voiceConnection.playOpusPacket(SILENCE_FRAME);
+					}
 				}
 			}
 		});
@@ -94,6 +108,9 @@ export class VoiceReceiver {
 			ws?.on('packet', onWsPacket);
 			udp?.on('message', onUdpMessage);
 			this.connectionData = connectionData ?? {};
+			if (this.connectionData.packetsPlayed === 0) {
+				this.voiceConnection.playOpusPacket(SILENCE_FRAME);
+			}
 		}
 	}
 

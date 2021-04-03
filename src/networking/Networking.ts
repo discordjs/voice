@@ -139,6 +139,7 @@ export interface ConnectionData {
 	secretKey: Uint8Array;
 	sequence: number;
 	timestamp: number;
+	packetsPlayed: number;
 	nonce: number;
 	nonceBuffer: Buffer;
 	speaking: boolean;
@@ -395,6 +396,7 @@ export class Networking extends EventEmitter {
 					nonce: 0,
 					nonceBuffer: Buffer.alloc(24),
 					speaking: false,
+					packetsPlayed: 0,
 				},
 			};
 		} else if (packet.op === VoiceOPCodes.Resumed && this.state.code === NetworkingStatusCode.Resuming) {
@@ -467,6 +469,7 @@ export class Networking extends EventEmitter {
 		const state = this.state;
 		if (state.code !== NetworkingStatusCode.Ready) return;
 		const { connectionData } = state;
+		connectionData.packetsPlayed++;
 		connectionData.sequence++;
 		connectionData.timestamp += TIMESTAMP_INC;
 		if (connectionData.sequence >= 2 ** 16) connectionData.sequence = 0;

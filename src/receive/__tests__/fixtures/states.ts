@@ -49,7 +49,9 @@ export const state3 = {
 const networking2 = new EventEmitter() as any;
 const networkingState4 = {
 	code: NetworkingStatusCode.Ready,
-	connectionData: {} as any,
+	connectionData: {
+		packetsPlayed: 0,
+	} as any,
 	connectionOptions: {} as any,
 	udp: new EventEmitter() as any,
 	ws: new EventEmitter() as any,

@@ -153,6 +153,7 @@ describe('VoiceReceiver', () => {
 
 test('Receiver tracks state changes', () => {
 	const voiceConnection: any = new EventEmitter();
+	voiceConnection.playOpusPacket = jest.fn();
 
 	voiceConnection.state = fixtures.state1;
 
@@ -185,7 +186,11 @@ test('Receiver tracks state changes', () => {
 	onUdpMessageSpy.mockClear();
 
 	voiceConnection.state = fixtures.state4.vc;
+	expect(voiceConnection.playOpusPacket).not.toHaveBeenCalled();
+
 	voiceConnection.emit('stateChange', fixtures.state3.vc, voiceConnection.state);
+
+	expect(voiceConnection.playOpusPacket).toHaveBeenCalled();
 
 	fixtures.state4.networking.ws.emit('packet', Symbol('message'));
 	expect(onWsPacketSpy).toHaveBeenCalled();
@@ -197,8 +202,11 @@ test('Receiver tracks state changes', () => {
 test('Receiver binds to immediately ready voice connection', () => {
 	const voiceConnection: any = new EventEmitter();
 	voiceConnection.state = fixtures.state4.vc;
+	voiceConnection.playOpusPacket = jest.fn();
 
 	const receiver = createVoiceReceiver(voiceConnection);
+
+	expect(voiceConnection.playOpusPacket).toHaveBeenCalled();
 
 	const onWsPacketSpy = jest.fn();
 	receiver['onWsPacket'] = onWsPacketSpy;
