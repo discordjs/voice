@@ -4,6 +4,7 @@ import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../.
 import { RTP_PACKET } from './fixtures';
 import { once } from 'events';
 import { createVoiceReceiver } from '..';
+import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
 
 jest.mock('../../VoiceConnection');
 jest.mock('../SSRCMap');
@@ -83,5 +84,64 @@ describe('VoiceReceiver', () => {
 
 	test('subscribe: refuses unknown SSRC or user IDs', () => {
 		expect(() => receiver.subscribe(RTP_PACKET.ssrc)).toThrow();
+	});
+
+	describe('onWsPacket', () => {
+		test('CLIENT_DISCONNECT packet', () => {
+			const spy = jest.spyOn(receiver.ssrcMap, 'delete');
+			receiver['onWsPacket']({
+				op: VoiceOPCodes.ClientDisconnect,
+				d: {
+					user_id: '123abc',
+				},
+			});
+			expect(spy).toHaveBeenCalledWith('123abc');
+		});
+
+		test('SPEAKING packet', () => {
+			const spy = jest.spyOn(receiver.ssrcMap, 'update');
+			receiver['onWsPacket']({
+				op: VoiceOPCodes.Speaking,
+				d: {
+					ssrc: 123,
+					user_id: '123abc',
+					speaking: 1,
+				},
+			});
+			expect(spy).toHaveBeenCalledWith({
+				audioSSRC: 123,
+				userId: '123abc',
+			});
+		});
+
+		test('CLIENT_CONNECT packet', () => {
+			const spy = jest.spyOn(receiver.ssrcMap, 'update');
+			receiver['onWsPacket']({
+				op: VoiceOPCodes.ClientConnect,
+				d: {
+					audio_ssrc: 123,
+					video_ssrc: 43,
+					user_id: '123abc',
+				},
+			});
+			expect(spy).toHaveBeenCalledWith({
+				audioSSRC: 123,
+				videoSSRC: 43,
+				userId: '123abc',
+			});
+			receiver['onWsPacket']({
+				op: VoiceOPCodes.ClientConnect,
+				d: {
+					audio_ssrc: 123,
+					video_ssrc: 0,
+					user_id: '123abc',
+				},
+			});
+			expect(spy).toHaveBeenCalledWith({
+				audioSSRC: 123,
+				videoSSRC: undefined,
+				userId: '123abc',
+			});
+		});
 	});
 });
