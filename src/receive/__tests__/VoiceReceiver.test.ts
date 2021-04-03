@@ -3,6 +3,7 @@ import { VoiceReceiver } from '../VoiceReceiver';
 import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
 import { RTP_PACKET } from './fixtures';
 import { once } from 'events';
+import { createVoiceReceiver } from '..';
 
 jest.mock('../../VoiceConnection');
 jest.mock('../SSRCMap');
@@ -22,7 +23,7 @@ describe('VoiceReceiver', () => {
 		voiceConnection.state = {
 			status: VoiceConnectionStatus.Signalling,
 		} as any;
-		receiver = new VoiceReceiver(voiceConnection);
+		receiver = createVoiceReceiver(voiceConnection);
 		receiver['connectionData'] = {
 			encryptionMode: 'dummy',
 			nonceBuffer: Buffer.alloc(0),
@@ -67,5 +68,20 @@ describe('VoiceReceiver', () => {
 		await nextTick();
 		await expect(errorEvent).resolves.toMatchObject([expect.any(Error)]);
 		expect(receiver.subscriptions.size).toBe(0);
+	});
+
+	test('subscribe: only allows one subscribe stream per SSRC', () => {
+		const spy = jest.spyOn(receiver.ssrcMap, 'get');
+		spy.mockImplementation(() => ({
+			audioSSRC: RTP_PACKET.ssrc,
+			userId: '123',
+		}));
+
+		const stream = receiver.subscribe(RTP_PACKET.ssrc);
+		expect(receiver.subscribe(RTP_PACKET.ssrc)).toBe(stream);
+	});
+
+	test('subscribe: refuses unknown SSRC or user IDs', () => {
+		expect(() => receiver.subscribe(RTP_PACKET.ssrc)).toThrow();
 	});
 });
