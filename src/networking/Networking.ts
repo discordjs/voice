@@ -11,7 +11,7 @@ const CHANNELS = 2;
 const TIMESTAMP_INC = (48000 / 100) * CHANNELS;
 const MAX_NONCE_SIZE = 2 ** 32 - 1;
 
-const SUPPORTED_ENCRYPTION_MODES = ['xsalsa20_poly1305_lite', 'xsalsa20_poly1305_suffix', 'xsalsa20_poly1305'];
+export const SUPPORTED_ENCRYPTION_MODES = ['xsalsa20_poly1305_lite', 'xsalsa20_poly1305_suffix', 'xsalsa20_poly1305'];
 
 /**
  * The different statuses that a networking instance can hold. The order
@@ -133,12 +133,13 @@ interface ConnectionOptions {
  * Information about the current connection, e.g. which encryption mode is to be used on
  * the connection, timing information for playback of streams.
  */
-interface ConnectionData {
+export interface ConnectionData {
 	ssrc: number;
 	encryptionMode: string;
 	secretKey: Uint8Array;
 	sequence: number;
 	timestamp: number;
+	packetsPlayed: number;
 	nonce: number;
 	nonceBuffer: Buffer;
 	speaking: boolean;
@@ -395,6 +396,7 @@ export class Networking extends EventEmitter {
 					nonce: 0,
 					nonceBuffer: Buffer.alloc(24),
 					speaking: false,
+					packetsPlayed: 0,
 				},
 			};
 		} else if (packet.op === VoiceOPCodes.Resumed && this.state.code === NetworkingStatusCode.Resuming) {
@@ -467,6 +469,7 @@ export class Networking extends EventEmitter {
 		const state = this.state;
 		if (state.code !== NetworkingStatusCode.Ready) return;
 		const { connectionData } = state;
+		connectionData.packetsPlayed++;
 		connectionData.sequence++;
 		connectionData.timestamp += TIMESTAMP_INC;
 		if (connectionData.sequence >= 2 ** 16) connectionData.sequence = 0;

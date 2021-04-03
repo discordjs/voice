@@ -1,6 +1,7 @@
 export * from './joinVoiceChannel';
 export * from './audio';
 export * from './util';
+export * from './receive';
 
 export {
 	VoiceConnection,

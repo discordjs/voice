@@ -8,7 +8,7 @@ import { PlayerSubscription } from './PlayerSubscription';
 import TypedEmitter from 'typed-emitter';
 
 // The Opus "silent" frame
-const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
+export const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
 
 /**
  * Describes the behavior of the player when an audio packet is played but there are no available

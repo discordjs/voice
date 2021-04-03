@@ -109,6 +109,8 @@ export class VoiceUDPSocket extends EventEmitter {
 			// Delete all keep alives up to and including the received one
 			this.keepAlives.splice(0, index);
 		}
+		// Propagate the message
+		this.emit('message', buffer);
 	}
 
 	/**
