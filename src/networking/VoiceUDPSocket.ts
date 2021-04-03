@@ -159,6 +159,7 @@ export class VoiceUDPSocket extends EventEmitter {
 		return new Promise((resolve, reject) => {
 			const listener = (message: Buffer) => {
 				try {
+					if (message.readUInt16BE(0) !== 2) return;
 					const packet = parseLocalPacket(message);
 					this.socket.off('message', listener);
 					resolve(packet);
@@ -168,8 +169,11 @@ export class VoiceUDPSocket extends EventEmitter {
 			this.socket.on('message', listener);
 			this.socket.once('close', () => reject(new Error('Cannot perform IP discovery - socket closed')));
 
-			const discoveryBuffer = Buffer.alloc(70);
-			discoveryBuffer.writeUInt32BE(ssrc, 0);
+			const discoveryBuffer = Buffer.alloc(74);
+
+			discoveryBuffer.writeUInt16BE(1, 0);
+			discoveryBuffer.writeUInt16BE(70, 2);
+			discoveryBuffer.writeUInt32BE(ssrc, 4);
 			this.send(discoveryBuffer);
 		});
 	}
@@ -183,13 +187,13 @@ export class VoiceUDPSocket extends EventEmitter {
 export function parseLocalPacket(message: Buffer): SocketConfig {
 	const packet = Buffer.from(message);
 
-	const ip = packet.slice(4, packet.indexOf(0, 4)).toString('utf-8');
+	const ip = packet.slice(8, packet.indexOf(0, 8)).toString('utf-8');
 
 	if (!isIPv4(ip)) {
 		throw new Error('Malformed IP address');
 	}
 
-	const port = packet.readUInt16LE(packet.length - 2);
+	const port = packet.readUInt16BE(packet.length - 2);
 
 	return { ip, port };
 }
