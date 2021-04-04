@@ -1,6 +1,7 @@
 import { createSocket, Socket } from 'dgram';
 import { EventEmitter } from 'events';
 import { isIPv4 } from 'net';
+import TypedEmitter from 'typed-emitter';
 
 /**
  * Stores an IP address and port. Used to store socket details for the local client as well as
@@ -14,6 +15,13 @@ export interface SocketConfig {
 interface KeepAlive {
 	value: number;
 	timestamp: number;
+}
+
+export interface VoiceUDPSocketEvents {
+	error: (error: Error) => void;
+	close: () => void;
+	debug: (message: string) => void;
+	message: (message: Buffer) => void;
 }
 
 /**
@@ -34,7 +42,7 @@ const MAX_COUNTER_VALUE = 2 ** 32 - 1;
 /**
  * Manages the UDP networking for a voice connection.
  */
-export class VoiceUDPSocket extends EventEmitter {
+export class VoiceUDPSocket extends (EventEmitter as new () => TypedEmitter<VoiceUDPSocketEvents>) {
 	/**
 	 * The underlying network Socket for the VoiceUDPSocket.
 	 */
@@ -92,7 +100,7 @@ export class VoiceUDPSocket extends EventEmitter {
 		this.keepAliveInterval = setInterval(() => this.keepAlive(), KEEP_ALIVE_INTERVAL);
 		setImmediate(() => this.keepAlive());
 
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
 	}
 
 	/**
