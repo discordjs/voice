@@ -75,7 +75,7 @@ describe('VoiceWebSocket: event propagation', () => {
 		const ws = new VoiceWebSocket(endpoint, false);
 		await server.connected;
 		const rcvError = once(ws, 'error');
-		const rcvClose = onceIgnoreError(ws, 'error');
+		const rcvClose = onceIgnoreError(ws, 'close');
 		server.error();
 		await expect(rcvError).resolves.toBeTruthy();
 		await expect(rcvClose).resolves.toBeTruthy();

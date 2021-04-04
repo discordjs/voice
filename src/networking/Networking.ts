@@ -5,6 +5,7 @@ import { VoiceWebSocket } from './VoiceWebSocket';
 import * as secretbox from '../util/Secretbox';
 import { noop } from '../util/util';
 import { CloseEvent } from 'ws';
+import TypedEmitter from 'typed-emitter';
 
 // The number of audio channels required by Discord
 const CHANNELS = 2;
@@ -150,10 +151,17 @@ export interface ConnectionData {
  */
 const nonce = Buffer.alloc(24);
 
+export interface NetworkingEvents {
+	debug: (message: string) => void;
+	error: (error: Error) => void;
+	stateChange: (oldState: NetworkingState, newState: NetworkingState) => void;
+	close: (code: number) => void;
+}
+
 /**
  * Manages the networking required to maintain a voice connection and dispatch audio packets
  */
-export class Networking extends EventEmitter {
+export class Networking extends (EventEmitter as new () => TypedEmitter<NetworkingEvents>) {
 	private _state: NetworkingState;
 
 	/**
@@ -175,7 +183,7 @@ export class Networking extends EventEmitter {
 		this.onUdpDebug = this.onUdpDebug.bind(this);
 		this.onUdpClose = this.onUdpClose.bind(this);
 
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
 
 		this._state = {
 			code: NetworkingStatusCode.OpeningWs,

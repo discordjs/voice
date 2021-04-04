@@ -1,6 +1,7 @@
 import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
 import EventEmitter from 'events';
 import WebSocket, { MessageEvent } from 'ws';
+import TypedEmitter from 'typed-emitter';
 
 /**
  * Debug event for VoiceWebSocket.
@@ -9,11 +10,19 @@ import WebSocket, { MessageEvent } from 'ws';
  * @type {string}
  */
 
+export interface VoiceWebSocketEvents {
+	error: (error: Error) => void;
+	open: (event: WebSocket.OpenEvent) => void;
+	close: (event: WebSocket.CloseEvent) => void;
+	debug: (message: string) => void;
+	packet: (packet: any) => void;
+}
+
 /**
  * An extension of the WebSocket class to provide helper functionality when interacting
  * with the Discord Voice gateway.
  */
-export class VoiceWebSocket extends EventEmitter {
+export class VoiceWebSocket extends (EventEmitter as new () => TypedEmitter<VoiceWebSocketEvents>) {
 	/**
 	 * The current heartbeat interval, if any
 	 */
@@ -61,13 +70,13 @@ export class VoiceWebSocket extends EventEmitter {
 		this.ws = new WebSocket(address);
 		this.ws.onmessage = (e) => this.onMessage(e);
 		this.ws.onopen = (e) => this.emit('open', e);
-		this.ws.onerror = (e) => this.emit('error', e);
+		this.ws.onerror = (e: Error | WebSocket.ErrorEvent) => this.emit('error', e instanceof Error ? e : e.error);
 		this.ws.onclose = (e) => this.emit('close', e);
 
 		this.lastHeartbeatAck = 0;
 		this.lastHeatbeatSend = 0;
 
-		this.debug = debug ? this.emit.bind(this, 'debug') : null;
+		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
 	}
 
 	/**
