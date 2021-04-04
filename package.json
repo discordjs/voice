@@ -38,8 +38,8 @@
 		"dist/*"
 	],
 	"dependencies": {
-		"prism-media": "^1.2.5",
-		"ws": "^7.4.3"
+		"prism-media": "^1.2.9",
+		"ws": "^7.4.4"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.13.8",
