@@ -11,7 +11,7 @@ import TypedEmitter from 'typed-emitter';
  */
 
 export interface VoiceWebSocketEvents {
-	error: (error: WebSocket.ErrorEvent) => void;
+	error: (error: Error) => void;
 	open: (event: WebSocket.OpenEvent) => void;
 	close: (event: WebSocket.CloseEvent) => void;
 	debug: (message: string) => void;
@@ -70,7 +70,7 @@ export class VoiceWebSocket extends (EventEmitter as new () => TypedEmitter<Voic
 		this.ws = new WebSocket(address);
 		this.ws.onmessage = (e) => this.onMessage(e);
 		this.ws.onopen = (e) => this.emit('open', e);
-		this.ws.onerror = (e) => this.emit('error', e);
+		this.ws.onerror = (e: Error | WebSocket.ErrorEvent) => this.emit('error', e instanceof Error ? e : e.error);
 		this.ws.onclose = (e) => this.emit('close', e);
 
 		this.lastHeartbeatAck = 0;
