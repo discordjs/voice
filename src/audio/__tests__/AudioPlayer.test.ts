@@ -41,6 +41,13 @@ function wait() {
 	return new Promise((resolve) => process.nextTick(resolve));
 }
 
+async function makeReadable(resource: AudioResource) {
+	while (!resource.started) {
+		await wait();
+	}
+	return resource;
+}
+
 let player: AudioPlayer | undefined;
 
 beforeEach(() => {
@@ -62,9 +69,9 @@ describe('State transitions', () => {
 		expect(deleteAudioPlayerMock).toBeCalledTimes(0);
 	});
 
-	test('Playing resource with pausing and resuming', () => {
+	test('Playing resource with pausing and resuming', async () => {
 		// Call AudioResource constructor directly to avoid analysing pipeline for stream
-		const resource = new AudioResource([], Readable.from(silence()));
+		const resource = await makeReadable(new AudioResource([], Readable.from(silence())));
 		player = createAudioPlayer();
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 
@@ -75,7 +82,6 @@ describe('State transitions', () => {
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(addAudioPlayerMock).toBeCalledTimes(0);
 
-		// Expect to be in the Playing state after calling .play() with a readable resource
 		player.play(resource);
 		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
 		expect(addAudioPlayerMock).toBeCalledTimes(1);
@@ -100,8 +106,8 @@ describe('State transitions', () => {
 		expect(deleteAudioPlayerMock).toBeCalledTimes(0);
 	});
 
-	test('Playing to Stopping', () => {
-		const resource = new AudioResource([], Readable.from(silence()));
+	test('Playing to Stopping', async () => {
+		const resource = await makeReadable(new AudioResource([], Readable.from(silence())));
 		player = createAudioPlayer();
 
 		// stop() shouldn't do anything in Idle state
@@ -120,13 +126,13 @@ describe('State transitions', () => {
 	});
 
 	describe('NoSubscriberBehavior transitions', () => {
-		test('NoSubscriberBehavior.Pause', () => {
+		test('NoSubscriberBehavior.Pause', async () => {
 			const connection = createVoiceConnectionMock();
 			if (connection.state.status !== VoiceConnectionStatus.Signalling) {
 				throw new Error('Voice connection should have been Signalling');
 			}
 
-			const resource = new AudioResource([], Readable.from(silence()));
+			const resource = await makeReadable(new AudioResource([], Readable.from(silence())));
 			player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Pause } });
 			connection.subscribe(player);
 
@@ -146,8 +152,8 @@ describe('State transitions', () => {
 			expect(player.state.status).toBe(AudioPlayerStatus.Playing);
 		});
 
-		test('NoSubscriberBehavior.Play', () => {
-			const resource = new AudioResource([], Readable.from(silence()));
+		test('NoSubscriberBehavior.Play', async () => {
+			const resource = await makeReadable(new AudioResource([], Readable.from(silence())));
 			player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
 
 			player.play(resource);
@@ -156,8 +162,8 @@ describe('State transitions', () => {
 			expect(player.state.status).toBe(AudioPlayerStatus.Playing);
 		});
 
-		test('NoSubscriberBehavior.Stop', () => {
-			const resource = new AudioResource([], Readable.from(silence()));
+		test('NoSubscriberBehavior.Stop', async () => {
+			const resource = await makeReadable(new AudioResource([], Readable.from(silence())));
 			player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Stop } });
 
 			player.play(resource);
@@ -181,8 +187,7 @@ describe('State transitions', () => {
 		};
 
 		const buffer = Buffer.from([1, 2, 4, 8]);
-		const resource = new AudioResource([], Readable.from([buffer, buffer, buffer, buffer, buffer]));
-		resource.playStream.read(); // To start the stream
+		const resource = await makeReadable(new AudioResource([], Readable.from([buffer, buffer, buffer, buffer, buffer])));
 		player = createAudioPlayer();
 		connection.subscribe(player);
 
@@ -300,7 +305,7 @@ test('play() throws when playing a resource that has already ended', async () =>
 });
 
 test('Propagates errors from streams', async () => {
-	const resource = new AudioResource([], Readable.from(silence()));
+	const resource = await makeReadable(new AudioResource([], Readable.from(silence())));
 	player = createAudioPlayer();
 	player.play(resource);
 	expect(player.state.status).toBe(AudioPlayerStatus.Playing);
