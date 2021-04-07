@@ -356,7 +356,7 @@ export class AudioPlayer extends (EventEmitter as new () => TypedEmitter<AudioPl
 
 		resource.playStream.once('error', onStreamError);
 
-		if (resource.playStream.readable) {
+		if (resource.started) {
 			this.state = {
 				status: AudioPlayerStatus.Playing,
 				missedFrames: 0,
