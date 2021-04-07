@@ -1,5 +1,5 @@
 import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGraph';
-import { pipeline, Readable } from 'stream';
+import { once, pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer, opus } from 'prism-media';
 import type { AudioPlayer } from './AudioPlayer';
@@ -68,11 +68,20 @@ export class AudioResource<T = unknown> {
 	 */
 	public playbackDuration = 0;
 
+	/**
+	 * Whether or not the stream for this resource has started (data has become readable)
+	 */
+	public started = false;
+
 	public constructor(pipeline: Edge[], playStream: Readable, metadata?: T, volume?: VolumeTransformer) {
 		this.pipeline = pipeline;
 		this.playStream = playStream;
 		this.metadata = metadata;
 		this.volume = volume;
+
+		once(this.playStream, 'readable')
+			.then(() => (this.started = true))
+			.catch(noop);
 	}
 
 	/**
