@@ -131,12 +131,11 @@ describe('State transitions', () => {
 
 		player.play(resource);
 		expect(player.state.status).toBe(AudioPlayerStatus.Buffering);
-		expect(addAudioPlayerMock).toBeCalledTimes(1);
 
 		await started(resource);
 
 		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
-		expect(addAudioPlayerMock).toBeCalledTimes(2);
+		expect(addAudioPlayerMock).toHaveBeenCalled();
 		expect(deleteAudioPlayerMock).not.toHaveBeenCalled();
 	});
 
