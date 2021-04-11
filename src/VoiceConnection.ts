@@ -247,6 +247,7 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 			this.state = {
 				...this.state,
 				status: VoiceConnectionStatus.Disconnected,
+				closeCode: undefined,
 			};
 		}
 	}

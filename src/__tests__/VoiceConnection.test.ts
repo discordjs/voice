@@ -143,6 +143,21 @@ describe('VoiceConnection#addServerPacket', () => {
 		expect(voiceConnection['packets'].server).toBe(dummy);
 		expect(voiceConnection.configureNetworking).toHaveBeenCalled();
 	});
+
+	test('Disconnects when given a null endpoint', () => {
+		const { voiceConnection } = createFakeVoiceConnection();
+		voiceConnection['packets'].server = Symbol('old') as any;
+		voiceConnection.configureNetworking = jest.fn();
+		const dummy = {
+			endpoint: null,
+			guild_id: 123,
+			token: 'abc',
+		} as any;
+		voiceConnection['addServerPacket'](dummy);
+		expect(voiceConnection['packets'].server).toBe(dummy);
+		expect(voiceConnection.configureNetworking).not.toHaveBeenCalled();
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Disconnected);
+	});
 });
 
 describe('VoiceConnection#addStatePacket', () => {
