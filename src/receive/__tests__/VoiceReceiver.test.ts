@@ -4,7 +4,7 @@ import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../.
 import { RTP_PACKET_DESKTOP, RTP_PACKET_CHROME, RTP_PACKET_ANDROID } from './fixtures/rtp';
 import EventEmitter, { once } from 'events';
 import { createVoiceReceiver } from '..';
-import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
+import { VoiceOPCodes } from 'discord-api-types/voice/v4';
 import * as fixtures from './fixtures/states';
 
 jest.mock('../../VoiceConnection');

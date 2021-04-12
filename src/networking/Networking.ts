@@ -1,4 +1,4 @@
-import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
+import { VoiceOPCodes } from 'discord-api-types/voice/v4';
 import { EventEmitter } from 'events';
 import { VoiceUDPSocket } from './VoiceUDPSocket';
 import { VoiceWebSocket } from './VoiceWebSocket';

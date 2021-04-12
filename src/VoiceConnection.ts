@@ -284,7 +284,7 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 	 */
 	public configureNetworking() {
 		const { server, state } = this.packets;
-		if (!server || !state || this.state.status === VoiceConnectionStatus.Destroyed) return;
+		if (!server || !state || this.state.status === VoiceConnectionStatus.Destroyed || !server.endpoint) return;
 
 		const networking = new Networking(
 			{

@@ -1,4 +1,4 @@
-import { GatewayOPCodes } from 'discord-api-types/v8/gateway';
+import { GatewayOPCodes } from 'discord-api-types/v8';
 import { AudioPlayer } from './audio';
 import { VoiceConnection } from './VoiceConnection';
 

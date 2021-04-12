@@ -1,4 +1,4 @@
-import { VoiceOPCodes } from 'discord-api-types/v8/gateway';
+import { VoiceOPCodes } from 'discord-api-types/voice/v4';
 import EventEmitter, { once } from 'events';
 import WS from 'jest-websocket-mock';
 import { VoiceWebSocket } from '../VoiceWebSocket';
