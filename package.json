@@ -53,7 +53,7 @@
 		"@typescript-eslint/eslint-plugin": "^4.14.2",
 		"@typescript-eslint/parser": "^4.14.2",
 		"babel-jest": "^26.6.3",
-		"discord-api-types": "^0.12.1",
+		"discord-api-types": "^0.15.1",
 		"eslint": "^7.20.0",
 		"eslint-config-marine": "^8.1.0",
 		"eslint-config-prettier": "^7.2.0",

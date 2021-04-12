@@ -1,4 +1,4 @@
-import { VoiceOPCodes } from 'discord-api-types/v8';
+import { VoiceOPCodes } from 'discord-api-types/voice/v4';
 import { SILENCE_FRAME } from '../audio/AudioPlayer';
 import { ConnectionData, Networking, NetworkingState } from '../networking/Networking';
 import { VoiceUDPSocket } from '../networking/VoiceUDPSocket';

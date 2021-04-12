@@ -63,7 +63,7 @@ export interface VoiceConnectionDisconnectedState {
 	/**
 	 * The close code of the WebSocket connection to the Discord voice server.
 	 */
-	closeCode: number;
+	closeCode?: number;
 	subscription?: PlayerSubscription;
 	adapter: DiscordGatewayAdapterImplementerMethods;
 }
@@ -241,7 +241,15 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 	 */
 	private addServerPacket(packet: GatewayVoiceServerUpdateDispatchData) {
 		this.packets.server = packet;
-		this.configureNetworking();
+		if (packet.endpoint) {
+			this.configureNetworking();
+		} else if (this.state.status !== VoiceConnectionStatus.Destroyed) {
+			this.state = {
+				...this.state,
+				status: VoiceConnectionStatus.Disconnected,
+				closeCode: undefined,
+			};
+		}
 	}
 
 	/**
@@ -276,7 +284,7 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 	 */
 	public configureNetworking() {
 		const { server, state } = this.packets;
-		if (!server || !state || this.state.status === VoiceConnectionStatus.Destroyed) return;
+		if (!server || !state || this.state.status === VoiceConnectionStatus.Destroyed || !server.endpoint) return;
 
 		const networking = new Networking(
 			{
