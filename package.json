@@ -4,7 +4,7 @@
 	"description": "audio streaming capability for discord.js",
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
-	"author": "Amish Shah <amishshah.2k@gmail.com>",
+	"author": "Amish Shah <amish@shah.gg>",
 	"license": "MIT",
 	"directories": {
 		"test": "test"
