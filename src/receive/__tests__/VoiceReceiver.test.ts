@@ -10,7 +10,7 @@ import * as fixtures from './fixtures/states';
 jest.mock('../../VoiceConnection');
 jest.mock('../SSRCMap');
 
-const VoiceConnection = (_VoiceConnection as unknown) as jest.Mocked<typeof _VoiceConnection>;
+const VoiceConnection = _VoiceConnection as unknown as jest.Mocked<typeof _VoiceConnection>;
 
 function nextTick() {
 	return new Promise((resolve) => process.nextTick(resolve));
