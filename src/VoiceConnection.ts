@@ -456,6 +456,7 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 			return false;
 		}
 
+		this.reconnectAttempts++;
 		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
 			this.state = {
 				...this.state,
@@ -463,7 +464,6 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 			};
 			return false;
 		}
-		this.reconnectAttempts++;
 
 		this.state = {
 			...this.state,
