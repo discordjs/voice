@@ -337,7 +337,12 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 				status: VoiceConnectionStatus.Signalling,
 			};
 			this.reconnectAttempts++;
-			this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig));
+			if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
+				this.state = {
+					...this.state,
+					status: VoiceConnectionStatus.Disconnected,
+				};
+			}
 		}
 	}
 
@@ -451,7 +456,13 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 			return false;
 		}
 
-		this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig));
+		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
+			this.state = {
+				...this.state,
+				status: VoiceConnectionStatus.Disconnected,
+			};
+			return false;
+		}
 		this.reconnectAttempts++;
 
 		this.state = {
@@ -541,14 +552,24 @@ export function createVoiceConnection(joinConfig: JoinConfig, options: CreateVoi
 	const payload = createJoinVoiceChannelPayload(joinConfig);
 	const existing = getVoiceConnection(joinConfig.guildId);
 	if (existing && existing.state.status !== VoiceConnectionStatus.Destroyed) {
-		existing.state.adapter.sendPayload(payload);
+		if (!existing.state.adapter.sendPayload(payload)) {
+			existing.state = {
+				...existing.state,
+				status: VoiceConnectionStatus.Disconnected,
+			};
+		}
 		return existing;
 	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
 	trackVoiceConnection(joinConfig.guildId, voiceConnection);
 	if (voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) {
-		voiceConnection.state.adapter.sendPayload(payload);
+		if (!voiceConnection.state.adapter.sendPayload(payload)) {
+			voiceConnection.state = {
+				...voiceConnection.state,
+				status: VoiceConnectionStatus.Disconnected,
+			};
+		}
 	}
 	return voiceConnection;
 }

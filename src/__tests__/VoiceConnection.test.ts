@@ -16,13 +16,14 @@ jest.mock('../audio/PlayerSubscription');
 jest.mock('../DataStore');
 jest.mock('../networking/Networking');
 
-const DataStore = (_DataStore as unknown) as jest.Mocked<typeof _DataStore>;
-const Networking = (_Networking as unknown) as jest.Mocked<typeof _Networking>;
-const AudioPlayer = (_AudioPlayer as unknown) as jest.Mocked<typeof _AudioPlayer>;
-const PlayerSubscription = (_PlayerSubscription as unknown) as jest.Mock<_PlayerSubscription>;
+const DataStore = _DataStore as unknown as jest.Mocked<typeof _DataStore>;
+const Networking = _Networking as unknown as jest.Mocked<typeof _Networking>;
+const AudioPlayer = _AudioPlayer as unknown as jest.Mocked<typeof _AudioPlayer>;
+const PlayerSubscription = _PlayerSubscription as unknown as jest.Mock<_PlayerSubscription>;
 
 function createFakeAdapter() {
 	const sendPayload = jest.fn();
+	sendPayload.mockReturnValue(true);
 	const destroy = jest.fn();
 	const libMethods: Partial<DiscordGatewayAdapterLibraryMethods> = {};
 	return {
@@ -240,7 +241,7 @@ describe('VoiceConnection#configureNetworking', () => {
 			status: VoiceConnectionStatus.Connecting,
 			adapter,
 		});
-		expect(((voiceConnection.state as unknown) as VoiceConnectionConnectingState).networking).toBeInstanceOf(
+		expect((voiceConnection.state as unknown as VoiceConnectionConnectingState).networking).toBeInstanceOf(
 			Networking.Networking,
 		);
 	});
