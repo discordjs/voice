@@ -7,7 +7,7 @@ import { VoiceUDPSocket } from '../VoiceUDPSocket';
 jest.mock('dgram');
 jest.useFakeTimers();
 
-const createSocket = (_createSocket as unknown) as jest.Mock<typeof _createSocket>;
+const createSocket = _createSocket as unknown as jest.Mock<typeof _createSocket>;
 
 beforeEach(() => {
 	createSocket.mockReset();

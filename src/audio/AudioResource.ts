@@ -116,9 +116,7 @@ export const NO_CONSTRAINT = () => true;
  *
  * @param stream - The stream to infer the type of
  */
-export function inferStreamType(
-	stream: Readable,
-): {
+export function inferStreamType(stream: Readable): {
 	streamType: StreamType;
 	hasVolume: boolean;
 } {
@@ -183,5 +181,5 @@ export function createAudioResource<T>(
 	// attempt to find the volume transformer in the pipeline (if one exists)
 	const volume = streams.find((stream) => stream instanceof VolumeTransformer) as VolumeTransformer | undefined;
 
-	return new AudioResource(transformerPipeline, (playStream as any) as Readable, options.metadata, volume);
+	return new AudioResource(transformerPipeline, playStream as any as Readable, options.metadata, volume);
 }

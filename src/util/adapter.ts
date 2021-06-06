@@ -31,8 +31,9 @@ export interface DiscordGatewayAdapterImplementerMethods {
 	 * Implement this method such that the given payload is sent to the main Discord gateway connection.
 	 *
 	 * @param payload - The payload to send to the main Discord gateway connection
+	 * @returns false if the payload definitely failed to send - in this case, the voice connection disconnects.
 	 */
-	sendPayload(payload: any): void;
+	sendPayload(payload: any): boolean;
 	/**
 	 * This will be called by @discordjs/voice when the adapter can safely be destroyed as it will no
 	 * longer be used.

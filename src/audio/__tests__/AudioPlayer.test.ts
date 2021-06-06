@@ -12,10 +12,10 @@ jest.mock('../../DataStore');
 jest.mock('../../VoiceConnection');
 jest.mock('../AudioPlayerError');
 
-const addAudioPlayerMock = (addAudioPlayer as unknown) as jest.Mock<typeof addAudioPlayer>;
-const deleteAudioPlayerMock = (deleteAudioPlayer as unknown) as jest.Mock<typeof deleteAudioPlayer>;
-const AudioPlayerErrorMock = (AudioPlayerError as unknown) as jest.Mock<typeof AudioPlayerError>;
-const VoiceConnectionMock = (VoiceConnection as unknown) as jest.Mock<VoiceConnection>;
+const addAudioPlayerMock = addAudioPlayer as unknown as jest.Mock<typeof addAudioPlayer>;
+const deleteAudioPlayerMock = deleteAudioPlayer as unknown as jest.Mock<typeof deleteAudioPlayer>;
+const AudioPlayerErrorMock = AudioPlayerError as unknown as jest.Mock<typeof AudioPlayerError>;
+const VoiceConnectionMock = VoiceConnection as unknown as jest.Mock<VoiceConnection>;
 
 function* silence() {
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -231,7 +231,7 @@ describe('State transitions', () => {
 		expect(connection.dispatchAudio).toHaveBeenCalledTimes(6);
 		await wait();
 		player['_stepPrepare']();
-		const prepareAudioPacket = (connection.prepareAudioPacket as unknown) as jest.Mock<
+		const prepareAudioPacket = connection.prepareAudioPacket as unknown as jest.Mock<
 			typeof connection.prepareAudioPacket
 		>;
 		expect(prepareAudioPacket).toHaveBeenCalledTimes(6);
@@ -265,7 +265,7 @@ describe('State transitions', () => {
 		expect(addAudioPlayerMock).toBeCalledTimes(1);
 		expect(player.checkPlayable()).toBe(true);
 
-		const prepareAudioPacket = (connection.prepareAudioPacket as unknown) as jest.Mock<
+		const prepareAudioPacket = connection.prepareAudioPacket as unknown as jest.Mock<
 			typeof connection.prepareAudioPacket
 		>;
 

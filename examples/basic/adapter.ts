@@ -1,9 +1,6 @@
 import { DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods } from '../../';
 import { VoiceChannel, Snowflake, Client, Constants, WebSocketShard, Guild } from 'discord.js';
-import {
-	GatewayVoiceServerUpdateDispatchData,
-	GatewayVoiceStateUpdateDispatchData,
-} from 'discord-api-types/v8/gateway';
+import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
 
 const adapters = new Map<Snowflake, DiscordGatewayAdapterLibraryMethods>();
 const trackedClients = new Set<Client>();
@@ -59,7 +56,11 @@ export function createDiscordJSAdapter(channel: VoiceChannel): DiscordGatewayAda
 		trackGuild(channel.guild);
 		return {
 			sendPayload(data) {
-				return channel.guild.shard.send(data);
+				if (channel.guild.shard.status === Constants.Status.READY) {
+					channel.guild.shard.send(data);
+					return true;
+				}
+				return false;
 			},
 			destroy() {
 				return adapters.delete(channel.guild.id);
