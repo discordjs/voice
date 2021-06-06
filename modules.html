@@ -67,6 +67,7 @@
 								<li class="tsd-kind-enum"><a href="enums/audioplayerstatus.html" class="tsd-kind-icon">Audio<wbr>Player<wbr>Status</a></li>
 								<li class="tsd-kind-enum"><a href="enums/nosubscriberbehavior.html" class="tsd-kind-icon">No<wbr>Subscriber<wbr>Behavior</a></li>
 								<li class="tsd-kind-enum"><a href="enums/streamtype.html" class="tsd-kind-icon">Stream<wbr>Type</a></li>
+								<li class="tsd-kind-enum"><a href="enums/voiceconnectiondisconnectreason.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnect<wbr>Reason</a></li>
 								<li class="tsd-kind-enum"><a href="enums/voiceconnectionstatus.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Status</a></li>
 							</ul>
 						</section>
@@ -98,7 +99,8 @@
 								<li class="tsd-kind-interface"><a href="interfaces/ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectiondestroyedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Destroyed<wbr>State</a></li>
-								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectiondisconnectedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectiondisconnectedbasestate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>Base<wbr>State</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectiondisconnectedwebsocketstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>Web<wbr>Socket<wbr>State</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectionreadystate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Ready<wbr>State</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectionsignallingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Signalling<wbr>State</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceuserdata.html" class="tsd-kind-icon">Voice<wbr>User<wbr>Data</a></li>
@@ -110,6 +112,7 @@
 								<li class="tsd-kind-type-alias"><a href="modules.html#audioplayerevents" class="tsd-kind-icon">Audio<wbr>Player<wbr>Events</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#audioplayerstate" class="tsd-kind-icon">Audio<wbr>Player<wbr>State</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#discordgatewayadaptercreator" class="tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Creator</a></li>
+								<li class="tsd-kind-type-alias"><a href="modules.html#voiceconnectiondisconnectedstate" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#voiceconnectionevents" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Events</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#voiceconnectionstate" class="tsd-kind-icon">Voice<wbr>Connection<wbr>State</a></li>
 							</ul>
@@ -137,7 +140,7 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Player<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>stateChange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>subscribe<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>subscription<span class="tsd-signature-symbol">: </span><a href="classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>unsubscribe<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>subscription<span class="tsd-signature-symbol">: </span><a href="classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span><span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">status</span><span class="tsd-signature-symbol"> in </span><a href="enums/audioplayerstatus.html" class="tsd-signature-type" data-tsd-kind="Enumeration">AudioPlayerStatus</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/audio/AudioPlayer.ts#L142">src/audio/AudioPlayer.ts:142</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/AudioPlayer.ts#L142">src/audio/AudioPlayer.ts:142</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -147,7 +150,7 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Player<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/audioplayeridlestate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerIdleState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerbufferingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerBufferingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerplayingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerPlayingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerpausedstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerPausedState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/audio/AudioPlayer.ts#L136">src/audio/AudioPlayer.ts:136</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/AudioPlayer.ts#L136">src/audio/AudioPlayer.ts:136</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -162,7 +165,7 @@
 					<div class="tsd-signature tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Creator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>methods<span class="tsd-signature-symbol">: </span><a href="interfaces/discordgatewayadapterlibrarymethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterLibraryMethods</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="interfaces/discordgatewayadapterimplementermethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterImplementerMethods</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/util/adapter.ts#L50">src/util/adapter.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/util/adapter.ts#L50">src/util/adapter.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -196,22 +199,38 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="voiceconnectiondisconnectedstate" class="tsd-anchor"></a>
+					<h3>Voice<wbr>Connection<wbr>Disconnected<wbr>State</h3>
+					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/voiceconnectiondisconnectedbasestate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedBaseState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectiondisconnectedwebsocketstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedWebSocketState</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/VoiceConnection.ts#L99">src/VoiceConnection.ts:99</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The states that a VoiceConnection can be in when it is not connected to a Discord voice server nor is
+							it attempting to connect. You can manually attempt to connect using VoiceConnection#reconnect.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="voiceconnectionevents" class="tsd-anchor"></a>
 					<h3>Voice<wbr>Connection<wbr>Events</h3>
 					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>stateChange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span><span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">status</span><span class="tsd-signature-symbol"> in </span><a href="enums/voiceconnectionstatus.html" class="tsd-signature-type" data-tsd-kind="Enumeration">VoiceConnectionStatus</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/VoiceConnection.ts#L112">src/VoiceConnection.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/VoiceConnection.ts#L144">src/VoiceConnection.ts:144</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="voiceconnectionstate" class="tsd-anchor"></a>
 					<h3>Voice<wbr>Connection<wbr>State</h3>
-					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/voiceconnectionsignallingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionSignallingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectiondisconnectedstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectionconnectingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionConnectingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectionreadystate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionReadyState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectiondestroyedstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDestroyedState</a></div>
+					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/voiceconnectionsignallingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionSignallingState</a><span class="tsd-signature-symbol"> | </span><a href="modules.html#voiceconnectiondisconnectedstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionDisconnectedState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectionconnectingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionConnectingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectionreadystate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionReadyState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectiondestroyedstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDestroyedState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/VoiceConnection.ts#L105">src/VoiceConnection.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/VoiceConnection.ts#L137">src/VoiceConnection.ts:137</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -233,7 +252,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/audio/AudioPlayer.ts#L593">src/audio/AudioPlayer.ts:593</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/AudioPlayer.ts#L593">src/audio/AudioPlayer.ts:593</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -261,7 +280,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/audio/AudioResource.ts#L152">src/audio/AudioResource.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/AudioResource.ts#L152">src/audio/AudioResource.ts:152</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -315,7 +334,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/receive/VoiceReceiver.ts#L249">src/receive/VoiceReceiver.ts:249</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/receive/VoiceReceiver.ts#L249">src/receive/VoiceReceiver.ts:249</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -355,7 +374,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/util/entersState.ts#L11">src/util/entersState.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/util/entersState.ts#L11">src/util/entersState.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -389,7 +408,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/util/entersState.ts#L24">src/util/entersState.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/util/entersState.ts#L24">src/util/entersState.ts:24</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -432,7 +451,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/util/generateDependencyReport.ts#L10">src/util/generateDependencyReport.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/util/generateDependencyReport.ts#L10">src/util/generateDependencyReport.ts:10</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -455,7 +474,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/DataStore.ts#L33">src/DataStore.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/DataStore.ts#L33">src/DataStore.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -478,7 +497,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/dd51d0b/src/joinVoiceChannel.ts#L45">src/joinVoiceChannel.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/joinVoiceChannel.ts#L45">src/joinVoiceChannel.ts:45</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -519,6 +538,9 @@
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/streamtype.html" class="tsd-kind-icon">Stream<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/voiceconnectiondisconnectreason.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnect<wbr>Reason</a>
 					</li>
 					<li class=" tsd-kind-enum">
 						<a href="enums/voiceconnectionstatus.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Status</a>
@@ -584,7 +606,10 @@
 						<a href="interfaces/voiceconnectiondestroyedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Destroyed<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/voiceconnectiondisconnectedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State</a>
+						<a href="interfaces/voiceconnectiondisconnectedbasestate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>Base<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/voiceconnectiondisconnectedwebsocketstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>Web<wbr>Socket<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/voiceconnectionreadystate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Ready<wbr>State</a>
@@ -603,6 +628,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#discordgatewayadaptercreator" class="tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Creator</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#voiceconnectiondisconnectedstate" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#voiceconnectionevents" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Events</a>

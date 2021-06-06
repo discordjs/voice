@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>StreamType | @discordjs/voice</title>
+	<title>VoiceConnectionDisconnectReason | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="streamtype.html">StreamType</a>
+					<a href="voiceconnectiondisconnectreason.html">VoiceConnectionDisconnectReason</a>
 				</li>
 			</ul>
-			<h1>Enumeration StreamType</h1>
+			<h1>Enumeration VoiceConnectionDisconnectReason</h1>
 		</div>
 	</div>
 </header>
@@ -68,24 +68,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The different types of stream that can exist within the pipeline</p>
+						<p>The reasons a voice connection can be in the disconnected state.</p>
 					</div>
-					<dl class="tsd-comment-tags">
-						<dt>remarks</dt>
-						<dd><ul>
-								<li><p><code>Arbitrary</code> - the type of the stream at this point is unknown.</p>
-								</li>
-								<li><p><code>Raw</code> - the stream at this point is s16le PCM.</p>
-								</li>
-								<li><p><code>OggOpus</code> - the stream at this point is Opus audio encoded in an Ogg wrapper.</p>
-								</li>
-								<li><p><code>WebmOpus</code> - the stream at this point is Opus audio encoded in a WebM wrapper.</p>
-								</li>
-								<li><p><code>Opus</code> - the stream at this point is Opus audio, and the stream is in object-mode. This is ready to play.</p>
-								</li>
-							</ul>
-						</dd>
-					</dl>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -95,11 +79,9 @@
 						<section class="tsd-index-section ">
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="streamtype.html#arbitrary" class="tsd-kind-icon">Arbitrary</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="streamtype.html#oggopus" class="tsd-kind-icon">Ogg<wbr>Opus</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="streamtype.html#opus" class="tsd-kind-icon">Opus</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="streamtype.html#raw" class="tsd-kind-icon">Raw</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="streamtype.html#webmopus" class="tsd-kind-icon">Webm<wbr>Opus</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="voiceconnectiondisconnectreason.html#adapterunavailable" class="tsd-kind-icon">Adapter<wbr>Unavailable</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="voiceconnectiondisconnectreason.html#endpointremoved" class="tsd-kind-icon">Endpoint<wbr>Removed</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="voiceconnectiondisconnectreason.html#websocketclose" class="tsd-kind-icon">Web<wbr>Socket<wbr>Close</a></li>
 							</ul>
 						</section>
 					</div>
@@ -108,54 +90,49 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Enumeration members</h2>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="arbitrary" class="tsd-anchor"></a>
-					<h3>Arbitrary</h3>
-					<div class="tsd-signature tsd-kind-icon">Arbitrary<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;arbitrary&quot;</span></div>
+					<a name="adapterunavailable" class="tsd-anchor"></a>
+					<h3>Adapter<wbr>Unavailable</h3>
+					<div class="tsd-signature tsd-kind-icon">Adapter<wbr>Unavailable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/TransformerGraph.ts#L40">src/audio/TransformerGraph.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/VoiceConnection.ts#L65">src/VoiceConnection.ts:65</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>When the adapter was unable to send a message requested by the VoiceConnection.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="oggopus" class="tsd-anchor"></a>
-					<h3>Ogg<wbr>Opus</h3>
-					<div class="tsd-signature tsd-kind-icon">Ogg<wbr>Opus<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;ogg/opus&quot;</span></div>
+					<a name="endpointremoved" class="tsd-anchor"></a>
+					<h3>Endpoint<wbr>Removed</h3>
+					<div class="tsd-signature tsd-kind-icon">Endpoint<wbr>Removed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/TransformerGraph.ts#L42">src/audio/TransformerGraph.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/VoiceConnection.ts#L69">src/VoiceConnection.ts:69</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>When a VOICE_SERVER_UPDATE packet is received with a null endpoint, causing the connection to be severed.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="opus" class="tsd-anchor"></a>
-					<h3>Opus</h3>
-					<div class="tsd-signature tsd-kind-icon">Opus<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;opus&quot;</span></div>
+					<a name="websocketclose" class="tsd-anchor"></a>
+					<h3>Web<wbr>Socket<wbr>Close</h3>
+					<div class="tsd-signature tsd-kind-icon">Web<wbr>Socket<wbr>Close<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/TransformerGraph.ts#L44">src/audio/TransformerGraph.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/VoiceConnection.ts#L61">src/VoiceConnection.ts:61</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="raw" class="tsd-anchor"></a>
-					<h3>Raw</h3>
-					<div class="tsd-signature tsd-kind-icon">Raw<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;raw&quot;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/TransformerGraph.ts#L41">src/audio/TransformerGraph.ts:41</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="webmopus" class="tsd-anchor"></a>
-					<h3>Webm<wbr>Opus</h3>
-					<div class="tsd-signature tsd-kind-icon">Webm<wbr>Opus<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;webm/opus&quot;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/178496b/src/audio/TransformerGraph.ts#L43">src/audio/TransformerGraph.ts:43</a></li>
-						</ul>
-					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>When the WebSocket connection has been closed.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -172,22 +149,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-enum">
-						<a href="streamtype.html" class="tsd-kind-icon">Stream<wbr>Type</a>
+						<a href="voiceconnectiondisconnectreason.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnect<wbr>Reason</a>
 						<ul>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="streamtype.html#arbitrary" class="tsd-kind-icon">Arbitrary</a>
+								<a href="voiceconnectiondisconnectreason.html#adapterunavailable" class="tsd-kind-icon">Adapter<wbr>Unavailable</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="streamtype.html#oggopus" class="tsd-kind-icon">Ogg<wbr>Opus</a>
+								<a href="voiceconnectiondisconnectreason.html#endpointremoved" class="tsd-kind-icon">Endpoint<wbr>Removed</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="streamtype.html#opus" class="tsd-kind-icon">Opus</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="streamtype.html#raw" class="tsd-kind-icon">Raw</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="streamtype.html#webmopus" class="tsd-kind-icon">Webm<wbr>Opus</a>
+								<a href="voiceconnectiondisconnectreason.html#websocketclose" class="tsd-kind-icon">Web<wbr>Socket<wbr>Close</a>
 							</li>
 						</ul>
 					</li>
