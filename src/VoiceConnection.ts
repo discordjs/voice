@@ -52,21 +52,53 @@ export interface VoiceConnectionSignallingState {
 }
 
 /**
- * The state that a VoiceConnection will be in when it is not connected to a Discord voice server, and
- * is not making an attempt to do so.
- *
- * It is possible to attempt a reconnect when in this state, but it will not be automatically done by
- * the library.
+ * The reasons a voice connection can be in the disconnected state.
  */
-export interface VoiceConnectionDisconnectedState {
-	status: VoiceConnectionStatus.Disconnected;
+export enum VoiceConnectionDisconnectReason {
 	/**
-	 * The close code of the WebSocket connection to the Discord voice server.
+	 * When the WebSocket connection has been closed.
 	 */
-	closeCode?: number;
+	WebSocketClose,
+	/**
+	 * When the adapter was unable to send a message requested by the VoiceConnection.
+	 */
+	AdapterUnavailable,
+	/**
+	 * When a VOICE_SERVER_UPDATE packet is received with a null endpoint, causing the connection to be severed.
+	 */
+	EndpointRemoved,
+}
+
+/**
+ * The state that a VoiceConnection will be in when it is not connected to a Discord voice server nor is
+ * it attempting to connect. You can manually attempt to reconnect using VoiceConnection#reconnect.
+ */
+export interface VoiceConnectionDisconnectedBaseState {
+	status: VoiceConnectionStatus.Disconnected;
+	reason: VoiceConnectionDisconnectReason;
 	subscription?: PlayerSubscription;
 	adapter: DiscordGatewayAdapterImplementerMethods;
 }
+
+/**
+ * The state that a VoiceConnection will be in when its WebSocket connection was closed.
+ * You can manually attempt to reconnect using VoiceConnection#reconnect.
+ */
+export interface VoiceConnectionDisconnectedWebSocketState extends VoiceConnectionDisconnectedBaseState {
+	reason: VoiceConnectionDisconnectReason.WebSocketClose;
+	/**
+	 * The close code of the WebSocket connection to the Discord voice server.
+	 */
+	closeCode: number;
+}
+
+/**
+ * The states that a VoiceConnection can be in when it is not connected to a Discord voice server nor is
+ * it attempting to connect. You can manually attempt to connect using VoiceConnection#reconnect.
+ */
+export type VoiceConnectionDisconnectedState =
+	| VoiceConnectionDisconnectedBaseState
+	| VoiceConnectionDisconnectedWebSocketState;
 
 /**
  * The state that a VoiceConnection will be in when it is establishing a connection to a Discord
@@ -247,7 +279,7 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 			this.state = {
 				...this.state,
 				status: VoiceConnectionStatus.Disconnected,
-				closeCode: undefined,
+				reason: VoiceConnectionDisconnectReason.EndpointRemoved,
 			};
 		}
 	}
@@ -329,6 +361,7 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 			this.state = {
 				...this.state,
 				status: VoiceConnectionStatus.Disconnected,
+				reason: VoiceConnectionDisconnectReason.WebSocketClose,
 				closeCode: code,
 			};
 		} else {
@@ -341,6 +374,7 @@ export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<Voi
 				this.state = {
 					...this.state,
 					status: VoiceConnectionStatus.Disconnected,
+					reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
 				};
 			}
 		}
@@ -556,6 +590,7 @@ export function createVoiceConnection(joinConfig: JoinConfig, options: CreateVoi
 			existing.state = {
 				...existing.state,
 				status: VoiceConnectionStatus.Disconnected,
+				reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
 			};
 		}
 		return existing;
@@ -568,6 +603,7 @@ export function createVoiceConnection(joinConfig: JoinConfig, options: CreateVoi
 			voiceConnection.state = {
 				...voiceConnection.state,
 				status: VoiceConnectionStatus.Disconnected,
+				reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
 			};
 		}
 	}
