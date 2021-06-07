@@ -9,6 +9,10 @@ import {
 } from '@discordjs/voice';
 import { Track } from './track';
 
+/**
+ * A MusicSubscription exists for each active VoiceConnection. Each subscription has its own audio player and queue,
+ * and it also attaches logic to the audio player and voice connection for error handling and reconnection logic.
+ */
 export class MusicSubscription {
 	public readonly voiceConnection: VoiceConnection;
 	public readonly audioPlayer: AudioPlayer;
@@ -55,9 +59,12 @@ export class MusicSubscription {
 		// Configure audio player
 		this.audioPlayer.on('stateChange', (oldState, newState) => {
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
+				// If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
+				// The queue is then processed to start playing the next track, if one is available.
 				(oldState.resource as AudioResource<Track>).metadata!.onFinish();
 				void this.processQueue();
 			} else if (newState.status === AudioPlayerStatus.Playing) {
+				// If the Playing state has been entered, then a new track has started playback.
 				(newState.resource as AudioResource<Track>).metadata!.onStart();
 			}
 		});
@@ -67,30 +74,48 @@ export class MusicSubscription {
 		voiceConnection.subscribe(this.audioPlayer);
 	}
 
+	/**
+	 * Adds a new Track to the queue.
+	 *
+	 * @param track The track to add to the queue
+	 */
 	public enqueue(track: Track) {
 		this.queue.push(track);
 		void this.processQueue();
 	}
 
+	/**
+	 * Stops audio playback and empties the queue
+	 */
 	public stop() {
 		this.queueLock = true;
 		this.queue = [];
 		this.audioPlayer.stop();
 	}
 
+	/**
+	 * Attempts to play a Track from the queue
+	 */
 	private async processQueue(): Promise<void> {
+		// If the queue is locked (already being processed), is empty, or the audio player is already playing something, return
 		if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle || this.queue.length === 0) {
 			return;
 		}
+		// Lock the queue to guarantee safe access
 		this.queueLock = true;
+
+		// Take the first item from the queue. This is guaranteed to exist due to the non-empty check above.
 		const nextTrack = this.queue.shift()!;
 		try {
+			// Attempt to convert the Track into an AudioResource (i.e. start streaming the video)
 			const resource = await nextTrack.createAudioResource();
 			this.audioPlayer.play(resource);
 		} catch (error) {
+			// If an error occurred, try the next item of the queue instead
 			nextTrack.onError(error);
 			return this.processQueue();
 		} finally {
+			// Once done, release the lock on the queue
 			this.queueLock = false;
 		}
 	}
