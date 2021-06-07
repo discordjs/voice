@@ -15,6 +15,7 @@ const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSA
 
 client.on('ready', () => console.log('Ready!'));
 
+// This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
 client.on('message', async (message) => {
 	if (!message.guild) return;
 	if (!client.application?.owner) await client.application?.fetch();
@@ -62,15 +63,22 @@ client.on('message', async (message) => {
 	}
 });
 
+/**
+ * Maps guild IDs to music subscriptions, which exist if the bot has an active VoiceConnection to the guild.
+ */
 const subscriptions = new Map<Snowflake, MusicSubscription>();
 
+// Handles slash command interactions
 client.on('interaction', async (interaction: Interaction) => {
 	if (!interaction.isCommand() || !interaction.guildID) return;
 	let subscription = subscriptions.get(interaction.guildID);
 
 	if (interaction.commandName === 'play') {
+		// Extract the video URL from the command
 		const url = interaction.options.get('song')!.value! as string;
 
+		// If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
+		// and create a subscription.
 		if (!subscription) {
 			if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
 				const channel = interaction.member.voice.channel;
@@ -86,11 +94,13 @@ client.on('interaction', async (interaction: Interaction) => {
 			}
 		}
 
+		// If there is no subscription, tell the user they need to join a channel.
 		if (!subscription) {
 			await interaction.reply('Join a voice channel and then try that again!');
 			return;
 		}
 
+		// Make sure the connection is ready before processing the user's request
 		try {
 			await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
 		} catch (error) {
@@ -100,6 +110,7 @@ client.on('interaction', async (interaction: Interaction) => {
 		}
 
 		try {
+			// Attempt to create a Track from the user's video URL
 			const track = await Track.from(url, {
 				onStart() {
 					interaction.followUp(`Now playing!`, { ephemeral: true }).catch(console.warn);
@@ -112,7 +123,7 @@ client.on('interaction', async (interaction: Interaction) => {
 					interaction.followUp(`Error: ${error.message}`, { ephemeral: true }).catch(console.warn);
 				},
 			});
-
+			// Enqueue the track and reply a success message to the user
 			subscription.enqueue(track);
 			await interaction.reply(`Enqueued **${track.title}**`);
 		} catch (error) {
@@ -120,14 +131,17 @@ client.on('interaction', async (interaction: Interaction) => {
 			await interaction.reply('Failed to play track, please try again later!');
 		}
 	} else if (interaction.commandName === 'skip') {
-		const subscription = subscriptions.get(interaction.guildID);
 		if (subscription) {
+			// Calling .stop() on an AudioPlayer causes it to transition into the Idle state. Because of a state transition
+			// listener defined in music/subscription.ts, transitions into the Idle state mean the next track from the queue
+			// will be loaded and played.
 			subscription.audioPlayer.stop();
 			await interaction.reply('Skipped song!');
 		} else {
 			await interaction.reply('Not playing in this server!');
 		}
 	} else if (interaction.commandName === 'queue') {
+		// Print out the current queue, including up to the next 5 tracks to be played.
 		if (subscription) {
 			const current =
 				subscription.audioPlayer.state.status === AudioPlayerStatus.Idle
