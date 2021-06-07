@@ -156,7 +156,9 @@ export class VoiceUDPSocket extends (EventEmitter as new () => TypedEmitter<Voic
 	 * Closes the socket, the instance will not be able to be reused.
 	 */
 	public destroy() {
-		this.socket.close();
+		try {
+			this.socket.close();
+		} catch {}
 		clearInterval(this.keepAliveInterval);
 	}
 
