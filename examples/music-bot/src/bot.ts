@@ -1,7 +1,13 @@
 import Discord, { Interaction, GuildMember, Snowflake } from 'discord.js';
-import { AudioPlayerStatus, entersState, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs/voice';
+import {
+	AudioPlayerStatus,
+	AudioResource,
+	entersState,
+	joinVoiceChannel,
+	VoiceConnectionStatus,
+} from '@discordjs/voice';
 import { createDiscordJSAdapter } from './music/adapter';
-import { Track, TrackMetadata } from './music/track';
+import { Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
 import { token } from '../auth.example.json';
 
@@ -108,7 +114,7 @@ client.on('interaction', async (interaction: Interaction) => {
 			});
 
 			subscription.enqueue(track);
-			await interaction.reply(`Enqueued **${track.metadata.title}**`);
+			await interaction.reply(`Enqueued **${track.title}**`);
 		} catch (error) {
 			console.warn(error);
 			await interaction.reply('Failed to play track, please try again later!');
@@ -126,11 +132,11 @@ client.on('interaction', async (interaction: Interaction) => {
 			const current =
 				subscription.audioPlayer.state.status === AudioPlayerStatus.Idle
 					? `Nothing is currently playing!`
-					: `Playing **${(subscription.audioPlayer.state.resource.metadata as TrackMetadata).title}**`;
+					: `Playing **${(subscription.audioPlayer.state.resource as AudioResource<Track>).metadata!.title}**`;
 
 			const queue = subscription.queue
 				.slice(0, 5)
-				.map((track, index) => `${index + 1}) ${track.metadata.title}`)
+				.map((track, index) => `${index + 1}) ${track.title}`)
 				.join('\n');
 
 			await interaction.reply(`${current}\n\n${queue}`);

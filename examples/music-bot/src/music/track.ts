@@ -1,7 +1,7 @@
 import ytdl, { getInfo } from 'ytdl-core-discord';
 import { AudioResource, createAudioResource, StreamType } from '@discordjs/voice';
 
-export interface TrackMetadata {
+export interface TrackData {
 	url: string;
 	title: string;
 	onStart: () => void;
@@ -12,24 +12,29 @@ export interface TrackMetadata {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
 
-export class Track {
-	public readonly metadata: TrackMetadata;
+export class Track implements TrackData {
+	public readonly url: string;
+	public readonly title: string;
+	public readonly onStart: () => void;
+	public readonly onFinish: () => void;
+	public readonly onError: (error: Error) => void;
 
-	private constructor(metadata: TrackMetadata) {
-		this.metadata = metadata;
+	private constructor({ url, title, onStart, onFinish, onError }: TrackData) {
+		this.url = url;
+		this.title = title;
+		this.onStart = onStart;
+		this.onFinish = onFinish;
+		this.onError = onError;
 	}
 
-	public async createAudioResource(): Promise<AudioResource<TrackMetadata>> {
-		return createAudioResource(await ytdl(this.metadata.url), { metadata: this.metadata, inputType: StreamType.Opus });
+	public async createAudioResource(): Promise<AudioResource<Track>> {
+		return createAudioResource(await ytdl(this.url), { metadata: this, inputType: StreamType.Opus });
 	}
 
-	public static async from(
-		url: string,
-		methods: Pick<TrackMetadata, 'onStart' | 'onFinish' | 'onError'>,
-	): Promise<Track> {
+	public static async from(url: string, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {
 		const info = await getInfo(url);
 
-		const wrappedMethods: Pick<TrackMetadata, 'onStart' | 'onFinish' | 'onError'> = {
+		const wrappedMethods = {
 			onStart() {
 				wrappedMethods.onStart = noop;
 				methods.onStart();
@@ -38,7 +43,7 @@ export class Track {
 				wrappedMethods.onFinish = noop;
 				methods.onFinish();
 			},
-			onError(error) {
+			onError(error: Error) {
 				wrappedMethods.onError = noop;
 				methods.onError(error);
 			},

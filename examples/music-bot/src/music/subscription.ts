@@ -7,7 +7,7 @@ import {
 	VoiceConnection,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
-import { Track, TrackMetadata } from './track';
+import { Track } from './track';
 
 export class MusicSubscription {
 	public readonly voiceConnection: VoiceConnection;
@@ -55,14 +55,14 @@ export class MusicSubscription {
 		// Configure audio player
 		this.audioPlayer.on('stateChange', (oldState, newState) => {
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
-				(oldState.resource as AudioResource<TrackMetadata>).metadata!.onFinish();
+				(oldState.resource as AudioResource<Track>).metadata!.onFinish();
 				void this.processQueue();
 			} else if (newState.status === AudioPlayerStatus.Playing) {
-				(newState.resource as AudioResource<TrackMetadata>).metadata!.onStart();
+				(newState.resource as AudioResource<Track>).metadata!.onStart();
 			}
 		});
 
-		this.audioPlayer.on('error', (error) => (error.resource as AudioResource<TrackMetadata>).metadata!.onError(error));
+		this.audioPlayer.on('error', (error) => (error.resource as AudioResource<Track>).metadata!.onError(error));
 
 		voiceConnection.subscribe(this.audioPlayer);
 	}
@@ -88,7 +88,7 @@ export class MusicSubscription {
 			const resource = await nextTrack.createAudioResource();
 			this.audioPlayer.play(resource);
 		} catch (error) {
-			nextTrack.metadata.onError(error);
+			nextTrack.onError(error);
 			return this.processQueue();
 		} finally {
 			this.queueLock = false;
