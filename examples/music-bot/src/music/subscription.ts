@@ -110,13 +110,12 @@ export class MusicSubscription {
 			// Attempt to convert the Track into an AudioResource (i.e. start streaming the video)
 			const resource = await nextTrack.createAudioResource();
 			this.audioPlayer.play(resource);
+			this.queueLock = false;
 		} catch (error) {
 			// If an error occurred, try the next item of the queue instead
 			nextTrack.onError(error);
-			return this.processQueue();
-		} finally {
-			// Once done, release the lock on the queue
 			this.queueLock = false;
+			return this.processQueue();
 		}
 	}
 }
