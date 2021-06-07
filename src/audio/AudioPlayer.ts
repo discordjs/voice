@@ -140,7 +140,7 @@ export type AudioPlayerState =
 	| AudioPlayerPausedState;
 
 export type AudioPlayerEvents = {
-	error: (error: Error) => void;
+	error: (error: AudioPlayerError) => void;
 	debug: (message: string) => void;
 	stateChange: (oldState: AudioPlayerState, newState: AudioPlayerState) => void;
 	subscribe: (subscription: PlayerSubscription) => void;
