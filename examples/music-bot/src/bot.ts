@@ -179,6 +179,8 @@ client.on('interaction', async (interaction: Interaction) => {
 		} else {
 			await interaction.reply('Not playing in this server!');
 		}
+	} else {
+		await interaction.reply('Unknown command');
 	}
 });
 
