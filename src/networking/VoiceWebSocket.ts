@@ -1,7 +1,6 @@
 import { VoiceOPCodes } from 'discord-api-types/voice/v4';
-import EventEmitter from 'events';
 import WebSocket, { MessageEvent } from 'ws';
-import TypedEmitter from 'typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 /**
  * Debug event for VoiceWebSocket.
@@ -22,7 +21,7 @@ export interface VoiceWebSocketEvents {
  * An extension of the WebSocket class to provide helper functionality when interacting
  * with the Discord Voice gateway.
  */
-export class VoiceWebSocket extends (EventEmitter as new () => TypedEmitter<VoiceWebSocketEvents>) {
+export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 	/**
 	 * The current heartbeat interval, if any
 	 */
