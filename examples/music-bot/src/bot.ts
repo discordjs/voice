@@ -146,7 +146,7 @@ client.on('interaction', async (interaction: Interaction) => {
 			const current =
 				subscription.audioPlayer.state.status === AudioPlayerStatus.Idle
 					? `Nothing is currently playing!`
-					: `Playing **${(subscription.audioPlayer.state.resource as AudioResource<Track>).metadata!.title}**`;
+					: `Playing **${subscription.audioPlayer.state.resource.metadata!.title}**`;
 
 			const queue = subscription.queue
 				.slice(0, 5)
@@ -154,17 +154,31 @@ client.on('interaction', async (interaction: Interaction) => {
 				.join('\n');
 
 			await interaction.reply(`${current}\n\n${queue}`);
+		} else {
+			await interaction.reply('Not playing in this server!');
 		}
-	} else if (interaction.commandName === 'pause' && subscription) {
-		subscription.audioPlayer.pause();
-		await interaction.reply(`Paused!`, { ephemeral: true });
-	} else if (interaction.commandName === 'resume' && subscription) {
-		subscription.audioPlayer.unpause();
-		await interaction.reply(`Unpaused!`, { ephemeral: true });
-	} else if (interaction.commandName === 'leave' && subscription) {
-		subscription.voiceConnection.destroy();
-		subscriptions.delete(interaction.guildID);
-		await interaction.reply(`Left channel!`, { ephemeral: true });
+	} else if (interaction.commandName === 'pause') {
+		if (subscription) {
+			subscription.audioPlayer.pause();
+			await interaction.reply(`Paused!`, { ephemeral: true });
+		} else {
+			await interaction.reply('Not playing in this server!');
+		}
+	} else if (interaction.commandName === 'resume') {
+		if (subscription) {
+			subscription.audioPlayer.unpause();
+			await interaction.reply(`Unpaused!`, { ephemeral: true });
+		} else {
+			await interaction.reply('Not playing in this server!');
+		}
+	} else if (interaction.commandName === 'leave') {
+		if (subscription) {
+			subscription.voiceConnection.destroy();
+			subscriptions.delete(interaction.guildID);
+			await interaction.reply(`Left channel!`, { ephemeral: true });
+		} else {
+			await interaction.reply('Not playing in this server!');
+		}
 	}
 });
 
