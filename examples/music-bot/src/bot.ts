@@ -11,7 +11,7 @@ import { Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const { token } = require('../auth.example.json');
+const { token } = require('../auth.json');
 
 const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
 
@@ -146,7 +146,7 @@ client.on('interaction', async (interaction: Interaction) => {
 			const current =
 				subscription.audioPlayer.state.status === AudioPlayerStatus.Idle
 					? `Nothing is currently playing!`
-					: `Playing **${subscription.audioPlayer.state.resource.metadata!.title}**`;
+					: `Playing **${(subscription.audioPlayer.state.resource as AudioResource<Track>).metadata!.title}**`;
 
 			const queue = subscription.queue
 				.slice(0, 5)
