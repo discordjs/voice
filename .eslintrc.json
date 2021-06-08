@@ -11,6 +11,7 @@
 				"selector": "enumMember",
 				"format": ["PascalCase"]
 			}
-		]
+		],
+		"no-redeclare": "off"
 	}
 }
