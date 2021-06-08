@@ -34,7 +34,7 @@ export class MusicSubscription {
 						if (this.voiceConnection.state.status === VoiceConnectionStatus.Disconnected) {
 							this.voiceConnection.reconnect();
 						}
-					}, (this.voiceConnection.reconnectAttempts + 1) * 5e3).unref();
+					}, (this.voiceConnection.reconnectAttempts + 1) * 5_000).unref();
 				} else {
 					this.voiceConnection.destroy();
 				}
@@ -47,7 +47,7 @@ export class MusicSubscription {
 			) {
 				// In the Signalling or Connecting states, set a time limit to prevent starvation
 				// These states can be entered after Ready in an automatic reconnect, e.g. unknown close code, UDP keep-alive failed
-				this.connectPromise = entersState(this.voiceConnection, VoiceConnectionStatus.Ready, 20e3)
+				this.connectPromise = entersState(this.voiceConnection, VoiceConnectionStatus.Ready, 20_000)
 					.then(() => undefined)
 					.catch(() => {
 						if (this.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) this.voiceConnection.destroy();

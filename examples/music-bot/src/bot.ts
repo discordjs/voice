@@ -113,10 +113,10 @@ client.on('interaction', async (interaction: Interaction) => {
 			// Attempt to create a Track from the user's video URL
 			const track = await Track.from(url, {
 				onStart() {
-					interaction.followUp(`Now playing!`, { ephemeral: true }).catch(console.warn);
+					interaction.followUp('Now playing!', { ephemeral: true }).catch(console.warn);
 				},
 				onFinish() {
-					interaction.followUp(`Now finished!`, { ephemeral: true }).catch(console.warn);
+					interaction.followUp('Now finished!', { ephemeral: true }).catch(console.warn);
 				},
 				onError(error) {
 					console.warn(error);
