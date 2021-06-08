@@ -9,7 +9,9 @@ import {
 import { createDiscordJSAdapter } from './music/adapter';
 import { Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
-import { token } from '../auth.example.json';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const { token } = require('../auth.example.json');
 
 const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
 
@@ -21,43 +23,40 @@ client.on('message', async (message) => {
 	if (!client.application?.owner) await client.application?.fetch();
 
 	if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
-		await message.guild.commands.create({
-			name: 'play',
-			description: 'Plays a song',
-			options: [
-				{
-					name: 'song',
-					type: 'STRING' as const,
-					description: 'The URL of the song to play',
-					required: true,
-				},
-			],
-		});
-
-		await message.guild.commands.create({
-			name: 'skip',
-			description: 'Skip to the next song in the queue',
-		});
-
-		await message.guild.commands.create({
-			name: 'queue',
-			description: 'See the music queue',
-		});
-
-		await message.guild.commands.create({
-			name: 'pause',
-			description: 'Pauses the song that is currently playing',
-		});
-
-		await message.guild.commands.create({
-			name: 'resume',
-			description: 'Resume playback of the current song',
-		});
-
-		await message.guild.commands.create({
-			name: 'leave',
-			description: 'Leave the voice channel',
-		});
+		await message.guild.commands.set([
+			{
+				name: 'play',
+				description: 'Plays a song',
+				options: [
+					{
+						name: 'song',
+						type: 'STRING' as const,
+						description: 'The URL of the song to play',
+						required: true,
+					},
+				],
+			},
+			{
+				name: 'skip',
+				description: 'Skip to the next song in the queue',
+			},
+			{
+				name: 'queue',
+				description: 'See the music queue',
+			},
+			{
+				name: 'pause',
+				description: 'Pauses the song that is currently playing',
+			},
+			{
+				name: 'resume',
+				description: 'Resume playback of the current song',
+			},
+			{
+				name: 'leave',
+				description: 'Leave the voice channel',
+			},
+		]);
 
 		await message.reply('Deployed!');
 	}

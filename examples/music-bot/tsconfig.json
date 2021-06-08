@@ -2,12 +2,14 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"resolveJsonModule": true,
+		"outDir": "dist",
+		"rootDir": "src",
 		"paths": {
 			"@discordjs/voice": ["../../"],
 			"sodium": ["./node_modules/sodium"],
 			"@discordjs/opus": ["./node_modules/@discordjs/opus"]
 		}
 	},
-	"include": ["src/**/*.ts"]
+	"include": ["src/**/*.ts"],
+	"exclude": [""]
 }
