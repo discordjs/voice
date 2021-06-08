@@ -40,7 +40,8 @@
 	"dependencies": {
 		"prism-media": "^1.2.9",
 		"ws": "^7.4.4",
-		"tiny-typed-emitter": "^2.0.3"
+		"tiny-typed-emitter": "^2.0.3",
+		"discord-api-types": "^0.18.1"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.3",
@@ -54,7 +55,6 @@
 		"@typescript-eslint/eslint-plugin": "^4.26.1",
 		"@typescript-eslint/parser": "^4.26.1",
 		"babel-jest": "^27.0.2",
-		"discord-api-types": "^0.18.1",
 		"eslint": "^7.28.0",
 		"eslint-config-marine": "^9.0.6",
 		"eslint-config-prettier": "^8.3.0",
