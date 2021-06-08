@@ -96,7 +96,7 @@ client.on('interaction', async (interaction: Interaction) => {
 
 		// If there is no subscription, tell the user they need to join a channel.
 		if (!subscription) {
-			await interaction.reply('Join a voice channel and then try that again!');
+			await interaction.followUp('Join a voice channel and then try that again!');
 			return;
 		}
 
@@ -105,7 +105,7 @@ client.on('interaction', async (interaction: Interaction) => {
 			await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
 		} catch (error) {
 			console.warn(error);
-			await interaction.reply('Failed to join voice channel within 20 seconds, please try again later!');
+			await interaction.followUp('Failed to join voice channel within 20 seconds, please try again later!');
 			return;
 		}
 
@@ -125,7 +125,7 @@ client.on('interaction', async (interaction: Interaction) => {
 			});
 			// Enqueue the track and reply a success message to the user
 			subscription.enqueue(track);
-			await interaction.reply(`Enqueued **${track.title}**`);
+			await interaction.followUp(`Enqueued **${track.title}**`);
 		} catch (error) {
 			console.warn(error);
 			await interaction.reply('Failed to play track, please try again later!');
