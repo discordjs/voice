@@ -1,5 +1,4 @@
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
-import { EventEmitter } from 'events';
 import { CreateVoiceConnectionOptions } from '.';
 import { AudioPlayer } from './audio/AudioPlayer';
 import { PlayerSubscription } from './audio/PlayerSubscription';
@@ -13,7 +12,7 @@ import {
 import { DiscordGatewayAdapterImplementerMethods } from './util/adapter';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { noop } from './util/util';
-import TypedEmitter from 'typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 /**
  * The various status codes a voice connection can hold at any one time.
@@ -152,7 +151,7 @@ export type VoiceConnectionEvents = {
 /**
  * A connection to the voice server of a Guild, can be used to play audio in voice channels.
  */
-export class VoiceConnection extends (EventEmitter as new () => TypedEmitter<VoiceConnectionEvents>) {
+export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	/**
 	 * The number of consecutive reconnect attempts. Initially 0, and increments for each reconnect.
 	 * When a connection is successfully established, it resets to 0.

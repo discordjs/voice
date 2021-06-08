@@ -1,7 +1,6 @@
 import { createSocket, Socket } from 'dgram';
-import { EventEmitter } from 'events';
 import { isIPv4 } from 'net';
-import TypedEmitter from 'typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 /**
  * Stores an IP address and port. Used to store socket details for the local client as well as
@@ -42,7 +41,7 @@ const MAX_COUNTER_VALUE = 2 ** 32 - 1;
 /**
  * Manages the UDP networking for a voice connection.
  */
-export class VoiceUDPSocket extends (EventEmitter as new () => TypedEmitter<VoiceUDPSocketEvents>) {
+export class VoiceUDPSocket extends TypedEmitter<VoiceUDPSocketEvents> {
 	/**
 	 * The underlying network Socket for the VoiceUDPSocket.
 	 */

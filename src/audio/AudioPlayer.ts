@@ -1,11 +1,10 @@
-import { EventEmitter } from 'events';
 import { addAudioPlayer, deleteAudioPlayer } from '../DataStore';
 import { noop } from '../util/util';
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayerError } from './AudioPlayerError';
 import { AudioResource } from './AudioResource';
 import { PlayerSubscription } from './PlayerSubscription';
-import TypedEmitter from 'typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 // The Opus "silent" frame
 export const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
@@ -159,7 +158,7 @@ export type AudioPlayerEvents = {
  * The AudioPlayer drives the timing of playback, and therefore is unaffected by voice connections
  * becoming unavailable. Its behavior in these scenarios can be configured.
  */
-export class AudioPlayer extends (EventEmitter as new () => TypedEmitter<AudioPlayerEvents>) {
+export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	/**
 	 * The state that the AudioPlayer is in
 	 */

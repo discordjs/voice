@@ -1,11 +1,10 @@
 import { VoiceOPCodes } from 'discord-api-types/voice/v4';
-import { EventEmitter } from 'events';
 import { VoiceUDPSocket } from './VoiceUDPSocket';
 import { VoiceWebSocket } from './VoiceWebSocket';
 import * as secretbox from '../util/Secretbox';
 import { noop } from '../util/util';
 import { CloseEvent } from 'ws';
-import TypedEmitter from 'typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 // The number of audio channels required by Discord
 const CHANNELS = 2;
@@ -161,7 +160,7 @@ export interface NetworkingEvents {
 /**
  * Manages the networking required to maintain a voice connection and dispatch audio packets
  */
-export class Networking extends (EventEmitter as new () => TypedEmitter<NetworkingEvents>) {
+export class Networking extends TypedEmitter<NetworkingEvents> {
 	private _state: NetworkingState;
 
 	/**

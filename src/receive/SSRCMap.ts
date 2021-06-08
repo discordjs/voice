@@ -1,5 +1,4 @@
-import EventEmitter from 'events';
-import TypedEmitter from 'typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 /**
  * The known data for a user in a Discord voice connection
@@ -31,7 +30,7 @@ export interface SSRCMapEvents {
 /**
  * Maps audio SSRCs to data of users in voice connections.
  */
-export class SSRCMap extends (EventEmitter as new () => TypedEmitter<SSRCMapEvents>) {
+export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 	/**
 	 * The underlying map
 	 */
