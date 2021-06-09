@@ -50,7 +50,7 @@ export class AudioResource<T = unknown> {
 	/**
 	 * Optional metadata that can be used to identify the resource.
 	 */
-	public metadata?: T;
+	public metadata: T;
 
 	/**
 	 * If the resource was created with inline volume transformation enabled, then this will be a
@@ -73,7 +73,7 @@ export class AudioResource<T = unknown> {
 	 */
 	public started = false;
 
-	public constructor(pipeline: Edge[], playStream: Readable, metadata?: T, volume?: VolumeTransformer) {
+	public constructor(pipeline: Edge[], playStream: Readable, metadata: T, volume?: VolumeTransformer) {
 		this.pipeline = pipeline;
 		this.playStream = playStream;
 		this.metadata = metadata;
@@ -152,7 +152,7 @@ export function inferStreamType(stream: Readable): {
 export function createAudioResource<T>(
 	input: string | Readable,
 	options: CreateAudioResourceOptions<T> = {},
-): AudioResource<T> {
+): AudioResource<T | undefined> {
 	let inputType = options.inputType;
 	let needsInlineVolume = Boolean(options.inlineVolume);
 

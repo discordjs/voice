@@ -61,15 +61,15 @@ export class MusicSubscription {
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
 				// If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
 				// The queue is then processed to start playing the next track, if one is available.
-				(oldState.resource as AudioResource<Track>).metadata!.onFinish();
+				(oldState.resource as AudioResource<Track>).metadata.onFinish();
 				void this.processQueue();
 			} else if (newState.status === AudioPlayerStatus.Playing) {
 				// If the Playing state has been entered, then a new track has started playback.
-				(newState.resource as AudioResource<Track>).metadata!.onStart();
+				(newState.resource as AudioResource<Track>).metadata.onStart();
 			}
 		});
 
-		this.audioPlayer.on('error', (error) => (error.resource as AudioResource<Track>).metadata!.onError(error));
+		this.audioPlayer.on('error', (error) => (error.resource as AudioResource<Track>).metadata.onError(error));
 
 		voiceConnection.subscribe(this.audioPlayer);
 	}

@@ -146,7 +146,7 @@ client.on('interaction', async (interaction: Interaction) => {
 			const current =
 				subscription.audioPlayer.state.status === AudioPlayerStatus.Idle
 					? `Nothing is currently playing!`
-					: `Playing **${(subscription.audioPlayer.state.resource as AudioResource<Track>).metadata!.title}**`;
+					: `Playing **${(subscription.audioPlayer.state.resource as AudioResource<Track>).metadata.title}**`;
 
 			const queue = subscription.queue
 				.slice(0, 5)
