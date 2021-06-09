@@ -45,7 +45,7 @@ export class AudioResource<T = unknown> {
 	 * contain an FFmpeg component for arbitrary inputs, and it may contain a VolumeTransformer component
 	 * for resources with inline volume transformation enabled.
 	 */
-	public readonly pipeline: Edge[];
+	public readonly edges: Edge[];
 
 	/**
 	 * Optional metadata that can be used to identify the resource.
@@ -79,8 +79,8 @@ export class AudioResource<T = unknown> {
 	 */
 	public started = false;
 
-	public constructor(_pipeline: Edge[], streams: Readable[], metadata: T) {
-		this.pipeline = _pipeline;
+	public constructor(edges: Edge[], streams: Readable[], metadata: T) {
+		this.edges = edges;
 		this.playStream = streams.length > 1 ? (pipeline(streams, noop) as any as Readable) : streams[0];
 		this.metadata = metadata;
 
