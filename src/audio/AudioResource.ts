@@ -45,18 +45,24 @@ export class AudioResource<T = unknown> {
 	 * contain an FFmpeg component for arbitrary inputs, and it may contain a VolumeTransformer component
 	 * for resources with inline volume transformation enabled.
 	 */
-	public readonly pipeline: Edge[];
+	public readonly edges: readonly Edge[];
 
 	/**
 	 * Optional metadata that can be used to identify the resource.
 	 */
-	public metadata?: T;
+	public metadata: T;
 
 	/**
 	 * If the resource was created with inline volume transformation enabled, then this will be a
 	 * prism-media VolumeTransformer. You can use this to alter the volume of the stream.
 	 */
 	public readonly volume?: VolumeTransformer;
+
+	/**
+	 * If using an Opus encoder to create this audio resource, then this will be a prism-media opus.Encoder.
+	 * You can use this to control settings such as bitrate, FEC, PLP.
+	 */
+	public readonly encoder?: opus.Encoder;
 
 	/**
 	 * The audio player that the resource is subscribed to, if any.
@@ -73,11 +79,18 @@ export class AudioResource<T = unknown> {
 	 */
 	public started = false;
 
-	public constructor(pipeline: Edge[], playStream: Readable, metadata?: T, volume?: VolumeTransformer) {
-		this.pipeline = pipeline;
-		this.playStream = playStream;
+	public constructor(edges: readonly Edge[], streams: readonly Readable[], metadata: T) {
+		this.edges = edges;
+		this.playStream = streams.length > 1 ? (pipeline(streams, noop) as any as Readable) : streams[0];
 		this.metadata = metadata;
-		this.volume = volume;
+
+		for (const stream of streams) {
+			if (stream instanceof VolumeTransformer) {
+				this.volume = stream;
+			} else if (stream instanceof opus.Encoder) {
+				this.encoder = stream;
+			}
+		}
 
 		once(this.playStream, 'readable')
 			.then(() => (this.started = true))
@@ -152,7 +165,7 @@ export function inferStreamType(stream: Readable): {
 export function createAudioResource<T>(
 	input: string | Readable,
 	options: CreateAudioResourceOptions<T> = {},
-): AudioResource<T> {
+): AudioResource<T | null> {
 	let inputType = options.inputType;
 	let needsInlineVolume = Boolean(options.inlineVolume);
 
@@ -170,16 +183,10 @@ export function createAudioResource<T>(
 	if (transformerPipeline.length === 0) {
 		if (typeof input === 'string') throw new Error(`Invalid pipeline constructed for string resource '${input}'`);
 		// No adjustments required
-		return new AudioResource([], input, options.metadata);
+		return new AudioResource([], [input], options.metadata ?? null);
 	}
 	const streams = transformerPipeline.map((edge) => edge.transformer(input));
 	if (typeof input !== 'string') streams.unshift(input);
 
-	// the callback is called once the stream ends
-	const playStream = streams.length > 1 ? pipeline(streams, noop) : streams[0];
-
-	// attempt to find the volume transformer in the pipeline (if one exists)
-	const volume = streams.find((stream) => stream instanceof VolumeTransformer) as VolumeTransformer | undefined;
-
-	return new AudioResource(transformerPipeline, playStream as any as Readable, options.metadata, volume);
+	return new AudioResource(transformerPipeline, streams, options.metadata ?? null);
 }
