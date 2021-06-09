@@ -9,11 +9,26 @@
 	<a href="https://www.patreon.com/discordjs"><img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" /></a>
 </p>
 
-> Provides audio streaming functionality to Discord.js
+## About
 
-## Status: alpha
+An implementation of the Discord Voice API for Node.js, written in TypeScript.
 
-> This library is still in development - the API is subject to change!
+**Features:**
+
+- Send and receive* audio in Discord voice-based channels
+- A strong focus on reliability and predictable behaviour
+- Horizontal scalability and libraries other than [discord.js](https://discord.js.org/) are supported with custom adapters
+- A robust audio processing system that can handle a wide range of audio sources
+
+\**Audio receive is not documented by Discord so complete support is not guaranteed*
+
+**Useful links:**
+
+- [Documentation](https://discordjs.github.io/voice)
+- [Examples](https://github.com/discordjs/voice/tree/main/examples)
+- [GitHub Discussions](https://github.com/discordjs/voice/discussions)
+- [Discord.js Server](https://discord.gg/djs)
+- [Repository](https://github.com/discordjs/voice)
 
 ## Dependencies
 
