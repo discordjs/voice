@@ -59,6 +59,12 @@ export class AudioResource<T = unknown> {
 	public readonly volume?: VolumeTransformer;
 
 	/**
+	 * If using an Opus encoder to create this audio resource, then this will be a prism-media opus.Encoder.
+	 * You can use this to control settings such as bitrate, FEC, PLP.
+	 */
+	public readonly encoder?: opus.Encoder;
+
+	/**
 	 * The audio player that the resource is subscribed to, if any.
 	 */
 	public audioPlayer?: AudioPlayer;
@@ -73,11 +79,18 @@ export class AudioResource<T = unknown> {
 	 */
 	public started = false;
 
-	public constructor(pipeline: Edge[], playStream: Readable, metadata: T, volume?: VolumeTransformer) {
+	public constructor(pipeline: Edge[], playStream: Readable, streams: Readable[], metadata: T) {
 		this.pipeline = pipeline;
 		this.playStream = playStream;
 		this.metadata = metadata;
-		this.volume = volume;
+
+		for (const stream of streams) {
+			if (stream instanceof VolumeTransformer) {
+				this.volume = stream;
+			} else if (stream instanceof opus.Encoder) {
+				this.encoder = stream;
+			}
+		}
 
 		once(this.playStream, 'readable')
 			.then(() => (this.started = true))
@@ -170,7 +183,7 @@ export function createAudioResource<T>(
 	if (transformerPipeline.length === 0) {
 		if (typeof input === 'string') throw new Error(`Invalid pipeline constructed for string resource '${input}'`);
 		// No adjustments required
-		return new AudioResource([], input, options.metadata);
+		return new AudioResource([], input, [], options.metadata);
 	}
 	const streams = transformerPipeline.map((edge) => edge.transformer(input));
 	if (typeof input !== 'string') streams.unshift(input);
@@ -178,8 +191,5 @@ export function createAudioResource<T>(
 	// the callback is called once the stream ends
 	const playStream = streams.length > 1 ? pipeline(streams, noop) : streams[0];
 
-	// attempt to find the volume transformer in the pipeline (if one exists)
-	const volume = streams.find((stream) => stream instanceof VolumeTransformer) as VolumeTransformer | undefined;
-
-	return new AudioResource(transformerPipeline, playStream as any as Readable, options.metadata, volume);
+	return new AudioResource(transformerPipeline, playStream as any as Readable, streams, options.metadata);
 }
