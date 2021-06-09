@@ -107,9 +107,9 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audioresource.html#audioplayer" class="tsd-kind-icon">audio<wbr>Player</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audioresource.html#edges" class="tsd-kind-icon">edges</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audioresource.html#encoder" class="tsd-kind-icon">encoder</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audioresource.html#metadata" class="tsd-kind-icon">metadata</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audioresource.html#pipeline" class="tsd-kind-icon">pipeline</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audioresource.html#playstream" class="tsd-kind-icon">play<wbr>Stream</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audioresource.html#playbackduration" class="tsd-kind-icon">playback<wbr>Duration</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="audioresource.html#started" class="tsd-kind-icon">started</a></li>
@@ -131,13 +131,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Audio<wbr>Resource&lt;T&gt;<span class="tsd-signature-symbol">(</span>_pipeline<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Edge</span><span class="tsd-signature-symbol">[]</span>, streams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readable</span><span class="tsd-signature-symbol">[]</span>, metadata<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="audioresource.html" class="tsd-signature-type" data-tsd-kind="Class">AudioResource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Audio<wbr>Resource&lt;T&gt;<span class="tsd-signature-symbol">(</span>edges<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Edge</span><span class="tsd-signature-symbol">[]</span>, streams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readable</span><span class="tsd-signature-symbol">[]</span>, metadata<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="audioresource.html" class="tsd-signature-type" data-tsd-kind="Class">AudioResource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L80">src/audio/AudioResource.ts:80</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L80">src/audio/AudioResource.ts:80</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -149,7 +149,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>_pipeline: <span class="tsd-signature-type">Edge</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>edges: <span class="tsd-signature-type">Edge</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 								<li>
 									<h5>streams: <span class="tsd-signature-type">Readable</span><span class="tsd-signature-symbol">[]</span></h5>
@@ -171,7 +171,7 @@
 					<div class="tsd-signature tsd-kind-icon">audio<wbr>Player<span class="tsd-signature-symbol">:</span> <a href="audioplayer.html" class="tsd-signature-type" data-tsd-kind="Class">AudioPlayer</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L70">src/audio/AudioResource.ts:70</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L70">src/audio/AudioResource.ts:70</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -181,12 +181,29 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="edges" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> edges</h3>
+					<div class="tsd-signature tsd-kind-icon">edges<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Edge</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L48">src/audio/AudioResource.ts:48</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The pipeline used to convert the input stream into a playable format. For example, this may
+								contain an FFmpeg component for arbitrary inputs, and it may contain a VolumeTransformer component
+							for resources with inline volume transformation enabled.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="encoder" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> encoder</h3>
 					<div class="tsd-signature tsd-kind-icon">encoder<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Encoder</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L65">src/audio/AudioResource.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L65">src/audio/AudioResource.ts:65</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -202,7 +219,7 @@
 					<div class="tsd-signature tsd-kind-icon">metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">T</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L53">src/audio/AudioResource.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L53">src/audio/AudioResource.ts:53</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -212,29 +229,12 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="pipeline" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> pipeline</h3>
-					<div class="tsd-signature tsd-kind-icon">pipeline<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Edge</span><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L48">src/audio/AudioResource.ts:48</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The pipeline used to convert the input stream into a playable format. For example, this may
-								contain an FFmpeg component for arbitrary inputs, and it may contain a VolumeTransformer component
-							for resources with inline volume transformation enabled.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="playstream" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> play<wbr>Stream</h3>
 					<div class="tsd-signature tsd-kind-icon">play<wbr>Stream<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Readable</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L41">src/audio/AudioResource.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L41">src/audio/AudioResource.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -249,7 +249,7 @@
 					<div class="tsd-signature tsd-kind-icon">playback<wbr>Duration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L75">src/audio/AudioResource.ts:75</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L75">src/audio/AudioResource.ts:75</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -264,7 +264,7 @@
 					<div class="tsd-signature tsd-kind-icon">started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L80">src/audio/AudioResource.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L80">src/audio/AudioResource.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -279,7 +279,7 @@
 					<div class="tsd-signature tsd-kind-icon">volume<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">VolumeTransformer</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L59">src/audio/AudioResource.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L59">src/audio/AudioResource.ts:59</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -302,7 +302,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/614f605/src/audio/AudioResource.ts#L109">src/audio/AudioResource.ts:109</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/356c803/src/audio/AudioResource.ts#L109">src/audio/AudioResource.ts:109</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -348,13 +348,13 @@
 								<a href="audioresource.html#audioplayer" class="tsd-kind-icon">audio<wbr>Player</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="audioresource.html#edges" class="tsd-kind-icon">edges</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audioresource.html#encoder" class="tsd-kind-icon">encoder</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audioresource.html#metadata" class="tsd-kind-icon">metadata</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="audioresource.html#pipeline" class="tsd-kind-icon">pipeline</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="audioresource.html#playstream" class="tsd-kind-icon">play<wbr>Stream</a>
