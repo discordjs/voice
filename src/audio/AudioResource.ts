@@ -45,7 +45,7 @@ export class AudioResource<T = unknown> {
 	 * contain an FFmpeg component for arbitrary inputs, and it may contain a VolumeTransformer component
 	 * for resources with inline volume transformation enabled.
 	 */
-	public readonly edges: Edge[];
+	public readonly edges: readonly Edge[];
 
 	/**
 	 * Optional metadata that can be used to identify the resource.
