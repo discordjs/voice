@@ -79,9 +79,9 @@ export class AudioResource<T = unknown> {
 	 */
 	public started = false;
 
-	public constructor(pipeline: Edge[], playStream: Readable, streams: Readable[], metadata: T) {
-		this.pipeline = pipeline;
-		this.playStream = playStream;
+	public constructor(_pipeline: Edge[], streams: Readable[], metadata: T) {
+		this.pipeline = _pipeline;
+		this.playStream = streams.length > 1 ? (pipeline(streams, noop) as any as Readable) : streams[0];
 		this.metadata = metadata;
 
 		for (const stream of streams) {
@@ -183,13 +183,10 @@ export function createAudioResource<T>(
 	if (transformerPipeline.length === 0) {
 		if (typeof input === 'string') throw new Error(`Invalid pipeline constructed for string resource '${input}'`);
 		// No adjustments required
-		return new AudioResource([], input, [], options.metadata);
+		return new AudioResource([], [input], options.metadata);
 	}
 	const streams = transformerPipeline.map((edge) => edge.transformer(input));
 	if (typeof input !== 'string') streams.unshift(input);
 
-	// the callback is called once the stream ends
-	const playStream = streams.length > 1 ? pipeline(streams, noop) : streams[0];
-
-	return new AudioResource(transformerPipeline, playStream as any as Readable, streams, options.metadata);
+	return new AudioResource(transformerPipeline, streams, options.metadata);
 }
