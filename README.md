@@ -20,7 +20,7 @@ An implementation of the Discord Voice API for Node.js, written in TypeScript.
 - Horizontal scalability and libraries other than [discord.js](https://discord.js.org/) are supported with custom adapters
 - A robust audio processing system that can handle a wide range of audio sources
 
-\**Audio receive is not documented by Discord so complete support is not guaranteed*
+\**Audio receive is not documented by Discord so stable support is not guaranteed*
 
 **Useful links:**
 
