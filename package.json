@@ -38,11 +38,11 @@
 		"dist/*"
 	],
 	"dependencies": {
-		"prism-media": "^1.2.9",
-		"ws": "^7.4.4",
-		"tiny-typed-emitter": "^2.0.3",
+		"@types/ws": "^7.4.4",
 		"discord-api-types": "^0.18.1",
-		"@types/ws": "^7.4.4"
+		"prism-media": "^1.2.9",
+		"tiny-typed-emitter": "^2.0.3",
+		"ws": "^7.4.4"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.3",
