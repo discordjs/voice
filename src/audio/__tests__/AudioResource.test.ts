@@ -55,12 +55,14 @@ describe('createAudioResource', () => {
 		const resource = createAudioResource(new opus.Encoder(), { inlineVolume: true });
 		expect(findPipeline).toHaveBeenCalledWith(StreamType.Opus, VOLUME_CONSTRAINT);
 		expect(resource.volume).toBeInstanceOf(VolumeTransformer);
+		expect(resource.encoder).toBeInstanceOf(opus.Encoder);
 	});
 
 	test('Infers from opus.OggDemuxer', () => {
 		const resource = createAudioResource(new opus.OggDemuxer());
 		expect(findPipeline).toHaveBeenCalledWith(StreamType.Opus, NO_CONSTRAINT);
 		expect(resource.volume).toBeUndefined();
+		expect(resource.encoder).toBeUndefined();
 	});
 
 	test('Infers from opus.WebmDemuxer', () => {
