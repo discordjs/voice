@@ -75,7 +75,7 @@ function version(name: string): string {
 		const pkg =
 			name === '@discordjs/voice'
 				? require('../../package.json')
-				: findPackageJSON(dirname(require.resolve(name)), name, 2);
+				: findPackageJSON(dirname(require.resolve(name)), name, 3);
 		return pkg?.version ?? 'not found';
 	} catch (err) {
 		return 'not found';

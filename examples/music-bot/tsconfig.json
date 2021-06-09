@@ -7,7 +7,8 @@
 		"paths": {
 			"@discordjs/voice": ["../../"],
 			"sodium": ["./node_modules/sodium"],
-			"@discordjs/opus": ["./node_modules/@discordjs/opus"]
+			"@discordjs/opus": ["./node_modules/@discordjs/opus"],
+			"tweetnacl": ["./node_modules/tweetnacl"]
 		}
 	},
 	"include": ["src/**/*.ts"],
