@@ -149,7 +149,11 @@ export function inferStreamType(stream: Readable): {
 
 export function createAudioResource<T>(
 	input: string | Readable,
-	options: CreateAudioResourceOptions<T> & Pick<CreateAudioResourceOptions<T>, 'metadata'>,
+	options: CreateAudioResourceOptions<T> &
+		Pick<
+			T extends null | undefined ? CreateAudioResourceOptions<T> : Required<CreateAudioResourceOptions<T>>,
+			'metadata'
+		>,
 ): AudioResource<T extends null | undefined ? null : T>;
 
 export function createAudioResource<T extends null | undefined>(
