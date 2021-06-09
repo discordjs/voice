@@ -6,7 +6,6 @@ import {
 	joinVoiceChannel,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
-import { createDiscordJSAdapter } from './music/adapter';
 import { Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
 
@@ -86,7 +85,7 @@ client.on('interaction', async (interaction: Interaction) => {
 					joinVoiceChannel({
 						channelId: channel.id,
 						guildId: channel.guild.id,
-						adapterCreator: createDiscordJSAdapter(channel),
+						adapterCreator: channel.guild.voiceAdapterCreator,
 					}),
 				);
 				subscription.voiceConnection.on('error', console.warn);
@@ -113,14 +112,14 @@ client.on('interaction', async (interaction: Interaction) => {
 			// Attempt to create a Track from the user's video URL
 			const track = await Track.from(url, {
 				onStart() {
-					interaction.followUp('Now playing!', { ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: 'Now playing!', ephemeral: true }).catch(console.warn);
 				},
 				onFinish() {
-					interaction.followUp('Now finished!', { ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: 'Now finished!', ephemeral: true }).catch(console.warn);
 				},
 				onError(error) {
 					console.warn(error);
-					interaction.followUp(`Error: ${error.message}`, { ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: `Error: ${error.message}`, ephemeral: true }).catch(console.warn);
 				},
 			});
 			// Enqueue the track and reply a success message to the user
@@ -160,14 +159,14 @@ client.on('interaction', async (interaction: Interaction) => {
 	} else if (interaction.commandName === 'pause') {
 		if (subscription) {
 			subscription.audioPlayer.pause();
-			await interaction.reply(`Paused!`, { ephemeral: true });
+			await interaction.reply({ content: `Paused!`, ephemeral: true });
 		} else {
 			await interaction.reply('Not playing in this server!');
 		}
 	} else if (interaction.commandName === 'resume') {
 		if (subscription) {
 			subscription.audioPlayer.unpause();
-			await interaction.reply(`Unpaused!`, { ephemeral: true });
+			await interaction.reply({ content: `Unpaused!`, ephemeral: true });
 		} else {
 			await interaction.reply('Not playing in this server!');
 		}
@@ -175,7 +174,7 @@ client.on('interaction', async (interaction: Interaction) => {
 		if (subscription) {
 			subscription.voiceConnection.destroy();
 			subscriptions.delete(interaction.guildID);
-			await interaction.reply(`Left channel!`, { ephemeral: true });
+			await interaction.reply({ content: `Left channel!`, ephemeral: true });
 		} else {
 			await interaction.reply('Not playing in this server!');
 		}
