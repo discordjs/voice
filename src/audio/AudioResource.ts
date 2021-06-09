@@ -147,9 +147,9 @@ export function inferStreamType(stream: Readable): {
 	return { streamType: StreamType.Arbitrary, hasVolume: false };
 }
 
-export function createAudioResource(
+export function createAudioResource<T extends undefined | null>(
 	input: string | Readable,
-	options: Pick<CreateAudioResourceOptions<unknown>, 'inlineVolume' | 'inputType'>,
+	options: Omit<CreateAudioResourceOptions<T>, 'metadata'>,
 ): AudioResource<null>;
 
 /**
