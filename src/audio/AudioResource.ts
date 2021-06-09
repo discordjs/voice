@@ -147,9 +147,14 @@ export function inferStreamType(stream: Readable): {
 	return { streamType: StreamType.Arbitrary, hasVolume: false };
 }
 
-export function createAudioResource<T extends undefined | null>(
+export function createAudioResource<T>(
 	input: string | Readable,
-	options: Omit<CreateAudioResourceOptions<T>, 'metadata'>,
+	options: CreateAudioResourceOptions<T> & Pick<CreateAudioResourceOptions<T>, 'metadata'>,
+): AudioResource<T>;
+
+export function createAudioResource<T extends null | undefined>(
+	input: string | Readable,
+	options?: Omit<CreateAudioResourceOptions<T>, 'metadata'>,
 ): AudioResource<null>;
 
 /**
@@ -188,10 +193,10 @@ export function createAudioResource<T>(
 	if (transformerPipeline.length === 0) {
 		if (typeof input === 'string') throw new Error(`Invalid pipeline constructed for string resource '${input}'`);
 		// No adjustments required
-		return new AudioResource<T>([], [input], (options.metadata ?? null) as any as T);
+		return new AudioResource<T>([], [input], (options.metadata ?? null) as T);
 	}
 	const streams = transformerPipeline.map((edge) => edge.transformer(input));
 	if (typeof input !== 'string') streams.unshift(input);
 
-	return new AudioResource<T>(transformerPipeline, streams, (options.metadata ?? null) as any as T);
+	return new AudioResource<T>(transformerPipeline, streams, (options.metadata ?? null) as T);
 }
