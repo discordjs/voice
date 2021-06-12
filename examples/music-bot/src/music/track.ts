@@ -45,12 +45,16 @@ export class Track implements TrackData {
 	 */
 	public createAudioResource(): Promise<AudioResource<Track>> {
 		return new Promise((resolve, reject) => {
-			const process = ytdl(this.url, {
-				o: '-',
-				q: true,
-				f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-				r: '100K'
-			}, { stdio: ['ignore', 'pipe', 'ignore']});
+			const process = ytdl(
+				this.url,
+				{
+					o: '-',
+					q: true,
+					f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+					r: '100K',
+				},
+				{ stdio: ['ignore', 'pipe', 'ignore'] },
+			);
 			if (!process.stdout) {
 				reject(new Error('No stdout'));
 				return;
@@ -61,12 +65,12 @@ export class Track implements TrackData {
 				stream.resume();
 				reject(error);
 			};
-			process.once('spawn', () => {
+			void process.once('spawn', () => {
 				demuxProbe(stream)
-					.then((inputType) => resolve(createAudioResource(stream, { metadata: this, inputType })))
+					.then((probe) => resolve(createAudioResource(stream, { metadata: this, inputType: probe.type })))
 					.catch(onError);
 			});
-			process.once('error', onError);
+			void process.once('error', onError);
 		});
 	}
 

@@ -14,6 +14,11 @@ export function validateDiscordOpusHead(opusHead: Buffer): boolean {
 	return channels === 2 && sampleRate === 48000;
 }
 
+export interface ProbeInfo {
+	stream: Readable;
+	type: StreamType;
+}
+
 /**
  * Attempt to probe a readable stream to figure out whether it can be demuxed using an Ogg or WebM Opus demuxer.
  * @param stream The readable stream to probe
@@ -25,7 +30,7 @@ export function demuxProbe(
 	stream: Readable,
 	probeSize = 1024,
 	validator = validateDiscordOpusHead,
-): Promise<StreamType> {
+): Promise<ProbeInfo> {
 	return new Promise((resolve, reject) => {
 		// Preconditions
 		if (stream.readableObjectMode) reject(new Error('Cannot probe a readable stream in object mode'));
@@ -41,8 +46,20 @@ export function demuxProbe(
 			stream.off('end', onClose);
 			stream.pause();
 			resolved = type;
-			if (readBuffer.length > 0) stream.push(readBuffer);
-			resolve(type);
+			if (stream.readableEnded) {
+				resolve({
+					stream: Readable.from(readBuffer),
+					type,
+				});
+			} else {
+				if (readBuffer.length > 0) {
+					stream.push(readBuffer);
+				}
+				resolve({
+					stream,
+					type,
+				});
+			}
 		};
 
 		const foundHead = (type: StreamType) => (head: Buffer) => {
