@@ -2,7 +2,7 @@ import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGr
 import { once, pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer, opus } from 'prism-media';
-import type { AudioPlayer } from './AudioPlayer';
+import { AudioPlayer, SILENCE_FRAME } from './AudioPlayer';
 
 /**
  * Options that are set when creating a new audio resource.
@@ -27,6 +27,12 @@ interface CreateAudioResourceOptions<T> {
 	 * of the stream on-the-fly. However, this also increases the performance cost of playback. Defaults to `false`.
 	 */
 	inlineVolume?: boolean;
+
+	/**
+	 * The number of silence frames to append to the end of the resource's audio stream, to prevent interpolation glitches.
+	 * Defaults to 5.
+	 */
+	silencePaddingFrames?: number;
 }
 
 /**
@@ -79,10 +85,21 @@ export class AudioResource<T = unknown> {
 	 */
 	public started = false;
 
-	public constructor(edges: readonly Edge[], streams: readonly Readable[], metadata: T) {
+	/**
+	 * The number of silence frames to append to the end of the resource's audio stream, to prevent interpolation glitches.
+	 */
+	public readonly silencePaddingFrames: number;
+
+	/**
+	 * The number of remaining silence frames to play. If -1, the frames have not yet started playing.
+	 */
+	public silenceRemaining = -1;
+
+	public constructor(edges: readonly Edge[], streams: readonly Readable[], metadata: T, silencePaddingFrames: number) {
 		this.edges = edges;
 		this.playStream = streams.length > 1 ? (pipeline(streams, noop) as any as Readable) : streams[0];
 		this.metadata = metadata;
+		this.silencePaddingFrames = silencePaddingFrames;
 
 		for (const stream of streams) {
 			if (stream instanceof VolumeTransformer) {
@@ -97,6 +114,22 @@ export class AudioResource<T = unknown> {
 			.catch(noop);
 	}
 
+	/**
+	 * Whether this resource is readable. If the underlying resource is no longer readable, this will still return true
+	 * while there are silence padding frames left to play.
+	 */
+	public get readable() {
+		const real = this.playStream.readable;
+		if (!real) {
+			if (this.silenceRemaining === -1) this.silenceRemaining = this.silencePaddingFrames;
+			return this.silenceRemaining !== 0;
+		}
+		return real;
+	}
+
+	/**
+	 * Whether this resource has ended or not.
+	 */
 	public get ended() {
 		return this.playStream.readableEnded || this.playStream.destroyed;
 	}
@@ -111,6 +144,10 @@ export class AudioResource<T = unknown> {
 	 * read from it.
 	 */
 	public read(): Buffer | null {
+		if (this.silenceRemaining > 0) {
+			this.silenceRemaining--;
+			return SILENCE_FRAME;
+		}
 		const packet: Buffer | null = this.playStream.read();
 		if (packet) {
 			this.playbackDuration += 20;
@@ -201,10 +238,15 @@ export function createAudioResource<T>(
 	if (transformerPipeline.length === 0) {
 		if (typeof input === 'string') throw new Error(`Invalid pipeline constructed for string resource '${input}'`);
 		// No adjustments required
-		return new AudioResource<T>([], [input], (options.metadata ?? null) as T);
+		return new AudioResource<T>([], [input], (options.metadata ?? null) as T, options.silencePaddingFrames ?? 5);
 	}
 	const streams = transformerPipeline.map((edge) => edge.transformer(input));
 	if (typeof input !== 'string') streams.unshift(input);
 
-	return new AudioResource<T>(transformerPipeline, streams, (options.metadata ?? null) as T);
+	return new AudioResource<T>(
+		transformerPipeline,
+		streams,
+		(options.metadata ?? null) as T,
+		options.silencePaddingFrames ?? 5,
+	);
 }
