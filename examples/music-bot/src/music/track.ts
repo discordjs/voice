@@ -65,13 +65,13 @@ export class Track implements TrackData {
 				stream.resume();
 				reject(error);
 			};
-			void process
+			process
 				.once('spawn', () => {
 					demuxProbe(stream)
 						.then((probe) => resolve(createAudioResource(stream, { metadata: this, inputType: probe.type })))
 						.catch(onError);
 				})
-				.once('error', onError);
+				.catch(onError);
 		});
 	}
 
