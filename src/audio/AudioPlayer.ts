@@ -321,7 +321,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	 * @throws Will throw if attempting to play an audio resource that has already ended, or is being played by another player.
 	 */
 	public play<T>(resource: AudioResource<T>) {
-		if (resource.playStream.readableEnded || resource.playStream.destroyed) {
+		if (resource.ended) {
 			throw new Error('Cannot play a resource that has already ended.');
 		}
 

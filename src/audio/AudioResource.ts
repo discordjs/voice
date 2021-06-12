@@ -97,6 +97,10 @@ export class AudioResource<T = unknown> {
 			.catch(noop);
 	}
 
+	public get ended() {
+		return this.playStream.readableEnded || this.playStream.destroyed;
+	}
+
 	/**
 	 * Attempts to read an Opus packet from the audio resource. If a packet is available, the playbackDuration
 	 * is incremented.
