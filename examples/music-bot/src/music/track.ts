@@ -1,6 +1,6 @@
 import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
-import { spawn } from 'child_process';
+import { raw as ytdl } from 'youtube-dl-exec';
 
 /**
  * This is the data required to create a Track object
@@ -45,19 +45,25 @@ export class Track implements TrackData {
 	 */
 	public createAudioResource(): Promise<AudioResource<Track>> {
 		return new Promise((resolve, reject) => {
-			const process = spawn(
-				'youtube-dl',
-				['-o', '-', '-q', '-f', 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio', '-r', '100K', this.url],
-				{ stdio: ['ignore', 'pipe', 'ignore'] },
-			);
+			const process = ytdl(this.url, {
+				o: '-',
+				q: true,
+				f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+				r: '100K'
+			}, { stdio: ['ignore', 'pipe', 'ignore']});
+			if (!process.stdout) {
+				reject(new Error('No stdout'));
+				return;
+			}
+			const stream = process.stdout;
 			const onError = (error: Error) => {
 				if (!process.killed) process.kill();
-				process.stdout.resume();
+				stream.resume();
 				reject(error);
 			};
 			process.once('spawn', () => {
-				demuxProbe(process.stdout)
-					.then((inputType) => resolve(createAudioResource(process.stdout, { metadata: this, inputType })))
+				demuxProbe(stream)
+					.then((inputType) => resolve(createAudioResource(stream, { metadata: this, inputType })))
 					.catch(onError);
 			});
 			process.once('error', onError);

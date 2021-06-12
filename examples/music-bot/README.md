@@ -12,9 +12,6 @@ If you're looking to make your own music bot that is fairly simple, this example
 # Clone the main repository, and then run:
 $ npm install
 
-# Ensure youtube-dl is installed (see https://github.com/ytdl-org/youtube-dl#installation for all options)
-$ sudo -H pip install --upgrade youtube-dl
-
 # Open this example and install dependencies
 $ cd examples/music-bot
 $ npm install
