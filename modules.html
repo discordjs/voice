@@ -96,6 +96,7 @@
 								<li class="tsd-kind-interface"><a href="interfaces/discordgatewayadapterimplementermethods.html" class="tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Implementer<wbr>Methods</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/discordgatewayadapterlibrarymethods.html" class="tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Library<wbr>Methods</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/joinvoicechanneloptions.html" class="tsd-kind-icon">Join<wbr>Voice<wbr>Channel<wbr>Options</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/probeinfo.html" class="tsd-kind-icon">Probe<wbr>Info</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectiondestroyedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Destroyed<wbr>State</a></li>
@@ -142,7 +143,7 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Player<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="classes/audioplayererror.html" class="tsd-signature-type" data-tsd-kind="Class">AudioPlayerError</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>stateChange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>subscribe<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>subscription<span class="tsd-signature-symbol">: </span><a href="classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>unsubscribe<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>subscription<span class="tsd-signature-symbol">: </span><a href="classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span><span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">status</span><span class="tsd-signature-symbol"> in </span><a href="enums/audioplayerstatus.html" class="tsd-signature-type" data-tsd-kind="Enumeration">AudioPlayerStatus</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/audio/AudioPlayer.ts#L141">src/audio/AudioPlayer.ts:141</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/audio/AudioPlayer.ts#L141">src/audio/AudioPlayer.ts:141</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -152,7 +153,7 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Player<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/audioplayeridlestate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerIdleState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerbufferingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerBufferingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerplayingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerPlayingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerpausedstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerPausedState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/audio/AudioPlayer.ts#L135">src/audio/AudioPlayer.ts:135</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/audio/AudioPlayer.ts#L135">src/audio/AudioPlayer.ts:135</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -167,7 +168,7 @@
 					<div class="tsd-signature tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Creator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>methods<span class="tsd-signature-symbol">: </span><a href="interfaces/discordgatewayadapterlibrarymethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterLibraryMethods</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="interfaces/discordgatewayadapterimplementermethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterImplementerMethods</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/util/adapter.ts#L50">src/util/adapter.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/util/adapter.ts#L50">src/util/adapter.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -206,7 +207,7 @@
 					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/voiceconnectiondisconnectedbasestate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedBaseState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectiondisconnectedwebsocketstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedWebSocketState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/VoiceConnection.ts#L98">src/VoiceConnection.ts:98</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/VoiceConnection.ts#L98">src/VoiceConnection.ts:98</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -222,7 +223,7 @@
 					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>stateChange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span><span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">status</span><span class="tsd-signature-symbol"> in </span><a href="enums/voiceconnectionstatus.html" class="tsd-signature-type" data-tsd-kind="Enumeration">VoiceConnectionStatus</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/VoiceConnection.ts#L143">src/VoiceConnection.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/VoiceConnection.ts#L143">src/VoiceConnection.ts:143</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -232,7 +233,7 @@
 					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/voiceconnectionsignallingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionSignallingState</a><span class="tsd-signature-symbol"> | </span><a href="modules.html#voiceconnectiondisconnectedstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionDisconnectedState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectionconnectingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionConnectingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectionreadystate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionReadyState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectiondestroyedstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDestroyedState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/VoiceConnection.ts#L136">src/VoiceConnection.ts:136</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/VoiceConnection.ts#L136">src/VoiceConnection.ts:136</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -254,7 +255,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/audio/AudioPlayer.ts#L592">src/audio/AudioPlayer.ts:592</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/audio/AudioPlayer.ts#L592">src/audio/AudioPlayer.ts:592</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -283,7 +284,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/audio/AudioResource.ts#L150">src/audio/AudioResource.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/audio/AudioResource.ts#L150">src/audio/AudioResource.ts:150</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -306,7 +307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/audio/AudioResource.ts#L159">src/audio/AudioResource.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/audio/AudioResource.ts#L159">src/audio/AudioResource.ts:159</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -338,7 +339,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/receive/VoiceReceiver.ts#L249">src/receive/VoiceReceiver.ts:249</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/receive/VoiceReceiver.ts#L249">src/receive/VoiceReceiver.ts:249</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -371,13 +372,13 @@
 					<a name="demuxprobe" class="tsd-anchor"></a>
 					<h3>demux<wbr>Probe</h3>
 					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">demux<wbr>Probe<span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readable</span>, probeSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, validator<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>opusHead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="enums/streamtype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">StreamType</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">demux<wbr>Probe<span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readable</span>, probeSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, validator<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>opusHead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/probeinfo.html" class="tsd-signature-type" data-tsd-kind="Interface">ProbeInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/util/demuxProbe.ts#L24">src/util/demuxProbe.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/util/demuxProbe.ts#L29">src/util/demuxProbe.ts:29</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -437,7 +438,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="enums/streamtype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">StreamType</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/probeinfo.html" class="tsd-signature-type" data-tsd-kind="Interface">ProbeInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -452,7 +453,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/util/entersState.ts#L11">src/util/entersState.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/util/entersState.ts#L11">src/util/entersState.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -486,7 +487,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/util/entersState.ts#L24">src/util/entersState.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/util/entersState.ts#L24">src/util/entersState.ts:24</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -529,7 +530,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/util/generateDependencyReport.ts#L10">src/util/generateDependencyReport.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/util/generateDependencyReport.ts#L10">src/util/generateDependencyReport.ts:10</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -552,7 +553,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/DataStore.ts#L33">src/DataStore.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/DataStore.ts#L33">src/DataStore.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -575,7 +576,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/joinVoiceChannel.ts#L45">src/joinVoiceChannel.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/joinVoiceChannel.ts#L45">src/joinVoiceChannel.ts:45</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -606,7 +607,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/d2fb4f7/src/util/demuxProbe.ts#L11">src/util/demuxProbe.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/0a6020b/src/util/demuxProbe.ts#L11">src/util/demuxProbe.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -705,6 +706,9 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/joinvoicechanneloptions.html" class="tsd-kind-icon">Join<wbr>Voice<wbr>Channel<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/probeinfo.html" class="tsd-kind-icon">Probe<wbr>Info</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a>
