@@ -145,7 +145,9 @@ export class AudioResource<T = unknown> {
 	 * read from it.
 	 */
 	public read(): Buffer | null {
-		if (this.silenceRemaining > 0) {
+		if (this.silenceRemaining === 0) {
+			return null;
+		} else if (this.silenceRemaining > 0) {
 			this.silenceRemaining--;
 			return SILENCE_FRAME;
 		}
