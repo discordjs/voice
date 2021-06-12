@@ -47,7 +47,7 @@ export class Track implements TrackData {
 		return new Promise((resolve, reject) => {
 			const process = spawn(
 				'youtube-dl',
-				['-o', '-', '-q', '-f', 'bestaudio[ext=webm+acodec=opus+asr=48000]', this.url],
+				['-o', '-', '-q', '-f', 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio', '-r', '100K', this.url],
 				{ stdio: ['ignore', 'pipe', 'ignore'] },
 			);
 			const onError = (error: Error) => {
