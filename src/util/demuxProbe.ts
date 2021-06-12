@@ -77,6 +77,5 @@ export function demuxProbe(
 		stream.once('close', onClose);
 		stream.once('end', onClose);
 		stream.once('error', reject);
-		stream.on('error', console.log);
 	});
 }
