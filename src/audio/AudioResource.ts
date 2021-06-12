@@ -132,7 +132,7 @@ export class AudioResource<T = unknown> {
 	 * Whether this resource has ended or not.
 	 */
 	public get ended() {
-		return this.playStream.readableEnded || this.playStream.destroyed;
+		return this.playStream.readableEnded || this.playStream.destroyed || this.silenceRemaining === 0;
 	}
 
 	/**
