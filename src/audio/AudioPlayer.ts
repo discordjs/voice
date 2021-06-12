@@ -432,15 +432,21 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	}
 
 	/**
-	 * Stops playback of the current resource and destroys the resource. The player will transition to the Idle state.
+	 * Stops playback of the current resource and destroys the resource. The player will either transition to the Idle state,
+	 * or remain in its current state until the silence padding frames of the resource have been played.
 	 *
-	 * @returns true if the player was successfully stopped, otherwise false.
+	 * @param force - If true, will force the player to enter the Idle state even if the resource has silence padding frames.
+	 * @returns true if the player will come to a stop, otherwise false.
 	 */
-	public stop() {
+	public stop(force = false) {
 		if (this.state.status === AudioPlayerStatus.Idle) return false;
-		this.state = {
-			status: AudioPlayerStatus.Idle,
-		};
+		if (force || this.state.resource.silencePaddingFrames === 0) {
+			this.state = {
+				status: AudioPlayerStatus.Idle,
+			};
+		} else if (this.state.resource.silenceRemaining === -1) {
+			this.state.resource.silenceRemaining = this.state.resource.silencePaddingFrames;
+		}
 		return true;
 	}
 
@@ -524,7 +530,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 				};
 				return;
 			} else if (this.behaviors.noSubscriber === NoSubscriberBehavior.Stop) {
-				this.stop();
+				this.stop(true);
 			}
 		}
 

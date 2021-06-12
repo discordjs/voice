@@ -58,7 +58,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	player?.stop();
+	player?.stop(true);
 });
 
 describe('State transitions', () => {
@@ -111,7 +111,7 @@ describe('State transitions', () => {
 		player = createAudioPlayer();
 
 		// stop() shouldn't do anything in Idle state
-		expect(player.stop()).toBe(false);
+		expect(player.stop(true)).toBe(false);
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 
 		player.play(resource);
@@ -119,7 +119,7 @@ describe('State transitions', () => {
 		expect(addAudioPlayerMock).toBeCalledTimes(1);
 		expect(deleteAudioPlayerMock).toBeCalledTimes(0);
 
-		expect(player.stop()).toBe(true);
+		expect(player.stop(true)).toBe(true);
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(addAudioPlayerMock).toBeCalledTimes(1);
 		expect(deleteAudioPlayerMock).toBeCalledTimes(1);
@@ -239,7 +239,7 @@ describe('State transitions', () => {
 		expect(prepareAudioPacket).toHaveBeenCalledTimes(6);
 		expect(prepareAudioPacket.mock.calls[5][0]).toEqual(silence().next().value);
 
-		player.stop();
+		player.stop(true);
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(connection.setSpeaking).toBeCalledTimes(1);
 		expect(connection.setSpeaking).toHaveBeenLastCalledWith(false);
@@ -257,7 +257,7 @@ describe('State transitions', () => {
 			networking: null as any,
 		};
 
-		const resource = await started(new AudioResource([], [Readable.from([1])], null, 5));
+		const resource = await started(new AudioResource([], [Readable.from([1])], null, 0));
 		resource.playStream.read();
 		player = createAudioPlayer({ behaviors: { maxMissedFrames: 5 } });
 		connection.subscribe(player);
@@ -316,7 +316,7 @@ test('play() throws when playing a resource that has already ended', async () =>
 		await wait();
 	}
 	expect(resource.playStream.readableEnded).toBe(true);
-	player.stop();
+	player.stop(true);
 	expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 	expect(() => player.play(resource)).toThrow();
 });

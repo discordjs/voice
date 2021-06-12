@@ -119,6 +119,7 @@ export class AudioResource<T = unknown> {
 	 * while there are silence padding frames left to play.
 	 */
 	public get readable() {
+		if (this.silenceRemaining === 0) return false;
 		const real = this.playStream.readable;
 		if (!real) {
 			if (this.silenceRemaining === -1) this.silenceRemaining = this.silencePaddingFrames;
