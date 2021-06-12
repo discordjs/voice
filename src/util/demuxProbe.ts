@@ -3,7 +3,12 @@ import { opus } from 'prism-media';
 import { noop } from './util';
 import { StreamType } from '..';
 
-export function discordOpusHeadValidator(opusHead: Buffer): boolean {
+/**
+ * Takes an Opus Head, and verifies whether the associated Opus audio is suitable to play in a Discord voice channel.
+ * @param opusHead The Opus Head to validate
+ * @returns true if suitable to play in a Discord voice channel, false otherwise
+ */
+export function validateDiscordOpusHead(opusHead: Buffer): boolean {
 	const channels = opusHead.readUInt8(9);
 	const sampleRate = opusHead.readUInt32LE(12);
 	return channels === 2 && sampleRate === 48000;
@@ -19,7 +24,7 @@ export function discordOpusHeadValidator(opusHead: Buffer): boolean {
 export function demuxProbe(
 	stream: Readable,
 	probeSize = 1024,
-	validator = discordOpusHeadValidator,
+	validator = validateDiscordOpusHead,
 ): Promise<StreamType> {
 	return new Promise((resolve, reject) => {
 		// Preconditions
