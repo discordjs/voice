@@ -2,21 +2,31 @@ import { demuxProbe } from '../demuxProbe';
 import { opus as _opus } from 'prism-media';
 import { Readable } from 'stream';
 import { StreamType } from '../../audio';
-import { once } from 'events';
+import EventEmitter, { once } from 'events';
 
 jest.mock('prism-media');
 
-const WebDemuxer = _opus.WebmDemuxer as unknown as jest.Mock<_opus.WebmDemuxer>;
+const WebmDemuxer = _opus.WebmDemuxer as unknown as jest.Mock<_opus.WebmDemuxer>;
 const OggDemuxer = _opus.OggDemuxer as unknown as jest.Mock<_opus.OggDemuxer>;
 
-async function* gen() {
-	for (let i = 0; i < 10; i++) {
+async function* gen(n: number) {
+	for (let i = 0; i < n; i++) {
 		yield Buffer.from([i]);
 		await nextTick();
 	}
 }
 
-const expectedOutput = Buffer.from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+function range(n: number) {
+	return Buffer.from(Array.from(Array(n).keys()));
+}
+
+const validHead = Buffer.from([
+	0x4f, 0x70, 0x75, 0x73, 0x48, 0x65, 0x61, 0x64, 0x01, 0x02, 0x38, 0x01, 0x80, 0xbb, 0, 0, 0, 0, 0,
+]);
+
+const invalidHead = Buffer.from([
+	0x4f, 0x70, 0x75, 0x73, 0x48, 0x65, 0x61, 0x64, 0x01, 0x01, 0x38, 0x01, 0x80, 0xbb, 0, 0, 0, 0, 0,
+]);
 
 async function collectStream(stream: Readable): Promise<Buffer> {
 	let output = Buffer.alloc(0);
@@ -28,9 +38,7 @@ async function collectStream(stream: Readable): Promise<Buffer> {
 }
 
 function nextTick() {
-	return new Promise((resolve) => {
-		process.nextTick(resolve);
-	});
+	return new Promise((resolve) => process.nextTick(resolve));
 }
 
 describe('demuxProbe', () => {
@@ -38,8 +46,16 @@ describe('demuxProbe', () => {
 	const oggWrite: jest.Mock<(buffer: Buffer) => void> = jest.fn();
 
 	beforeAll(() => {
-		WebDemuxer.prototype.write = webmWrite;
-		OggDemuxer.prototype.write = oggWrite;
+		WebmDemuxer.prototype = {
+			...WebmDemuxer,
+			...EventEmitter.prototype,
+			write: webmWrite,
+		};
+		OggDemuxer.prototype = {
+			...OggDemuxer,
+			...EventEmitter.prototype,
+			write: oggWrite,
+		};
 	});
 
 	beforeEach(() => {
@@ -48,9 +64,56 @@ describe('demuxProbe', () => {
 	});
 
 	test('Defaults to arbitrary', async () => {
-		const stream = Readable.from(gen(), { objectMode: false });
+		const stream = Readable.from(gen(10), { objectMode: false });
 		const probe = await demuxProbe(stream);
 		expect(probe.type).toBe(StreamType.Arbitrary);
-		await expect(collectStream(probe.stream)).resolves.toEqual(expectedOutput);
+		await expect(collectStream(probe.stream)).resolves.toEqual(range(10));
+	});
+
+	test('Detects WebM', async () => {
+		const stream = Readable.from(gen(10), { objectMode: false });
+		webmWrite.mockImplementation(function mock(data: Buffer) {
+			if (data[0] === 5) this.emit('head', validHead);
+		} as any);
+		const probe = await demuxProbe(stream);
+		expect(probe.type).toBe(StreamType.WebmOpus);
+		await expect(collectStream(probe.stream)).resolves.toEqual(range(10));
+	});
+
+	test('Detects Ogg', async () => {
+		const stream = Readable.from(gen(10), { objectMode: false });
+		oggWrite.mockImplementation(function mock(data: Buffer) {
+			if (data[0] === 5) this.emit('head', validHead);
+		} as any);
+		const probe = await demuxProbe(stream);
+		expect(probe.type).toBe(StreamType.OggOpus);
+		await expect(collectStream(probe.stream)).resolves.toEqual(range(10));
+	});
+
+	test('Rejects invalid OpusHead', async () => {
+		const stream = Readable.from(gen(10), { objectMode: false });
+		oggWrite.mockImplementation(function mock(data: Buffer) {
+			if (data[0] === 5) this.emit('head', invalidHead);
+		} as any);
+		const probe = await demuxProbe(stream);
+		expect(probe.type).toBe(StreamType.Arbitrary);
+		await expect(collectStream(probe.stream)).resolves.toEqual(range(10));
+	});
+
+	test('Gives up on larger streams', async () => {
+		const stream = Readable.from(gen(8192), { objectMode: false });
+		const probe = await demuxProbe(stream);
+		expect(probe.type).toBe(StreamType.Arbitrary);
+		await expect(collectStream(probe.stream)).resolves.toEqual(range(8192));
+	});
+
+	test('Propagates errors', async () => {
+		const testError = new Error('test error');
+		const stream = new Readable({
+			read() {
+				this.destroy(testError);
+			},
+		});
+		await expect(demuxProbe(stream)).rejects.toBe(testError);
 	});
 });
