@@ -1,10 +1,22 @@
 import { opus, VolumeTransformer } from 'prism-media';
-import { PassThrough } from 'stream';
-import { createAudioResource, NO_CONSTRAINT, VOLUME_CONSTRAINT } from '../AudioResource';
+import { PassThrough, Readable } from 'stream';
+import { SILENCE_FRAME } from '../AudioPlayer';
+import { AudioResource, createAudioResource, NO_CONSTRAINT, VOLUME_CONSTRAINT } from '../AudioResource';
 import { Edge, findPipeline as _findPipeline, StreamType, TransformerType } from '../TransformerGraph';
 
 jest.mock('prism-media');
 jest.mock('../TransformerGraph');
+
+function wait() {
+	return new Promise((resolve) => process.nextTick(resolve));
+}
+
+async function started(resource: AudioResource) {
+	while (!resource.started) {
+		await wait();
+	}
+	return resource;
+}
 
 const findPipeline = _findPipeline as unknown as jest.MockedFunction<typeof _findPipeline>;
 
@@ -88,5 +100,22 @@ describe('createAudioResource', () => {
 		const resource = createAudioResource(new PassThrough());
 		expect(findPipeline).toHaveBeenCalledWith(StreamType.Arbitrary, NO_CONSTRAINT);
 		expect(resource.volume).toBeUndefined();
+	});
+
+	test('Appends silence frames when ended', async () => {
+		const stream = Readable.from(Buffer.from([1]));
+
+		const resource = new AudioResource([], [stream], null, 5);
+
+		await started(resource);
+		expect(resource.readable).toBe(true);
+		expect(resource.read()).toEqual(Buffer.from([1]));
+		for (let i = 0; i < 5; i++) {
+			await wait();
+			expect(resource.readable).toBe(true);
+			expect(resource.read()).toBe(SILENCE_FRAME);
+		}
+		await wait();
+		expect(resource.readable).toBe(false);
 	});
 });
