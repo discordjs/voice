@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VoiceConnectionDisconnectedBaseState | @discordjs/voice</title>
+	<title>VoiceConnectionDisconnectedOtherState | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="voiceconnectiondisconnectedbasestate.html">VoiceConnectionDisconnectedBaseState</a>
+					<a href="voiceconnectiondisconnectedotherstate.html">VoiceConnectionDisconnectedOtherState</a>
 				</li>
 			</ul>
-			<h1>Interface VoiceConnectionDisconnectedBaseState</h1>
+			<h1>Interface VoiceConnectionDisconnectedOtherState</h1>
 		</div>
 	</div>
 </header>
@@ -77,13 +77,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">VoiceConnectionDisconnectedBaseState</span>
+						<a href="voiceconnectiondisconnectedbasestate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedBaseState</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<a href="voiceconnectiondisconnectedotherstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedOtherState</a>
-							</li>
-							<li>
-								<a href="voiceconnectiondisconnectedwebsocketstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedWebSocketState</a>
+								<span class="target">VoiceConnectionDisconnectedOtherState</span>
 							</li>
 						</ul>
 					</li>
@@ -96,9 +93,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectiondisconnectedbasestate.html#adapter" class="tsd-kind-icon">adapter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectiondisconnectedbasestate.html#status" class="tsd-kind-icon">status</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectiondisconnectedbasestate.html#subscription" class="tsd-kind-icon">subscription</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="voiceconnectiondisconnectedotherstate.html#adapter" class="tsd-kind-icon">adapter</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectiondisconnectedotherstate.html#reason" class="tsd-kind-icon">reason</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="voiceconnectiondisconnectedotherstate.html#status" class="tsd-kind-icon">status</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="voiceconnectiondisconnectedotherstate.html#subscription" class="tsd-kind-icon">subscription</a></li>
 							</ul>
 						</section>
 					</div>
@@ -106,31 +104,44 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="adapter" class="tsd-anchor"></a>
 					<h3>adapter</h3>
 					<div class="tsd-signature tsd-kind-icon">adapter<span class="tsd-signature-symbol">:</span> <a href="discordgatewayadapterimplementermethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterImplementerMethods</a></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="voiceconnectiondisconnectedbasestate.html">VoiceConnectionDisconnectedBaseState</a>.<a href="voiceconnectiondisconnectedbasestate.html#adapter">adapter</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/discordjs/voice/blob/9cd3617/src/VoiceConnection.ts#L78">src/VoiceConnection.ts:78</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="reason" class="tsd-anchor"></a>
+					<h3>reason</h3>
+					<div class="tsd-signature tsd-kind-icon">reason<span class="tsd-signature-symbol">:</span> <a href="../enums/voiceconnectiondisconnectreason.html#adapterunavailable" class="tsd-signature-type" data-tsd-kind="Enumeration member">AdapterUnavailable</a><span class="tsd-signature-symbol"> | </span><a href="../enums/voiceconnectiondisconnectreason.html#endpointremoved" class="tsd-signature-type" data-tsd-kind="Enumeration member">EndpointRemoved</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/9cd3617/src/VoiceConnection.ts#L86">src/VoiceConnection.ts:86</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="status" class="tsd-anchor"></a>
 					<h3>status</h3>
 					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <a href="../enums/voiceconnectionstatus.html#disconnected" class="tsd-signature-type" data-tsd-kind="Enumeration member">Disconnected</a></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="voiceconnectiondisconnectedbasestate.html">VoiceConnectionDisconnectedBaseState</a>.<a href="voiceconnectiondisconnectedbasestate.html#status">status</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/discordjs/voice/blob/9cd3617/src/VoiceConnection.ts#L76">src/VoiceConnection.ts:76</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="subscription" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> subscription</h3>
 					<div class="tsd-signature tsd-kind-icon">subscription<span class="tsd-signature-symbol">:</span> <a href="../classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="voiceconnectiondisconnectedbasestate.html">VoiceConnectionDisconnectedBaseState</a>.<a href="voiceconnectiondisconnectedbasestate.html#subscription">subscription</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/discordjs/voice/blob/9cd3617/src/VoiceConnection.ts#L77">src/VoiceConnection.ts:77</a></li>
 						</ul>
@@ -151,16 +162,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="voiceconnectiondisconnectedbasestate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>Base<wbr>State</a>
+						<a href="voiceconnectiondisconnectedotherstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>Other<wbr>State</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectiondisconnectedbasestate.html#adapter" class="tsd-kind-icon">adapter</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="voiceconnectiondisconnectedotherstate.html#adapter" class="tsd-kind-icon">adapter</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectiondisconnectedbasestate.html#status" class="tsd-kind-icon">status</a>
+								<a href="voiceconnectiondisconnectedotherstate.html#reason" class="tsd-kind-icon">reason</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectiondisconnectedbasestate.html#subscription" class="tsd-kind-icon">subscription</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="voiceconnectiondisconnectedotherstate.html#status" class="tsd-kind-icon">status</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="voiceconnectiondisconnectedotherstate.html#subscription" class="tsd-kind-icon">subscription</a>
 							</li>
 						</ul>
 					</li>
