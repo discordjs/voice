@@ -6,8 +6,9 @@
 		"rootDir": "src",
 		"paths": {
 			"@discordjs/voice": ["../../"],
-			"sodium": ["./node_modules/sodium"],
 			"@discordjs/opus": ["./node_modules/@discordjs/opus"],
+			"sodium": ["./node_modules/sodium"],
+			"libsodium-wrappers": ["./node_modules/libsodium-wrappers"],
 			"tweetnacl": ["./node_modules/tweetnacl"]
 		}
 	},

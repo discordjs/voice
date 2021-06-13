@@ -9,8 +9,9 @@ If you're looking to make your own music bot that is fairly simple, this example
 ## Usage
 
 ```bash
-# Clone the main repository
+# Clone the main repository, and then run:
 $ npm install
+$ npm run build
 
 # Open this example and install dependencies
 $ cd examples/music-bot
