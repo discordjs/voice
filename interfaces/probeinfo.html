@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VoiceConnectionReadyState | @discordjs/voice</title>
+	<title>ProbeInfo | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="voiceconnectionreadystate.html">VoiceConnectionReadyState</a>
+					<a href="probeinfo.html">ProbeInfo</a>
 				</li>
 			</ul>
-			<h1>Interface VoiceConnectionReadyState</h1>
+			<h1>Interface ProbeInfo</h1>
 		</div>
 	</div>
 </header>
@@ -68,8 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The state that a VoiceConnection will be in when it has an active connection to a Discord
-						voice server.</p>
+						<p>The resulting information after probing an audio stream</p>
 					</div>
 				</div>
 			</section>
@@ -77,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">VoiceConnectionReadyState</span>
+						<span class="target">ProbeInfo</span>
 					</li>
 				</ul>
 			</section>
@@ -88,10 +87,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionreadystate.html#adapter" class="tsd-kind-icon">adapter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionreadystate.html#networking" class="tsd-kind-icon">networking</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionreadystate.html#status" class="tsd-kind-icon">status</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionreadystate.html#subscription" class="tsd-kind-icon">subscription</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="probeinfo.html#stream" class="tsd-kind-icon">stream</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="probeinfo.html#type" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,44 +97,35 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="adapter" class="tsd-anchor"></a>
-					<h3>adapter</h3>
-					<div class="tsd-signature tsd-kind-icon">adapter<span class="tsd-signature-symbol">:</span> <a href="discordgatewayadapterimplementermethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterImplementerMethods</a></div>
+					<a name="stream" class="tsd-anchor"></a>
+					<h3>stream</h3>
+					<div class="tsd-signature tsd-kind-icon">stream<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Readable</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/379f9a7/src/VoiceConnection.ts#L121">src/VoiceConnection.ts:121</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/379f9a7/src/util/demuxProbe.ts#L25">src/util/demuxProbe.ts:25</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The readable audio stream to use. You should use this rather than the input stream, as the probing
+							function can sometimes read the input stream to its end and cause the stream to close.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="networking" class="tsd-anchor"></a>
-					<h3>networking</h3>
-					<div class="tsd-signature tsd-kind-icon">networking<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Networking</span></div>
+					<a name="type" class="tsd-anchor"></a>
+					<h3>type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <a href="../enums/streamtype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">StreamType</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/379f9a7/src/VoiceConnection.ts#L119">src/VoiceConnection.ts:119</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/379f9a7/src/util/demuxProbe.ts#L29">src/util/demuxProbe.ts:29</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="status" class="tsd-anchor"></a>
-					<h3>status</h3>
-					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <a href="../enums/voiceconnectionstatus.html#ready" class="tsd-signature-type" data-tsd-kind="Enumeration member">Ready</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/379f9a7/src/VoiceConnection.ts#L118">src/VoiceConnection.ts:118</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="subscription" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> subscription</h3>
-					<div class="tsd-signature tsd-kind-icon">subscription<span class="tsd-signature-symbol">:</span> <a href="../classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/379f9a7/src/VoiceConnection.ts#L120">src/VoiceConnection.ts:120</a></li>
-						</ul>
-					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The recommended stream type for this audio stream</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -154,19 +142,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="voiceconnectionreadystate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Ready<wbr>State</a>
+						<a href="probeinfo.html" class="tsd-kind-icon">Probe<wbr>Info</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionreadystate.html#adapter" class="tsd-kind-icon">adapter</a>
+								<a href="probeinfo.html#stream" class="tsd-kind-icon">stream</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionreadystate.html#networking" class="tsd-kind-icon">networking</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionreadystate.html#status" class="tsd-kind-icon">status</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionreadystate.html#subscription" class="tsd-kind-icon">subscription</a>
+								<a href="probeinfo.html#type" class="tsd-kind-icon">type</a>
 							</li>
 						</ul>
 					</li>
