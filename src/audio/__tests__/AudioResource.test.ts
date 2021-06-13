@@ -117,5 +117,6 @@ describe('createAudioResource', () => {
 		}
 		await wait();
 		expect(resource.readable).toBe(false);
+		expect(resource.read()).toBe(null);
 	});
 });
