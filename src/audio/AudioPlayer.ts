@@ -1,5 +1,5 @@
 import { addAudioPlayer, deleteAudioPlayer } from '../DataStore';
-import { noop } from '../util/util';
+import { Awaited, noop } from '../util/util';
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayerError } from './AudioPlayerError';
 import { AudioResource } from './AudioResource';
@@ -139,13 +139,13 @@ export type AudioPlayerState =
 	| AudioPlayerPausedState;
 
 export type AudioPlayerEvents = {
-	error: (error: AudioPlayerError) => void;
-	debug: (message: string) => void;
-	stateChange: (oldState: AudioPlayerState, newState: AudioPlayerState) => void;
-	subscribe: (subscription: PlayerSubscription) => void;
-	unsubscribe: (subscription: PlayerSubscription) => void;
+	error: (error: AudioPlayerError) => Awaited<void>;
+	debug: (message: string) => Awaited<void>;
+	stateChange: (oldState: AudioPlayerState, newState: AudioPlayerState) => Awaited<void>;
+	subscribe: (subscription: PlayerSubscription) => Awaited<void>;
+	unsubscribe: (subscription: PlayerSubscription) => Awaited<void>;
 } & {
-	[status in AudioPlayerStatus]: (oldState: AudioPlayerState, newState: AudioPlayerState) => void;
+	[status in AudioPlayerStatus]: (oldState: AudioPlayerState, newState: AudioPlayerState) => Awaited<void>;
 };
 
 /**
