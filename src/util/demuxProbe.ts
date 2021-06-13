@@ -14,8 +14,18 @@ export function validateDiscordOpusHead(opusHead: Buffer): boolean {
 	return channels === 2 && sampleRate === 48000;
 }
 
+/**
+ * The resulting information after probing an audio stream
+ */
 export interface ProbeInfo {
+	/**
+	 * The readable audio stream to use. You should use this rather than the input stream, as the probing
+	 * function can sometimes read the input stream to its end and cause the stream to close.
+	 */
 	stream: Readable;
+	/**
+	 * The recommended stream type for this audio stream
+	 */
 	type: StreamType;
 }
 
