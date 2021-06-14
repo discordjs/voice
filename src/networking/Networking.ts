@@ -2,7 +2,7 @@ import { VoiceOPCodes } from 'discord-api-types/voice/v4';
 import { VoiceUDPSocket } from './VoiceUDPSocket';
 import { VoiceWebSocket } from './VoiceWebSocket';
 import * as secretbox from '../util/Secretbox';
-import { noop } from '../util/util';
+import { Awaited, noop } from '../util/util';
 import { CloseEvent } from 'ws';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
@@ -151,10 +151,10 @@ export interface ConnectionData {
 const nonce = Buffer.alloc(24);
 
 export interface NetworkingEvents {
-	debug: (message: string) => void;
-	error: (error: Error) => void;
-	stateChange: (oldState: NetworkingState, newState: NetworkingState) => void;
-	close: (code: number) => void;
+	debug: (message: string) => Awaited<void>;
+	error: (error: Error) => Awaited<void>;
+	stateChange: (oldState: NetworkingState, newState: NetworkingState) => Awaited<void>;
+	close: (code: number) => Awaited<void>;
 }
 
 /**

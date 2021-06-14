@@ -11,7 +11,7 @@ import {
 } from './DataStore';
 import { DiscordGatewayAdapterImplementerMethods } from './util/adapter';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
-import { noop } from './util/util';
+import { Awaited, noop } from './util/util';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
 /**
@@ -74,9 +74,16 @@ export enum VoiceConnectionDisconnectReason {
  */
 export interface VoiceConnectionDisconnectedBaseState {
 	status: VoiceConnectionStatus.Disconnected;
-	reason: VoiceConnectionDisconnectReason;
 	subscription?: PlayerSubscription;
 	adapter: DiscordGatewayAdapterImplementerMethods;
+}
+
+/**
+ * The state that a VoiceConnection will be in when it is not connected to a Discord voice server nor is
+ * it attempting to connect. You can manually attempt to reconnect using VoiceConnection#reconnect.
+ */
+export interface VoiceConnectionDisconnectedOtherState extends VoiceConnectionDisconnectedBaseState {
+	reason: Exclude<VoiceConnectionDisconnectReason, VoiceConnectionDisconnectReason.WebSocketClose>;
 }
 
 /**
@@ -96,7 +103,7 @@ export interface VoiceConnectionDisconnectedWebSocketState extends VoiceConnecti
  * it attempting to connect. You can manually attempt to connect using VoiceConnection#reconnect.
  */
 export type VoiceConnectionDisconnectedState =
-	| VoiceConnectionDisconnectedBaseState
+	| VoiceConnectionDisconnectedOtherState
 	| VoiceConnectionDisconnectedWebSocketState;
 
 /**
@@ -141,11 +148,11 @@ export type VoiceConnectionState =
 	| VoiceConnectionDestroyedState;
 
 export type VoiceConnectionEvents = {
-	error: (error: Error) => void;
-	debug: (message: string) => void;
-	stateChange: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
+	error: (error: Error) => Awaited<void>;
+	debug: (message: string) => Awaited<void>;
+	stateChange: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => Awaited<void>;
 } & {
-	[status in VoiceConnectionStatus]: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => void;
+	[status in VoiceConnectionStatus]: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => Awaited<void>;
 };
 
 /**

@@ -1,6 +1,7 @@
 import { VoiceOPCodes } from 'discord-api-types/voice/v4';
 import WebSocket, { MessageEvent } from 'ws';
 import { TypedEmitter } from 'tiny-typed-emitter';
+import { Awaited } from '../util/util';
 
 /**
  * Debug event for VoiceWebSocket.
@@ -10,11 +11,11 @@ import { TypedEmitter } from 'tiny-typed-emitter';
  */
 
 export interface VoiceWebSocketEvents {
-	error: (error: Error) => void;
-	open: (event: WebSocket.OpenEvent) => void;
-	close: (event: WebSocket.CloseEvent) => void;
-	debug: (message: string) => void;
-	packet: (packet: any) => void;
+	error: (error: Error) => Awaited<void>;
+	open: (event: WebSocket.OpenEvent) => Awaited<void>;
+	close: (event: WebSocket.CloseEvent) => Awaited<void>;
+	debug: (message: string) => Awaited<void>;
+	packet: (packet: any) => Awaited<void>;
 }
 
 /**

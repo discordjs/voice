@@ -1,6 +1,7 @@
 import { createSocket, Socket } from 'dgram';
 import { isIPv4 } from 'net';
 import { TypedEmitter } from 'tiny-typed-emitter';
+import { Awaited } from '../util/util';
 
 /**
  * Stores an IP address and port. Used to store socket details for the local client as well as
@@ -17,10 +18,10 @@ interface KeepAlive {
 }
 
 export interface VoiceUDPSocketEvents {
-	error: (error: Error) => void;
-	close: () => void;
-	debug: (message: string) => void;
-	message: (message: Buffer) => void;
+	error: (error: Error) => Awaited<void>;
+	close: () => Awaited<void>;
+	debug: (message: string) => Awaited<void>;
+	message: (message: Buffer) => Awaited<void>;
 }
 
 /**

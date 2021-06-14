@@ -11,6 +11,7 @@ export {
 	VoiceConnectionDestroyedState,
 	VoiceConnectionDisconnectedState,
 	VoiceConnectionDisconnectedBaseState,
+	VoiceConnectionDisconnectedOtherState,
 	VoiceConnectionDisconnectedWebSocketState,
 	VoiceConnectionDisconnectReason,
 	VoiceConnectionReadyState,
