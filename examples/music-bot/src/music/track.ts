@@ -49,7 +49,7 @@ export class Track implements TrackData {
 				this.url,
 				{
 					o: '-',
-					q: true,
+					q: '',
 					f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
 					r: '100K',
 				},
