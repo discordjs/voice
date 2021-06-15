@@ -34,16 +34,24 @@ function attachRecorder() {
 	player.play(
 		createAudioResource(
 			new prism.FFmpeg({
-        args: [
-          '-analyzeduration', '0',
-          '-loglevel', '0',
-          '-f', config.type,
-          '-i', config.type === 'dshow' ? `audio=${config.device}` : config.device,
-          '-acodec', 'libopus',
-          '-f', 'opus',
-          '-ar', '48000',
-          '-ac', '2'
-        ],
+				args: [
+					'-analyzeduration',
+					'0',
+					'-loglevel',
+					'0',
+					'-f',
+					config.type,
+					'-i',
+					config.type === 'dshow' ? `audio=${config.device}` : config.device,
+					'-acodec',
+					'libopus',
+					'-f',
+					'opus',
+					'-ar',
+					'48000',
+					'-ac',
+					'2',
+				],
 			}),
 			{
 				inputType: StreamType.OggOpus,
