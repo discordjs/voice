@@ -102,7 +102,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="voiceconnection.html#debug" class="tsd-kind-icon">debug</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voiceconnection.html#joinconfig" class="tsd-kind-icon">join<wbr>Config</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="voiceconnection.html#packets" class="tsd-kind-icon">packets</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voiceconnection.html#rejoinattempts" class="tsd-kind-icon">rejoin<wbr>Attempts</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voiceconnection.html#reconnectattempts" class="tsd-kind-icon">reconnect<wbr>Attempts</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="voiceconnection.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
 							</ul>
 						</section>
@@ -121,7 +121,6 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voiceconnection.html#addstatepacket" class="tsd-kind-icon">add<wbr>State<wbr>Packet</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voiceconnection.html#configurenetworking" class="tsd-kind-icon">configure<wbr>Networking</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voiceconnection.html#destroy" class="tsd-kind-icon">destroy</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voiceconnection.html#disconnect" class="tsd-kind-icon">disconnect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voiceconnection.html#dispatchaudio" class="tsd-kind-icon">dispatch<wbr>Audio</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="voiceconnection.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="voiceconnection.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a></li>
@@ -141,7 +140,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="voiceconnection.html#prependlistener" class="tsd-kind-icon">prepend<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="voiceconnection.html#prependoncelistener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="voiceconnection.html#rawlisteners" class="tsd-kind-icon">raw<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voiceconnection.html#rejoin" class="tsd-kind-icon">rejoin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voiceconnection.html#reconnect" class="tsd-kind-icon">reconnect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="voiceconnection.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="voiceconnection.html#removelistener" class="tsd-kind-icon">remove<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="voiceconnection.html#setmaxlisteners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a></li>
@@ -165,7 +164,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides TypedEmitter&lt;VoiceConnectionEvents&gt;.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L195">src/VoiceConnection.ts:195</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L191">src/VoiceConnection.ts:191</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -198,7 +197,7 @@
 					<div class="tsd-signature tsd-kind-icon">_state<span class="tsd-signature-symbol">:</span> <a href="../modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L175">src/VoiceConnection.ts:175</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L171">src/VoiceConnection.ts:171</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -213,7 +212,7 @@
 					<div class="tsd-signature tsd-kind-icon">debug<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L195">src/VoiceConnection.ts:195</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L191">src/VoiceConnection.ts:191</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -228,7 +227,7 @@
 					<div class="tsd-signature tsd-kind-icon">join<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JoinConfig</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L181">src/VoiceConnection.ts:181</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L177">src/VoiceConnection.ts:177</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -247,7 +246,7 @@
 					<div class="tsd-signature tsd-kind-icon">packets<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>server<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">GatewayVoiceServerUpdateDispatchData</span><span class="tsd-signature-symbol">; </span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">GatewayVoiceState</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L187">src/VoiceConnection.ts:187</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L183">src/VoiceConnection.ts:183</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -269,17 +268,17 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="rejoinattempts" class="tsd-anchor"></a>
-					<h3>rejoin<wbr>Attempts</h3>
-					<div class="tsd-signature tsd-kind-icon">rejoin<wbr>Attempts<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="reconnectattempts" class="tsd-anchor"></a>
+					<h3>reconnect<wbr>Attempts</h3>
+					<div class="tsd-signature tsd-kind-icon">reconnect<wbr>Attempts<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L170">src/VoiceConnection.ts:170</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L166">src/VoiceConnection.ts:166</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The number of consecutive rejoin attempts. Initially 0, and increments for each rejoin.
+							<p>The number of consecutive reconnect attempts. Initially 0, and increments for each reconnect.
 							When a connection is successfully established, it resets to 0.</p>
 						</div>
 					</div>
@@ -308,7 +307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L589">src/VoiceConnection.ts:589</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L554">src/VoiceConnection.ts:554</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -346,7 +345,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L233">src/VoiceConnection.ts:233</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L229">src/VoiceConnection.ts:229</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -359,7 +358,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L240">src/VoiceConnection.ts:240</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L236">src/VoiceConnection.ts:236</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -423,7 +422,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L284">src/VoiceConnection.ts:284</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L280">src/VoiceConnection.ts:280</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -455,7 +454,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L303">src/VoiceConnection.ts:303</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L299">src/VoiceConnection.ts:299</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -487,7 +486,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L327">src/VoiceConnection.ts:327</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L323">src/VoiceConnection.ts:323</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -518,7 +517,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L473">src/VoiceConnection.ts:473</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L469">src/VoiceConnection.ts:469</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -542,31 +541,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="disconnect" class="tsd-anchor"></a>
-					<h3>disconnect</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">disconnect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L492">src/VoiceConnection.ts:492</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Disconnects the VoiceConnection, allowing the possibility of rejoining later on.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<ul>
-								<li>true if the connection was successfully disconnected.</li>
-							</ul>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="dispatchaudio" class="tsd-anchor"></a>
 					<h3>dispatch<wbr>Audio</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -576,7 +550,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L449">src/VoiceConnection.ts:449</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L445">src/VoiceConnection.ts:445</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -793,7 +767,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L366">src/VoiceConnection.ts:366</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L362">src/VoiceConnection.ts:362</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -833,7 +807,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L431">src/VoiceConnection.ts:431</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L427">src/VoiceConnection.ts:427</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -864,7 +838,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L422">src/VoiceConnection.ts:422</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L418">src/VoiceConnection.ts:418</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -895,7 +869,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L399">src/VoiceConnection.ts:399</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L395">src/VoiceConnection.ts:395</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -932,7 +906,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L610">src/VoiceConnection.ts:610</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L575">src/VoiceConnection.ts:575</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -996,7 +970,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L460">src/VoiceConnection.ts:460</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L456">src/VoiceConnection.ts:456</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1027,7 +1001,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L440">src/VoiceConnection.ts:440</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L436">src/VoiceConnection.ts:436</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1145,37 +1119,31 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="rejoin" class="tsd-anchor"></a>
-					<h3>rejoin</h3>
+					<a name="reconnect" class="tsd-anchor"></a>
+					<h3>reconnect</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">rejoin<span class="tsd-signature-symbol">(</span>joinConfig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">JoinConfig</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;guildId&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">reconnect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L526">src/VoiceConnection.ts:526</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L494">src/VoiceConnection.ts:494</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Attempts to rejoin (better explanation soon:tm:)</p>
+									<p>Attempts to reconnect the VoiceConnection if it is in the Disconnected state.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>remarks</dt>
-									<dd><p>Calling this method successfully will automatically increment the <code>rejoinAttempts</code> counter,
+									<dd><p>Calling this method successfully will automatically increment the <code>reconnectAttempts</code> counter,
 											which you can use to inform whether or not you&#39;d like to keep attempting to reconnect your
 										voice connection.</p>
 										<p>A state transition from Disconnected to Signalling will be observed when this is called.</p>
 									</dd>
 								</dl>
 							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> joinConfig: <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">JoinConfig</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;guildId&quot;</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -1271,7 +1239,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L556">src/VoiceConnection.ts:556</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L521">src/VoiceConnection.ts:521</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1303,7 +1271,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/257751e/src/VoiceConnection.ts#L567">src/VoiceConnection.ts:567</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/f87324a/src/VoiceConnection.ts#L532">src/VoiceConnection.ts:532</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1358,7 +1326,7 @@
 								<a href="voiceconnection.html#packets" class="tsd-kind-icon">packets</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="voiceconnection.html#rejoinattempts" class="tsd-kind-icon">rejoin<wbr>Attempts</a>
+								<a href="voiceconnection.html#reconnectattempts" class="tsd-kind-icon">reconnect<wbr>Attempts</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
 								<a href="voiceconnection.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a>
@@ -1383,9 +1351,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="voiceconnection.html#destroy" class="tsd-kind-icon">destroy</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="voiceconnection.html#disconnect" class="tsd-kind-icon">disconnect</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="voiceconnection.html#dispatchaudio" class="tsd-kind-icon">dispatch<wbr>Audio</a>
@@ -1445,7 +1410,7 @@
 								<a href="voiceconnection.html#rawlisteners" class="tsd-kind-icon">raw<wbr>Listeners</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="voiceconnection.html#rejoin" class="tsd-kind-icon">rejoin</a>
+								<a href="voiceconnection.html#reconnect" class="tsd-kind-icon">reconnect</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="voiceconnection.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a>
