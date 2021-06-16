@@ -134,6 +134,44 @@ describe('createVoiceConnection', () => {
 		expect(stateSetter).not.toHaveBeenCalled();
 	});
 
+	test('Calls rejoin() on existing disconnected connection', () => {
+		const mockPayload = Symbol('mock') as any;
+
+		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => mockPayload);
+
+		const existingAdapter = createFakeAdapter();
+		const existingJoinConfig = createJoinConfig();
+		const existingVoiceConnection = new VoiceConnection(existingJoinConfig, {
+			debug: false,
+			adapterCreator: existingAdapter.creator,
+		});
+		existingVoiceConnection.state = {
+			status: VoiceConnectionStatus.Disconnected,
+			adapter: existingAdapter,
+			reason: VoiceConnectionDisconnectReason.EndpointRemoved,
+		};
+
+		const rejoinSpy = jest.spyOn(existingVoiceConnection, 'rejoin');
+
+		DataStore.getVoiceConnection.mockImplementation((guildId) =>
+			guildId === existingJoinConfig.guildId ? existingVoiceConnection : null,
+		);
+
+		const newAdapter = createFakeAdapter();
+		const newJoinConfig = createJoinConfig();
+		const { guildId, ...rejoinConfig } = newJoinConfig;
+		const newVoiceConnection = createVoiceConnection(newJoinConfig, {
+			debug: false,
+			adapterCreator: newAdapter.creator,
+		});
+		expect(DataStore.getVoiceConnection).toHaveBeenCalledWith(newJoinConfig.guildId);
+		expect(DataStore.trackVoiceConnection).not.toHaveBeenCalled();
+		expect(DataStore.untrackVoiceConnection).not.toHaveBeenCalled();
+		expect(newAdapter.creator).not.toHaveBeenCalled();
+		expect(rejoinSpy).toHaveBeenCalledWith(rejoinConfig);
+		expect(newVoiceConnection).toBe(existingVoiceConnection);
+	});
+
 	test('Reconfiguring existing connection with adapter failure', () => {
 		const mockPayload = Symbol('mock') as any;
 
@@ -435,6 +473,48 @@ describe('VoiceConnection#destroy', () => {
 		});
 		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+	});
+});
+
+describe('VoiceConnection#disconnect', () => {
+	test('Fails in Destroyed and Signalling states', () => {
+		const { voiceConnection, adapter } = createFakeVoiceConnection();
+		voiceConnection.state = { status: VoiceConnectionStatus.Destroyed };
+		expect(voiceConnection.disconnect()).toBe(false);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Destroyed);
+
+		voiceConnection.state = { status: VoiceConnectionStatus.Signalling, adapter };
+		expect(voiceConnection.disconnect()).toBe(false);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+	});
+
+	test('Disconnects - available adapter', () => {
+		const { voiceConnection, adapter } = createFakeVoiceConnection();
+		voiceConnection.state = {
+			status: VoiceConnectionStatus.Ready,
+			adapter,
+			networking: new Networking.Networking({} as any, false),
+		};
+		expect(voiceConnection.disconnect()).toBe(true);
+		expect(voiceConnection.state).toMatchObject({
+			status: VoiceConnectionStatus.Disconnected,
+			reason: VoiceConnectionDisconnectReason.Manual,
+		});
+	});
+
+	test('Disconnects - unavailable adapter', () => {
+		const { voiceConnection, adapter } = createFakeVoiceConnection();
+		voiceConnection.state = {
+			status: VoiceConnectionStatus.Ready,
+			adapter,
+			networking: new Networking.Networking({} as any, false),
+		};
+		adapter.sendPayload.mockImplementation(() => false);
+		expect(voiceConnection.disconnect()).toBe(false);
+		expect(voiceConnection.state).toMatchObject({
+			status: VoiceConnectionStatus.Disconnected,
+			reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
+		});
 	});
 });
 
