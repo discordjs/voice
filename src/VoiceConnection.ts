@@ -514,7 +514,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	}
 
 	/**
-	 * Attempts to reconnect the VoiceConnection if it is in the Disconnected state.
+	 * Attempts to rejoin (better explanation soon:tm:)
 	 *
 	 * @remarks
 	 * Calling this method successfully will automatically increment the `reconnectAttempts` counter,
@@ -524,7 +524,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 * A state transition from Disconnected to Signalling will be observed when this is called.
 	 */
 	public rejoin(joinConfig?: Omit<JoinConfig, 'guildId'>) {
-		if (this.state.status !== VoiceConnectionStatus.Disconnected) {
+		if (this.state.status === VoiceConnectionStatus.Destroyed) {
 			return false;
 		}
 
