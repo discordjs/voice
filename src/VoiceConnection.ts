@@ -523,7 +523,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 *
 	 * A state transition from Disconnected to Signalling will be observed when this is called.
 	 */
-	public reconnect() {
+	public rejoin() {
 		if (this.state.status !== VoiceConnectionStatus.Disconnected) {
 			return false;
 		}

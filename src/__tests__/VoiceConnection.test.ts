@@ -3,6 +3,7 @@ import {
 	createVoiceConnection,
 	VoiceConnection,
 	VoiceConnectionConnectingState,
+	VoiceConnectionDisconnectReason,
 	VoiceConnectionSignallingState,
 	VoiceConnectionStatus,
 } from '../VoiceConnection';
@@ -441,7 +442,7 @@ describe('VoiceConnection#reconnect', () => {
 	test('Does nothing in a non-disconnected state', () => {
 		const { voiceConnection, adapter } = createFakeVoiceConnection();
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
-		expect(voiceConnection.reconnect()).toBe(false);
+		expect(voiceConnection.rejoin()).toBe(false);
 		expect(voiceConnection.reconnectAttempts).toBe(0);
 		expect(adapter.sendPayload).not.toHaveBeenCalled();
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
@@ -455,9 +456,10 @@ describe('VoiceConnection#reconnect', () => {
 		voiceConnection.state = {
 			...(voiceConnection.state as VoiceConnectionSignallingState),
 			status: VoiceConnectionStatus.Disconnected,
+			reason: VoiceConnectionDisconnectReason.WebSocketClose,
 			closeCode: 1000,
 		};
-		expect(voiceConnection.reconnect()).toBe(true);
+		expect(voiceConnection.rejoin()).toBe(true);
 		expect(voiceConnection.reconnectAttempts).toBe(1);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
@@ -471,10 +473,11 @@ describe('VoiceConnection#reconnect', () => {
 		voiceConnection.state = {
 			...(voiceConnection.state as VoiceConnectionSignallingState),
 			status: VoiceConnectionStatus.Disconnected,
+			reason: VoiceConnectionDisconnectReason.WebSocketClose,
 			closeCode: 1000,
 		};
 		adapter.sendPayload.mockReturnValue(false);
-		expect(voiceConnection.reconnect()).toBe(false);
+		expect(voiceConnection.rejoin()).toBe(false);
 		expect(voiceConnection.reconnectAttempts).toBe(1);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Disconnected);

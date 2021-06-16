@@ -52,7 +52,7 @@ export class MusicSubscription {
 						The disconnect in this case is recoverable, and we also have <5 repeated attempts so we will reconnect.
 					*/
 					await wait((this.voiceConnection.reconnectAttempts + 1) * 5_000);
-					this.voiceConnection.reconnect();
+					this.voiceConnection.rejoin();
 				} else {
 					/*
 						The disconnect in this case may be recoverable, but we have no more remaining attempts - destroy.
