@@ -20,7 +20,19 @@ const libs = {
 	}),
 };
 
-const methods: Record<any, any> = {};
+const fallbackError = () => {
+	throw new Error(
+		`Cannot play audio as no valid encryption package is installed.
+- Install sodium, libsodium-wrappers, or tweetnacl.
+- Use the generateDependencyReport() function for more information.\n`,
+	);
+};
+
+const methods: Record<any, any> = {
+	open: fallbackError,
+	close: fallbackError,
+	random: fallbackError,
+};
 
 void (async () => {
 	for (const libName of Object.keys(libs)) {
