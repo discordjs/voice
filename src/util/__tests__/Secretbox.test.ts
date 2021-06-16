@@ -1,7 +1,15 @@
 import { methods } from '../Secretbox';
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-jest.mock('tweetnacl', () => {}, { virtual: true });
+jest.mock(
+	'tweetnacl',
+	() => ({
+		secretbox: {
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			open() {},
+		},
+	}),
+	{ virtual: true },
+);
 
 test('Does not throw error with a package installed', () => {
-	expect(() => methods.open).not.toThrowError();
+	expect(() => methods.open()).not.toThrowError();
 });
