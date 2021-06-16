@@ -66,6 +66,10 @@ export enum VoiceConnectionDisconnectReason {
 	 * When a VOICE_SERVER_UPDATE packet is received with a null endpoint, causing the connection to be severed.
 	 */
 	EndpointRemoved,
+	/**
+	 * When a manual disconnect was requested.
+	 */
+	Manual,
 }
 
 /**
@@ -479,6 +483,34 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		this.state = {
 			status: VoiceConnectionStatus.Destroyed,
 		};
+	}
+
+	/**
+	 * Disconnects the VoiceConnection, allowing the possibility of rejoining later on.
+	 * @returns - true if the connection was successfully disconnected.
+	 */
+	public disconnect() {
+		if (
+			this.state.status === VoiceConnectionStatus.Destroyed ||
+			this.state.status === VoiceConnectionStatus.Signalling
+		) {
+			return false;
+		}
+		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
+			this.state = {
+				adapter: this.state.adapter,
+				subscription: this.state.subscription,
+				status: VoiceConnectionStatus.Disconnected,
+				reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
+			};
+			return false;
+		}
+		this.state = {
+			adapter: this.state.adapter,
+			reason: VoiceConnectionDisconnectReason.Manual,
+			status: VoiceConnectionStatus.Disconnected,
+		};
+		return true;
 	}
 
 	/**
