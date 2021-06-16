@@ -523,12 +523,13 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 *
 	 * A state transition from Disconnected to Signalling will be observed when this is called.
 	 */
-	public rejoin() {
+	public rejoin(joinConfig?: Omit<JoinConfig, 'guildId'>) {
 		if (this.state.status !== VoiceConnectionStatus.Disconnected) {
 			return false;
 		}
 
 		this.reconnectAttempts++;
+		Object.assign(this.joinConfig, joinConfig);
 		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
 			this.state = {
 				adapter: this.state.adapter,
@@ -626,7 +627,13 @@ export function createVoiceConnection(joinConfig: JoinConfig, options: CreateVoi
 	const payload = createJoinVoiceChannelPayload(joinConfig);
 	const existing = getVoiceConnection(joinConfig.guildId);
 	if (existing && existing.state.status !== VoiceConnectionStatus.Destroyed) {
-		if (!existing.state.adapter.sendPayload(payload)) {
+		if (existing.state.status === VoiceConnectionStatus.Disconnected) {
+			existing.rejoin({
+				channelId: joinConfig.channelId,
+				selfDeaf: joinConfig.selfDeaf,
+				selfMute: joinConfig.selfMute,
+			});
+		} else if (!existing.state.adapter.sendPayload(payload)) {
 			existing.state = {
 				...existing.state,
 				status: VoiceConnectionStatus.Disconnected,
