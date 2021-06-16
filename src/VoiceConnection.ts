@@ -66,6 +66,10 @@ export enum VoiceConnectionDisconnectReason {
 	 * When a VOICE_SERVER_UPDATE packet is received with a null endpoint, causing the connection to be severed.
 	 */
 	EndpointRemoved,
+	/**
+	 * When a manual disconnect was requested.
+	 */
+	Manual,
 }
 
 /**
@@ -160,10 +164,10 @@ export type VoiceConnectionEvents = {
  */
 export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	/**
-	 * The number of consecutive reconnect attempts. Initially 0, and increments for each reconnect.
+	 * The number of consecutive rejoin attempts. Initially 0, and increments for each rejoin.
 	 * When a connection is successfully established, it resets to 0.
 	 */
-	public reconnectAttempts: number;
+	public rejoinAttempts: number;
 
 	/**
 	 * The state of the voice connection
@@ -200,7 +204,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		super();
 
 		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
-		this.reconnectAttempts = 0;
+		this.rejoinAttempts = 0;
 
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
 		this.onNetworkingStateChange = this.onNetworkingStateChange.bind(this);
@@ -251,7 +255,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		}
 
 		if (newState.status === VoiceConnectionStatus.Ready) {
-			this.reconnectAttempts = 0;
+			this.rejoinAttempts = 0;
 		}
 
 		// If destroyed, the adapter can also be destroyed so it can be cleaned up by the user
@@ -375,7 +379,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
-			this.reconnectAttempts++;
+			this.rejoinAttempts++;
 			if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
 				this.state = {
 					...this.state,
@@ -482,34 +486,65 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	}
 
 	/**
-	 * Attempts to reconnect the VoiceConnection if it is in the Disconnected state.
+	 * Disconnects the VoiceConnection, allowing the possibility of rejoining later on.
+	 * @returns - true if the connection was successfully disconnected.
+	 */
+	public disconnect() {
+		if (
+			this.state.status === VoiceConnectionStatus.Destroyed ||
+			this.state.status === VoiceConnectionStatus.Signalling
+		) {
+			return false;
+		}
+		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
+			this.state = {
+				adapter: this.state.adapter,
+				subscription: this.state.subscription,
+				status: VoiceConnectionStatus.Disconnected,
+				reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
+			};
+			return false;
+		}
+		this.state = {
+			adapter: this.state.adapter,
+			reason: VoiceConnectionDisconnectReason.Manual,
+			status: VoiceConnectionStatus.Disconnected,
+		};
+		return true;
+	}
+
+	/**
+	 * Attempts to rejoin (better explanation soon:tm:)
 	 *
 	 * @remarks
-	 * Calling this method successfully will automatically increment the `reconnectAttempts` counter,
+	 * Calling this method successfully will automatically increment the `rejoinAttempts` counter,
 	 * which you can use to inform whether or not you'd like to keep attempting to reconnect your
 	 * voice connection.
 	 *
 	 * A state transition from Disconnected to Signalling will be observed when this is called.
 	 */
-	public reconnect() {
-		if (this.state.status !== VoiceConnectionStatus.Disconnected) {
+	public rejoin(joinConfig?: Omit<JoinConfig, 'guildId'>) {
+		if (this.state.status === VoiceConnectionStatus.Destroyed) {
 			return false;
 		}
 
-		this.reconnectAttempts++;
-		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
+		this.rejoinAttempts++;
+		Object.assign(this.joinConfig, joinConfig);
+		if (this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
 			this.state = {
 				...this.state,
-				status: VoiceConnectionStatus.Disconnected,
+				status: VoiceConnectionStatus.Signalling,
 			};
-			return false;
+			return true;
 		}
 
 		this.state = {
-			...this.state,
-			status: VoiceConnectionStatus.Signalling,
+			adapter: this.state.adapter,
+			subscription: this.state.subscription,
+			status: VoiceConnectionStatus.Disconnected,
+			reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
 		};
-		return true;
+		return false;
 	}
 
 	/**
@@ -592,7 +627,13 @@ export function createVoiceConnection(joinConfig: JoinConfig, options: CreateVoi
 	const payload = createJoinVoiceChannelPayload(joinConfig);
 	const existing = getVoiceConnection(joinConfig.guildId);
 	if (existing && existing.state.status !== VoiceConnectionStatus.Destroyed) {
-		if (!existing.state.adapter.sendPayload(payload)) {
+		if (existing.state.status === VoiceConnectionStatus.Disconnected) {
+			existing.rejoin({
+				channelId: joinConfig.channelId,
+				selfDeaf: joinConfig.selfDeaf,
+				selfMute: joinConfig.selfMute,
+			});
+		} else if (!existing.state.adapter.sendPayload(payload)) {
 			existing.state = {
 				...existing.state,
 				status: VoiceConnectionStatus.Disconnected,
