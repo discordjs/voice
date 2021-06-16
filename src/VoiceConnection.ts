@@ -530,21 +530,21 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 		this.rejoinAttempts++;
 		Object.assign(this.joinConfig, joinConfig);
-		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
+		if (this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
 			this.state = {
-				adapter: this.state.adapter,
-				subscription: this.state.subscription,
-				status: VoiceConnectionStatus.Disconnected,
-				reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
+				...this.state,
+				status: VoiceConnectionStatus.Signalling,
 			};
-			return false;
+			return true;
 		}
 
 		this.state = {
-			...this.state,
-			status: VoiceConnectionStatus.Signalling,
+			adapter: this.state.adapter,
+			subscription: this.state.subscription,
+			status: VoiceConnectionStatus.Disconnected,
+			reason: VoiceConnectionDisconnectReason.AdapterUnavailable,
 		};
-		return true;
+		return false;
 	}
 
 	/**
