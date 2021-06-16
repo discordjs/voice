@@ -47,11 +47,11 @@ export class MusicSubscription {
 						this.voiceConnection.destroy();
 						// Probably removed from voice channel
 					}
-				} else if (this.voiceConnection.reconnectAttempts < 5) {
+				} else if (this.voiceConnection.rejoinAttempts < 5) {
 					/*
 						The disconnect in this case is recoverable, and we also have <5 repeated attempts so we will reconnect.
 					*/
-					await wait((this.voiceConnection.reconnectAttempts + 1) * 5_000);
+					await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000);
 					this.voiceConnection.rejoin();
 				} else {
 					/*

@@ -164,10 +164,10 @@ export type VoiceConnectionEvents = {
  */
 export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	/**
-	 * The number of consecutive reconnect attempts. Initially 0, and increments for each reconnect.
+	 * The number of consecutive rejoin attempts. Initially 0, and increments for each rejoin.
 	 * When a connection is successfully established, it resets to 0.
 	 */
-	public reconnectAttempts: number;
+	public rejoinAttempts: number;
 
 	/**
 	 * The state of the voice connection
@@ -204,7 +204,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		super();
 
 		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
-		this.reconnectAttempts = 0;
+		this.rejoinAttempts = 0;
 
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
 		this.onNetworkingStateChange = this.onNetworkingStateChange.bind(this);
@@ -255,7 +255,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		}
 
 		if (newState.status === VoiceConnectionStatus.Ready) {
-			this.reconnectAttempts = 0;
+			this.rejoinAttempts = 0;
 		}
 
 		// If destroyed, the adapter can also be destroyed so it can be cleaned up by the user
@@ -379,7 +379,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 				...this.state,
 				status: VoiceConnectionStatus.Signalling,
 			};
-			this.reconnectAttempts++;
+			this.rejoinAttempts++;
 			if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
 				this.state = {
 					...this.state,
@@ -517,7 +517,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 * Attempts to rejoin (better explanation soon:tm:)
 	 *
 	 * @remarks
-	 * Calling this method successfully will automatically increment the `reconnectAttempts` counter,
+	 * Calling this method successfully will automatically increment the `rejoinAttempts` counter,
 	 * which you can use to inform whether or not you'd like to keep attempting to reconnect your
 	 * voice connection.
 	 *
@@ -528,7 +528,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 			return false;
 		}
 
-		this.reconnectAttempts++;
+		this.rejoinAttempts++;
 		Object.assign(this.joinConfig, joinConfig);
 		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
 			this.state = {

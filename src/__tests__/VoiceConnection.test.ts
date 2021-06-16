@@ -318,7 +318,7 @@ describe('VoiceConnection#onNetworkingClose', () => {
 		expect(adapter.sendPayload).not.toHaveBeenCalled();
 	});
 
-	test('Attempts reconnect for codes != 4014', () => {
+	test('Attempts rejoin for codes != 4014', () => {
 		const dummyPayload = Symbol('dummy') as any;
 		const { voiceConnection, adapter, joinConfig } = createFakeVoiceConnection();
 		DataStore.createJoinVoiceChannelPayload.mockImplementation((config) =>
@@ -327,10 +327,10 @@ describe('VoiceConnection#onNetworkingClose', () => {
 		voiceConnection['onNetworkingClose'](1234);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(dummyPayload);
-		expect(voiceConnection.reconnectAttempts).toBe(1);
+		expect(voiceConnection.rejoinAttempts).toBe(1);
 	});
 
-	test('Attempts reconnect for codes != 4014 (with adapter failure)', () => {
+	test('Attempts rejoin for codes != 4014 (with adapter failure)', () => {
 		const dummyPayload = Symbol('dummy') as any;
 		const { voiceConnection, adapter, joinConfig } = createFakeVoiceConnection();
 		DataStore.createJoinVoiceChannelPayload.mockImplementation((config) =>
@@ -340,7 +340,7 @@ describe('VoiceConnection#onNetworkingClose', () => {
 		voiceConnection['onNetworkingClose'](1234);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Disconnected);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(dummyPayload);
-		expect(voiceConnection.reconnectAttempts).toBe(1);
+		expect(voiceConnection.rejoinAttempts).toBe(1);
 	});
 });
 
@@ -438,17 +438,8 @@ describe('VoiceConnection#destroy', () => {
 	});
 });
 
-describe('VoiceConnection#reconnect', () => {
-	test('Does nothing in a non-disconnected state', () => {
-		const { voiceConnection, adapter } = createFakeVoiceConnection();
-		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
-		expect(voiceConnection.rejoin()).toBe(false);
-		expect(voiceConnection.reconnectAttempts).toBe(0);
-		expect(adapter.sendPayload).not.toHaveBeenCalled();
-		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
-	});
-
-	test('Reconnects in a disconnected state', () => {
+describe('VoiceConnection#rejoin', () => {
+	test('Rejoins in a disconnected state', () => {
 		const dummy = Symbol('dummy') as any;
 		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => dummy);
 
@@ -460,7 +451,7 @@ describe('VoiceConnection#reconnect', () => {
 			closeCode: 1000,
 		};
 		expect(voiceConnection.rejoin()).toBe(true);
-		expect(voiceConnection.reconnectAttempts).toBe(1);
+		expect(voiceConnection.rejoinAttempts).toBe(1);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
 	});
@@ -478,7 +469,7 @@ describe('VoiceConnection#reconnect', () => {
 		};
 		adapter.sendPayload.mockReturnValue(false);
 		expect(voiceConnection.rejoin()).toBe(false);
-		expect(voiceConnection.reconnectAttempts).toBe(1);
+		expect(voiceConnection.rejoinAttempts).toBe(1);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Disconnected);
 	});
