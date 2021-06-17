@@ -88,9 +88,16 @@ client.on('interaction', async (interaction: Interaction) => {
 			await interaction.followUp('Failed to join voice channel within 20 seconds, please try again later!');
 		}
 	} else if (interaction.commandName === 'listen') {
+		await interaction.defer();
 		if (connection) {
 			const userID = interaction.options.get('speaker')!.value! as Snowflake;
-			await interaction.reply(JSON.stringify(connection.receiver.ssrcMap.get(userID) ?? 'nope'));
+			try {
+				const { audioSSRC } = await connection.receiver.ssrcMap.resolve(userID, 5_000);
+				await interaction.followUp(audioSSRC.toString());
+			} catch (error) {
+				console.warn(error);
+				await interaction.followUp(`Unable to find <@${userID}> in the voice server - ask them to speak!`);
+			}
 		}
 	} else if (interaction.commandName === 'leave') {
 		if (connection) {
