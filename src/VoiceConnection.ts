@@ -156,7 +156,10 @@ export type VoiceConnectionEvents = {
 	debug: (message: string) => Awaited<void>;
 	stateChange: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => Awaited<void>;
 } & {
-	[status in VoiceConnectionStatus]: (oldState: VoiceConnectionState, newState: VoiceConnectionState & { status: status }) => Awaited<void>;
+	[status in VoiceConnectionStatus]: (
+		oldState: VoiceConnectionState,
+		newState: VoiceConnectionState & { status: status },
+	) => Awaited<void>;
 };
 
 /**

@@ -145,7 +145,10 @@ export type AudioPlayerEvents = {
 	subscribe: (subscription: PlayerSubscription) => Awaited<void>;
 	unsubscribe: (subscription: PlayerSubscription) => Awaited<void>;
 } & {
-	[status in AudioPlayerStatus]: (oldState: AudioPlayerState, newState: AudioPlayerState) => Awaited<void>;
+	[status in AudioPlayerStatus]: (
+		oldState: AudioPlayerState,
+		newState: AudioPlayerState & { status: status },
+	) => Awaited<void>;
 };
 
 /**
