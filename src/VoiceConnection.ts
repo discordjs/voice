@@ -274,7 +274,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 		this.emit('stateChange', oldState, newState);
 		if (oldState.status !== newState.status) {
-			this.emit(newState.status, oldState, newState);
+			this.emit(newState.status, oldState, newState as any);
 		}
 	}
 

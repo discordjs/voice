@@ -304,7 +304,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 
 		this.emit('stateChange', oldState, this._state);
 		if (oldState.status !== newState.status || didChangeResources) {
-			this.emit(newState.status, oldState, this._state);
+			this.emit(newState.status, oldState, this._state as any);
 		}
 		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
