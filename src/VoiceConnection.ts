@@ -13,6 +13,8 @@ import { DiscordGatewayAdapterImplementerMethods } from './util/adapter';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { Awaited, noop } from './util/util';
 import { TypedEmitter } from 'tiny-typed-emitter';
+import { VoiceReceiver } from './receive';
+import type { VoiceWebSocket, VoiceUDPSocket } from './networking';
 
 /**
  * The various status codes a voice connection can hold at any one time.
@@ -193,6 +195,12 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	};
 
 	/**
+	 * The receiver of this voice connection. You should join the voice channel with `selfDeaf` set
+	 * to false for this feature to work properly.
+	 */
+	public readonly receiver: VoiceReceiver;
+
+	/**
 	 * The debug logger function, if debugging is enabled.
 	 */
 	private readonly debug: null | ((message: string) => void);
@@ -208,6 +216,8 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 		this.debug = debug ? (message: string) => this.emit('debug', message) : null;
 		this.rejoinAttempts = 0;
+
+		this.receiver = new VoiceReceiver(this);
 
 		this.onNetworkingClose = this.onNetworkingClose.bind(this);
 		this.onNetworkingStateChange = this.onNetworkingStateChange.bind(this);
@@ -248,13 +258,14 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		const oldSubscription: PlayerSubscription | undefined = Reflect.get(oldState, 'subscription');
 		const newSubscription: PlayerSubscription | undefined = Reflect.get(newState, 'subscription');
 
-		if (oldNetworking && oldNetworking !== newNetworking) {
-			oldNetworking.off('debug', this.onNetworkingDebug);
-			oldNetworking.on('error', noop);
-			oldNetworking.off('error', this.onNetworkingError);
-			oldNetworking.off('close', this.onNetworkingClose);
-			oldNetworking.off('stateChange', this.onNetworkingStateChange);
-			oldNetworking.destroy();
+		if (oldNetworking !== newNetworking) {
+			oldNetworking?.off('debug', this.onNetworkingDebug);
+			oldNetworking?.on('error', noop);
+			oldNetworking?.off('error', this.onNetworkingError);
+			oldNetworking?.off('close', this.onNetworkingClose);
+			oldNetworking?.off('stateChange', this.onNetworkingStateChange);
+			oldNetworking?.destroy();
+			if (newNetworking) this.updateReceiveBindings(newNetworking.state, oldNetworking?.state);
 		}
 
 		if (newState.status === VoiceConnectionStatus.Ready) {
@@ -314,6 +325,25 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 			as it may have disconnected due to network failure. This will be gracefully handled once the voice websocket
 			dies, and then it is up to the user to decide how they wish to handle this.
 		*/
+	}
+
+	private updateReceiveBindings(newState: NetworkingState, oldState?: NetworkingState) {
+		const oldWs = Reflect.get(oldState ?? {}, 'ws') as VoiceWebSocket | undefined;
+		const newWs = Reflect.get(newState, 'ws') as VoiceWebSocket | undefined;
+		const oldUdp = Reflect.get(oldState ?? {}, 'udp') as VoiceUDPSocket | undefined;
+		const newUdp = Reflect.get(newState, 'udp') as VoiceUDPSocket | undefined;
+
+		if (oldWs !== newWs) {
+			oldWs?.off('packet', this.receiver.onWsPacket);
+			newWs?.on('packet', this.receiver.onWsPacket);
+		}
+
+		if (oldUdp !== newUdp) {
+			oldUdp?.off('message', this.receiver.onUdpMessage);
+			newUdp?.on('message', this.receiver.onUdpMessage);
+		}
+
+		this.receiver.connectionData = Reflect.get(newState, 'connectionData') ?? {};
 	}
 
 	/**
@@ -400,6 +430,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 * @param newState - The new state
 	 */
 	private onNetworkingStateChange(oldState: NetworkingState, newState: NetworkingState) {
+		this.updateReceiveBindings(newState, oldState);
 		if (oldState.code === newState.code) return;
 		if (this.state.status !== VoiceConnectionStatus.Connecting && this.state.status !== VoiceConnectionStatus.Ready)
 			return;
