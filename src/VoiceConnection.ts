@@ -156,7 +156,10 @@ export type VoiceConnectionEvents = {
 	debug: (message: string) => Awaited<void>;
 	stateChange: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => Awaited<void>;
 } & {
-	[status in VoiceConnectionStatus]: (oldState: VoiceConnectionState, newState: VoiceConnectionState) => Awaited<void>;
+	[status in VoiceConnectionStatus]: (
+		oldState: VoiceConnectionState,
+		newState: VoiceConnectionState & { status: status },
+	) => Awaited<void>;
 };
 
 /**
@@ -271,7 +274,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 		this.emit('stateChange', oldState, newState);
 		if (oldState.status !== newState.status) {
-			this.emit(newState.status, oldState, newState);
+			this.emit(newState.status, oldState, newState as any);
 		}
 	}
 

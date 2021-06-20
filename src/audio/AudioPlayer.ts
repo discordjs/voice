@@ -145,7 +145,10 @@ export type AudioPlayerEvents = {
 	subscribe: (subscription: PlayerSubscription) => Awaited<void>;
 	unsubscribe: (subscription: PlayerSubscription) => Awaited<void>;
 } & {
-	[status in AudioPlayerStatus]: (oldState: AudioPlayerState, newState: AudioPlayerState) => Awaited<void>;
+	[status in AudioPlayerStatus]: (
+		oldState: AudioPlayerState,
+		newState: AudioPlayerState & { status: status },
+	) => Awaited<void>;
 };
 
 /**
@@ -301,7 +304,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 
 		this.emit('stateChange', oldState, this._state);
 		if (oldState.status !== newState.status || didChangeResources) {
-			this.emit(newState.status, oldState, this._state);
+			this.emit(newState.status, oldState, this._state as any);
 		}
 		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
 	}
