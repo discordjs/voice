@@ -270,6 +270,10 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 		if (newState.status === VoiceConnectionStatus.Ready) {
 			this.rejoinAttempts = 0;
+		} else {
+			for (const stream of this.receiver.subscriptions.values()) {
+				if (!stream.destroyed) stream.destroy(); // TODO - close with error?
+			}
 		}
 
 		// If destroyed, the adapter can also be destroyed so it can be cleaned up by the user
