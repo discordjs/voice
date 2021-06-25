@@ -532,7 +532,10 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		}
 
 		let notConnected = true;
-		if (this.state.status === VoiceConnectionStatus.Ready && joinConfig?.channelId === this.joinConfig.channelId) {
+		if (
+			this.state.status === VoiceConnectionStatus.Ready &&
+			(!joinConfig || joinConfig.channelId === this.joinConfig.channelId)
+		) {
 			notConnected = false;
 		}
 		if (notConnected) this.rejoinAttempts++;
