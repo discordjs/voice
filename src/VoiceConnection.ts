@@ -531,13 +531,17 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 			return false;
 		}
 
-		this.rejoinAttempts++;
+		const notReady = this.state.status !== VoiceConnectionStatus.Ready;
+
+		if (notReady) this.rejoinAttempts++;
 		Object.assign(this.joinConfig, joinConfig);
 		if (this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
-			this.state = {
-				...this.state,
-				status: VoiceConnectionStatus.Signalling,
-			};
+			if (notReady) {
+				this.state = {
+					...this.state,
+					status: VoiceConnectionStatus.Signalling,
+				};
+			}
 			return true;
 		}
 

@@ -4,6 +4,7 @@ import {
 	VoiceConnection,
 	VoiceConnectionConnectingState,
 	VoiceConnectionDisconnectReason,
+	VoiceConnectionReadyState,
 	VoiceConnectionSignallingState,
 	VoiceConnectionStatus,
 } from '../VoiceConnection';
@@ -534,6 +535,21 @@ describe('VoiceConnection#rejoin', () => {
 		expect(voiceConnection.rejoinAttempts).toBe(1);
 		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
+	});
+
+	test('Rejoins in a ready state', () => {
+		const dummy = Symbol('dummy') as any;
+		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => dummy);
+
+		const { voiceConnection, adapter } = createFakeVoiceConnection();
+		voiceConnection.state = {
+			...(voiceConnection.state as VoiceConnectionReadyState),
+			status: VoiceConnectionStatus.Ready,
+		};
+		expect(voiceConnection.rejoin()).toBe(true);
+		expect(voiceConnection.rejoinAttempts).toBe(0);
+		expect(adapter.sendPayload).toHaveBeenCalledWith(dummy);
+		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Ready);
 	});
 
 	test('Stays in the disconnected state when the adapter fails', () => {
