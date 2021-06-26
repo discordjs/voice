@@ -98,7 +98,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voicereceiver.html#connectiondata" class="tsd-kind-icon">connection<wbr>Data</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#connectiondata" class="tsd-kind-icon">connection<wbr>Data</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voicereceiver.html#ssrcmap" class="tsd-kind-icon">ssrc<wbr>Map</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voicereceiver.html#subscriptions" class="tsd-kind-icon">subscriptions</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="voicereceiver.html#voiceconnection" class="tsd-kind-icon">voice<wbr>Connection</a></li>
@@ -108,8 +108,8 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#decrypt" class="tsd-kind-icon">decrypt</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicereceiver.html#onudpmessage" class="tsd-kind-icon">on<wbr>Udp<wbr>Message</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicereceiver.html#onwspacket" class="tsd-kind-icon">on<wbr>WsPacket</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#onudpmessage" class="tsd-kind-icon">on<wbr>Udp<wbr>Message</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#onwspacket" class="tsd-kind-icon">on<wbr>WsPacket</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="voicereceiver.html#parsepacket" class="tsd-kind-icon">parse<wbr>Packet</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="voicereceiver.html#subscribe" class="tsd-kind-icon">subscribe</a></li>
 							</ul>
@@ -129,7 +129,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L34">src/receive/VoiceReceiver.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L36">src/receive/VoiceReceiver.ts:36</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -145,23 +145,19 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="connectiondata" class="tsd-anchor"></a>
-					<h3>connection<wbr>Data</h3>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> connection<wbr>Data</h3>
 					<div class="tsd-signature tsd-kind-icon">connection<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ConnectionData</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L34">src/receive/VoiceReceiver.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L36">src/receive/VoiceReceiver.ts:36</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The connection data of the receiver</p>
+							<p>The connection information for this receiver. Used to decrypt incoming packets.</p>
 						</div>
-						<dl class="tsd-comment-tags">
-							<dt>internal</dt>
-							<dd></dd>
-						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
@@ -170,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">ssrc<wbr>Map<span class="tsd-signature-symbol">:</span> <a href="ssrcmap.html" class="tsd-signature-type" data-tsd-kind="Class">SSRCMap</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L23">src/receive/VoiceReceiver.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L26">src/receive/VoiceReceiver.ts:26</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -185,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">subscriptions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="audioreceivestream.html" class="tsd-signature-type" data-tsd-kind="Class">AudioReceiveStream</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L28">src/receive/VoiceReceiver.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L31">src/receive/VoiceReceiver.ts:31</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -200,7 +196,7 @@
 					<div class="tsd-signature tsd-kind-icon">voice<wbr>Connection<span class="tsd-signature-symbol">:</span> <a href="voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L18">src/receive/VoiceReceiver.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L21">src/receive/VoiceReceiver.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -222,7 +218,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L74">src/receive/VoiceReceiver.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L137">src/receive/VoiceReceiver.ts:137</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -244,27 +240,23 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="onudpmessage" class="tsd-anchor"></a>
-					<h3>on<wbr>Udp<wbr>Message</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> on<wbr>Udp<wbr>Message</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">on<wbr>Udp<wbr>Message<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L132">src/receive/VoiceReceiver.ts:132</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L194">src/receive/VoiceReceiver.ts:194</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Called when the UDP socket of the attached connection receives a message.</p>
 								</div>
-								<dl class="tsd-comment-tags">
-									<dt>internal</dt>
-									<dd></dd>
-								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -279,27 +271,23 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="onwspacket" class="tsd-anchor"></a>
-					<h3>on<wbr>WsPacket</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> on<wbr>WsPacket</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">on<wbr>WsPacket<span class="tsd-signature-symbol">(</span>packet<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L52">src/receive/VoiceReceiver.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L115">src/receive/VoiceReceiver.ts:115</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Called when a packet is received on the attached connection&#39;s WebSocket.</p>
 								</div>
-								<dl class="tsd-comment-tags">
-									<dt>internal</dt>
-									<dd></dd>
-								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -324,7 +312,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L102">src/receive/VoiceReceiver.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L165">src/receive/VoiceReceiver.ts:165</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -374,7 +362,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/118fba4/src/receive/VoiceReceiver.ts#L162">src/receive/VoiceReceiver.ts:162</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/36aad8d/src/receive/VoiceReceiver.ts#L224">src/receive/VoiceReceiver.ts:224</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -416,7 +404,7 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="voicereceiver.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="voicereceiver.html#connectiondata" class="tsd-kind-icon">connection<wbr>Data</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -431,10 +419,10 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="voicereceiver.html#decrypt" class="tsd-kind-icon">decrypt</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="voicereceiver.html#onudpmessage" class="tsd-kind-icon">on<wbr>Udp<wbr>Message</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="voicereceiver.html#onwspacket" class="tsd-kind-icon">on<wbr>WsPacket</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
