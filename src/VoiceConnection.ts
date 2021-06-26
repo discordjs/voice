@@ -499,6 +499,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		) {
 			return false;
 		}
+		this.joinConfig.channelId = null;
 		if (!this.state.adapter.sendPayload(createJoinVoiceChannelPayload(this.joinConfig))) {
 			this.state = {
 				adapter: this.state.adapter,

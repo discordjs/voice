@@ -496,7 +496,17 @@ describe('VoiceConnection#disconnect', () => {
 			adapter,
 			networking: new Networking.Networking({} as any, false),
 		};
+		const leavePayload = Symbol('dummy');
+		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => leavePayload as any);
 		expect(voiceConnection.disconnect()).toBe(true);
+		expect(voiceConnection.joinConfig).toMatchObject({
+			channelId: null,
+			guildId: '2',
+			selfDeaf: true,
+			selfMute: false,
+		});
+		expect(DataStore.createJoinVoiceChannelPayload).toHaveBeenCalledWith(voiceConnection.joinConfig);
+		expect(adapter.sendPayload).toHaveBeenCalledWith(leavePayload);
 		expect(voiceConnection.state).toMatchObject({
 			status: VoiceConnectionStatus.Disconnected,
 			reason: VoiceConnectionDisconnectReason.Manual,
