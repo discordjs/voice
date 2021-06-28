@@ -35,6 +35,10 @@ function createKey({ guildId, group }: { guildId: string; group: string }) {
 	return guildId + group;
 }
 
+export function getVoiceConnections() {
+	return voiceConnections;
+}
+
 export function getVoiceConnection(guildId: string, group = 'default') {
 	return voiceConnections.get(createKey({ guildId, group }));
 }
