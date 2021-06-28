@@ -478,7 +478,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 			throw new Error('Cannot destroy VoiceConnection - it has already been destroyed');
 		}
 		if (getVoiceConnection(this.joinConfig.guildId) === this) {
-			untrackVoiceConnection(this.joinConfig.guildId);
+			untrackVoiceConnection(this);
 		}
 		if (adapterAvailable) {
 			this.state.adapter.sendPayload(createJoinVoiceChannelPayload({ ...this.joinConfig, channelId: null }));
@@ -527,7 +527,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 *
 	 * A state transition from Disconnected to Signalling will be observed when this is called.
 	 */
-	public rejoin(joinConfig?: Omit<JoinConfig, 'guildId'>) {
+	public rejoin(joinConfig?: Omit<JoinConfig, 'guildId' | 'group'>) {
 		if (this.state.status === VoiceConnectionStatus.Destroyed) {
 			return false;
 		}
@@ -652,7 +652,7 @@ export function createVoiceConnection(joinConfig: JoinConfig, options: CreateVoi
 	}
 
 	const voiceConnection = new VoiceConnection(joinConfig, options);
-	trackVoiceConnection(joinConfig.guildId, voiceConnection);
+	trackVoiceConnection(voiceConnection);
 	if (voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) {
 		if (!voiceConnection.state.adapter.sendPayload(payload)) {
 			voiceConnection.state = {

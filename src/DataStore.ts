@@ -7,6 +7,7 @@ export interface JoinConfig {
 	channelId: string | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
+	group: string;
 }
 
 /**
@@ -30,16 +31,20 @@ export function createJoinVoiceChannelPayload(config: JoinConfig) {
 // Voice Connections
 const voiceConnections: Map<string, VoiceConnection> = new Map();
 
-export function getVoiceConnection(guildId: string) {
-	return voiceConnections.get(guildId);
+function createKey({ guildId, group }: { guildId: string; group: string }) {
+	return guildId + group;
 }
 
-export function untrackVoiceConnection(guildId: string) {
-	return voiceConnections.delete(guildId);
+export function getVoiceConnection(guildId: string, group = 'default') {
+	return voiceConnections.get(createKey({ guildId, group }));
 }
 
-export function trackVoiceConnection(guildId: string, voiceConnection: VoiceConnection) {
-	return voiceConnections.set(guildId, voiceConnection);
+export function untrackVoiceConnection(voiceConnection: VoiceConnection) {
+	return voiceConnections.delete(createKey(voiceConnection.joinConfig));
+}
+
+export function trackVoiceConnection(voiceConnection: VoiceConnection) {
+	return voiceConnections.set(createKey(voiceConnection.joinConfig), voiceConnection);
 }
 
 // Audio Players
