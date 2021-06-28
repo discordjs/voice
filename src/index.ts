@@ -19,4 +19,4 @@ export {
 	VoiceConnectionEvents,
 } from './VoiceConnection';
 
-export { getVoiceConnection } from './DataStore';
+export { getVoiceConnection, getVoiceConnections, getGroups } from './DataStore';
