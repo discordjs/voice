@@ -29,8 +29,7 @@ export function createJoinVoiceChannelPayload(config: JoinConfig) {
 }
 
 // Voice Connections
-type VoiceConnectionMap = Map<string, VoiceConnection>;
-const groups: Map<string, VoiceConnectionMap> = new Map();
+const groups: Map<string, Map<string, VoiceConnection>> = new Map();
 groups.set('default', new Map());
 
 function getOrCreateGroup(group: string) {
