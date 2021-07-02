@@ -1,7 +1,0 @@
-{
-	"$schema": "https://raw.githubusercontent.com/favware/rollup-type-bundler/main/assets/rollup-type-bundler.schema.json",
-	"dist": "./dist",
-	"buildScript": "build",
-	"verbose": false,
-	"external": ["stream"]
-}

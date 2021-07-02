@@ -18,7 +18,7 @@
 		"build": "tsc",
 		"build:check": "tsc --noEmit --incremental false",
 		"docs": "typedoc src/index.ts",
-		"prepublishOnly": "rollup-type-bundler"
+		"prepublishOnly": "rollup-type-bundler -e stream"
 	},
 	"repository": {
 		"type": "git",
@@ -51,7 +51,7 @@
 		"@babel/preset-typescript": "^7.13.0",
 		"@commitlint/cli": "^12.1.4",
 		"@commitlint/config-angular": "^12.1.4",
-		"@favware/rollup-type-bundler": "^1.0.0",
+		"@favware/rollup-type-bundler": "^1.0.1",
 		"@types/jest": "^26.0.23",
 		"@types/node": "^15.12.2",
 		"@typescript-eslint/eslint-plugin": "^4.26.1",
