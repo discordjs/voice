@@ -49,7 +49,7 @@ export function getGroups() {
 	return groups;
 }
 
-export function getVoiceConnections(group: 'default'): Map<string, VoiceConnection>;
+export function getVoiceConnections(group?: 'default'): Map<string, VoiceConnection>;
 export function getVoiceConnections(group: string): Map<string, VoiceConnection> | undefined;
 /**
  * Retrieves all the voice connections under the given group name. Defaults to the 'default' group.
