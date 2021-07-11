@@ -49,13 +49,15 @@ export function getGroups() {
 	return groups;
 }
 
+export function getVoiceConnections(group: 'default'): Map<string, VoiceConnection>;
+export function getVoiceConnections(group: string): Map<string, VoiceConnection> | undefined;
 /**
  * Retrieves all the voice connections under the given group name. Defaults to the 'default' group.
  * @param group - The group to look up
  * @returns The map of voice connections
  */
 export function getVoiceConnections(group = 'default') {
-	return groups.get(group) ?? new Map();
+	return groups.get(group);
 }
 
 /**
@@ -65,11 +67,11 @@ export function getVoiceConnections(group = 'default') {
  * @returns The voice connection, if it exists
  */
 export function getVoiceConnection(guildId: string, group = 'default') {
-	return getVoiceConnections(group).get(guildId);
+	return getVoiceConnections(group)?.get(guildId);
 }
 
 export function untrackVoiceConnection(voiceConnection: VoiceConnection) {
-	return getVoiceConnections(voiceConnection.joinConfig.group)!.delete(voiceConnection.joinConfig.guildId);
+	return getVoiceConnections(voiceConnection.joinConfig.group)?.delete(voiceConnection.joinConfig.guildId);
 }
 
 export function trackVoiceConnection(voiceConnection: VoiceConnection) {
