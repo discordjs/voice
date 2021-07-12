@@ -34,6 +34,10 @@ export interface JoinVoiceChannelOptions {
 	 * Whether to join the channel muted (defaults to true)
 	 */
 	selfMute?: boolean;
+	/**
+	 * An optional group identifier for the voice connection
+	 */
+	group?: string;
 }
 
 /**
@@ -46,6 +50,7 @@ export function joinVoiceChannel(options: JoinVoiceChannelOptions & CreateVoiceC
 	const joinConfig: JoinConfig = {
 		selfDeaf: true,
 		selfMute: false,
+		group: 'default',
 		...options,
 	};
 

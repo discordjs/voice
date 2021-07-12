@@ -48,6 +48,7 @@ function createJoinConfig() {
 		guildId: '2',
 		selfDeaf: true,
 		selfMute: false,
+		group: 'default',
 	};
 }
 
@@ -80,7 +81,7 @@ describe('createVoiceConnection', () => {
 		});
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Signalling);
 		expect(DataStore.getVoiceConnection).toHaveBeenCalledTimes(1);
-		expect(DataStore.trackVoiceConnection).toHaveBeenCalledWith(joinConfig.guildId, voiceConnection);
+		expect(DataStore.trackVoiceConnection).toHaveBeenCalledWith(voiceConnection);
 		expect(DataStore.untrackVoiceConnection).not.toHaveBeenCalled();
 		expect(adapter.sendPayload).toHaveBeenCalledWith(mockPayload);
 	});
@@ -97,7 +98,7 @@ describe('createVoiceConnection', () => {
 		});
 		expect(voiceConnection.state.status).toBe(VoiceConnectionStatus.Disconnected);
 		expect(DataStore.getVoiceConnection).toHaveBeenCalledTimes(1);
-		expect(DataStore.trackVoiceConnection).toHaveBeenCalledWith(joinConfig.guildId, voiceConnection);
+		expect(DataStore.trackVoiceConnection).toHaveBeenCalledWith(voiceConnection);
 		expect(DataStore.untrackVoiceConnection).not.toHaveBeenCalled();
 		expect(adapter.sendPayload).toHaveBeenCalledWith(mockPayload);
 	});
@@ -160,7 +161,7 @@ describe('createVoiceConnection', () => {
 
 		const newAdapter = createFakeAdapter();
 		const newJoinConfig = createJoinConfig();
-		const { guildId, ...rejoinConfig } = newJoinConfig;
+		const { guildId, group, ...rejoinConfig } = newJoinConfig;
 		const newVoiceConnection = createVoiceConnection(newJoinConfig, {
 			debug: false,
 			adapterCreator: newAdapter.creator,
@@ -467,7 +468,7 @@ describe('VoiceConnection#destroy', () => {
 		DataStore.createJoinVoiceChannelPayload.mockImplementation(() => dummy as any);
 		voiceConnection.destroy();
 		expect(DataStore.getVoiceConnection).toHaveReturnedWith(voiceConnection);
-		expect(DataStore.untrackVoiceConnection).toHaveBeenCalledWith(joinConfig.guildId);
+		expect(DataStore.untrackVoiceConnection).toHaveBeenCalledWith(voiceConnection);
 		expect(DataStore.createJoinVoiceChannelPayload.mock.calls[0][0]).toMatchObject({
 			channelId: null,
 			guildId: joinConfig.guildId,

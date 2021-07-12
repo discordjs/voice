@@ -7,6 +7,7 @@ export interface JoinConfig {
 	channelId: string | null;
 	selfDeaf: boolean;
 	selfMute: boolean;
+	group: string;
 }
 
 /**
@@ -28,18 +29,53 @@ export function createJoinVoiceChannelPayload(config: JoinConfig) {
 }
 
 // Voice Connections
-const voiceConnections: Map<string, VoiceConnection> = new Map();
+const groups: Map<string, Map<string, VoiceConnection>> = new Map();
+groups.set('default', new Map());
 
-export function getVoiceConnection(guildId: string) {
-	return voiceConnections.get(guildId);
+function getOrCreateGroup(group: string) {
+	const existing = groups.get(group);
+	if (existing) return existing;
+	const map = new Map();
+	groups.set(group, map);
+	return map;
 }
 
-export function untrackVoiceConnection(guildId: string) {
-	return voiceConnections.delete(guildId);
+/**
+ * Retrieves the map of group names to maps of voice connections. By default, all voice connections
+ * are created under the 'default' group.
+ * @returns The group map
+ */
+export function getGroups() {
+	return groups;
 }
 
-export function trackVoiceConnection(guildId: string, voiceConnection: VoiceConnection) {
-	return voiceConnections.set(guildId, voiceConnection);
+export function getVoiceConnections(group?: 'default'): Map<string, VoiceConnection>;
+export function getVoiceConnections(group: string): Map<string, VoiceConnection> | undefined;
+/**
+ * Retrieves all the voice connections under the given group name. Defaults to the 'default' group.
+ * @param group - The group to look up
+ * @returns The map of voice connections
+ */
+export function getVoiceConnections(group = 'default') {
+	return groups.get(group);
+}
+
+/**
+ * Finds a voice connection with the given guild ID and group. Defaults to the 'default' group.
+ * @param guildId - The guild ID of the voice connection
+ * @param group - the group that the voice connection was registered with
+ * @returns The voice connection, if it exists
+ */
+export function getVoiceConnection(guildId: string, group = 'default') {
+	return getVoiceConnections(group)?.get(guildId);
+}
+
+export function untrackVoiceConnection(voiceConnection: VoiceConnection) {
+	return getVoiceConnections(voiceConnection.joinConfig.group)?.delete(voiceConnection.joinConfig.guildId);
+}
+
+export function trackVoiceConnection(voiceConnection: VoiceConnection) {
+	return getOrCreateGroup(voiceConnection.joinConfig.group).set(voiceConnection.joinConfig.guildId, voiceConnection);
 }
 
 // Audio Players

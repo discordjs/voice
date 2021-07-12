@@ -19,7 +19,7 @@
 		"discord.js": "^13.0.0-dev.02693bc02f45980d8165820a103220f0027b96b7",
 		"libsodium-wrappers": "^0.7.9",
 		"youtube-dl-exec": "^1.2.4",
-		"ytdl-core": "^4.8.2"
+		"ytdl-core": "^4.8.3"
 	},
 	"devDependencies": {
 		"tsconfig-paths": "^3.9.0",
