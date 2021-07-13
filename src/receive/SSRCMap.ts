@@ -24,6 +24,7 @@ export interface VoiceUserData {
  * The events that an SSRCMap may emit.
  */
 export interface SSRCMapEvents {
+	new: (newData: VoiceUserData) => Awaited<void>;
 	update: (oldData: VoiceUserData | undefined, newData: VoiceUserData) => Awaited<void>;
 	delete: (deletedData: VoiceUserData) => Awaited<void>;
 }
@@ -56,6 +57,7 @@ export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 		};
 
 		this.map.set(data.audioSSRC, newValue);
+		if (!existing) this.emit('new', newValue);
 		this.emit('update', existing, newValue);
 	}
 
@@ -97,5 +99,29 @@ export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 				return data;
 			}
 		}
+	}
+
+	public resolve(target: string, maxTime?: number): Promise<VoiceUserData> {
+		const existing = this.get(target);
+		if (existing) return Promise.resolve(existing);
+
+		return new Promise((resolve, reject) => {
+			let timeout: NodeJS.Timeout | undefined;
+			if (typeof maxTime === 'number') {
+				timeout = setTimeout(() => {
+					this.off('new', onNew);
+					reject(new Error(`Did not find SSRC for user ${target} within ${maxTime}ms`));
+				}, maxTime);
+			}
+
+			const onNew = (userData: VoiceUserData) => {
+				if (userData.userId === target) {
+					this.off('new', onNew);
+					if (timeout) clearTimeout(timeout);
+					resolve(userData);
+				}
+			};
+			this.on('new', onNew);
+		});
 	}
 }
