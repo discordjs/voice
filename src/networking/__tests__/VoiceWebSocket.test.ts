@@ -1,4 +1,4 @@
-import { VoiceOPCodes } from 'discord-api-types/voice/v4';
+import { VoiceOpcodes } from 'discord-api-types/voice/v4';
 import EventEmitter, { once } from 'events';
 import WS from 'jest-websocket-mock';
 import { VoiceWebSocket } from '../VoiceWebSocket';
@@ -93,10 +93,10 @@ describe('VoiceWebSocket: heartbeating', () => {
 		for (let i = 0; i < 10; i++) {
 			const packet: any = await server.nextMessage;
 			expect(packet).toMatchObject({
-				op: VoiceOPCodes.Heartbeat,
+				op: VoiceOpcodes.Heartbeat,
 			});
 			server.send({
-				op: VoiceOPCodes.HeartbeatAck,
+				op: VoiceOpcodes.HeartbeatAck,
 				d: packet.d,
 			});
 			expect(ws.ping).toBeGreaterThanOrEqual(0);

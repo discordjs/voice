@@ -1,4 +1,4 @@
-import { VoiceOPCodes } from 'discord-api-types/voice/v4';
+import { VoiceOpcodes } from 'discord-api-types/voice/v4';
 import { SILENCE_FRAME } from '../audio/AudioPlayer';
 import { ConnectionData, Networking, NetworkingState } from '../networking/Networking';
 import { VoiceUDPSocket } from '../networking/VoiceUDPSocket';
@@ -113,16 +113,16 @@ export class VoiceReceiver {
 	 * @param packet The received packet
 	 */
 	private onWsPacket(packet: any) {
-		if (packet.op === VoiceOPCodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
+		if (packet.op === VoiceOpcodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
 			this.ssrcMap.delete(packet.d.user_id);
 		} else if (
-			packet.op === VoiceOPCodes.Speaking &&
+			packet.op === VoiceOpcodes.Speaking &&
 			typeof packet.d?.user_id === 'string' &&
 			typeof packet.d?.ssrc === 'number'
 		) {
 			this.ssrcMap.update({ userId: packet.d.user_id, audioSSRC: packet.d.ssrc });
 		} else if (
-			packet.op === VoiceOPCodes.ClientConnect &&
+			packet.op === VoiceOpcodes.ClientConnect &&
 			typeof packet.d?.user_id === 'string' &&
 			typeof packet.d?.audio_ssrc === 'number'
 		) {

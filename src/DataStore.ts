@@ -1,4 +1,4 @@
-import { GatewayOPCodes } from 'discord-api-types/v8';
+import { GatewayOpcodes } from 'discord-api-types/v9';
 import { AudioPlayer } from './audio';
 import { VoiceConnection } from './VoiceConnection';
 
@@ -18,7 +18,7 @@ export interface JoinConfig {
  */
 export function createJoinVoiceChannelPayload(config: JoinConfig) {
 	return {
-		op: GatewayOPCodes.VoiceStateUpdate,
+		op: GatewayOpcodes.VoiceStateUpdate,
 		d: {
 			guild_id: config.guildId,
 			channel_id: config.channelId,

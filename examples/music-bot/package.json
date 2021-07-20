@@ -15,7 +15,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@discordjs/opus": "^0.5.0",
-		"discord-api-types": "^0.18.1",
+		"discord-api-types": "^0.19.0",
 		"discord.js": "^13.0.0-dev.02693bc02f45980d8165820a103220f0027b96b7",
 		"libsodium-wrappers": "^0.7.9",
 		"youtube-dl-exec": "^1.2.4",

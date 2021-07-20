@@ -1,4 +1,4 @@
-import { VoiceOPCodes } from 'discord-api-types/voice/v4';
+import { VoiceOpcodes } from 'discord-api-types/voice/v4';
 import { VoiceUDPSocket } from './VoiceUDPSocket';
 import { VoiceWebSocket } from './VoiceWebSocket';
 import * as secretbox from '../util/Secretbox';
@@ -282,7 +282,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 	private onWsOpen() {
 		if (this.state.code === NetworkingStatusCode.OpeningWs) {
 			const packet = {
-				op: VoiceOPCodes.Identify,
+				op: VoiceOpcodes.Identify,
 				d: {
 					server_id: this.state.connectionOptions.serverID,
 					user_id: this.state.connectionOptions.userID,
@@ -297,7 +297,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 			};
 		} else if (this.state.code === NetworkingStatusCode.Resuming) {
 			const packet = {
-				op: VoiceOPCodes.Resume,
+				op: VoiceOpcodes.Resume,
 				d: {
 					server_id: this.state.connectionOptions.serverID,
 					session_id: this.state.connectionOptions.sessionID,
@@ -347,9 +347,9 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 	 * @param packet - The received packet
 	 */
 	private onWsPacket(packet: any) {
-		if (packet.op === VoiceOPCodes.Hello && this.state.code !== NetworkingStatusCode.Closed) {
+		if (packet.op === VoiceOpcodes.Hello && this.state.code !== NetworkingStatusCode.Closed) {
 			this.state.ws.setHeartbeatInterval(packet.d.heartbeat_interval);
-		} else if (packet.op === VoiceOPCodes.Ready && this.state.code === NetworkingStatusCode.Identifying) {
+		} else if (packet.op === VoiceOpcodes.Ready && this.state.code === NetworkingStatusCode.Identifying) {
 			const { ip, port, ssrc, modes } = packet.d;
 
 			const udp = new VoiceUDPSocket({ ip, port });
@@ -361,7 +361,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 				.then((localConfig) => {
 					if (this.state.code !== NetworkingStatusCode.UdpHandshaking) return;
 					this.state.ws.sendPacket({
-						op: VoiceOPCodes.SelectProtocol,
+						op: VoiceOpcodes.SelectProtocol,
 						d: {
 							protocol: 'udp',
 							data: {
@@ -387,7 +387,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 				},
 			};
 		} else if (
-			packet.op === VoiceOPCodes.SessionDescription &&
+			packet.op === VoiceOpcodes.SessionDescription &&
 			this.state.code === NetworkingStatusCode.SelectingProtocol
 		) {
 			const { mode: encryptionMode, secret_key: secretKey } = packet.d;
@@ -406,7 +406,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 					packetsPlayed: 0,
 				},
 			};
-		} else if (packet.op === VoiceOPCodes.Resumed && this.state.code === NetworkingStatusCode.Resuming) {
+		} else if (packet.op === VoiceOpcodes.Resumed && this.state.code === NetworkingStatusCode.Resuming) {
 			this.state = {
 				...this.state,
 				code: NetworkingStatusCode.Ready,
@@ -497,7 +497,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 		if (state.connectionData.speaking === speaking) return;
 		state.connectionData.speaking = speaking;
 		state.ws.sendPacket({
-			op: VoiceOPCodes.Speaking,
+			op: VoiceOpcodes.Speaking,
 			d: {
 				speaking: speaking ? 1 : 0,
 				delay: 0,

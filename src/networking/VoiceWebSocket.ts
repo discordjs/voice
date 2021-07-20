@@ -1,4 +1,4 @@
-import { VoiceOPCodes } from 'discord-api-types/voice/v4';
+import { VoiceOpcodes } from 'discord-api-types/voice/v4';
 import WebSocket, { MessageEvent } from 'ws';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Awaited } from '../util/util';
@@ -111,7 +111,7 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 			return;
 		}
 
-		if (packet.op === VoiceOPCodes.HeartbeatAck) {
+		if (packet.op === VoiceOpcodes.HeartbeatAck) {
 			this.lastHeartbeatAck = Date.now();
 			this.missedHeartbeats = 0;
 			this.ping = this.lastHeartbeatAck - this.lastHeatbeatSend;
@@ -149,7 +149,7 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 		this.missedHeartbeats++;
 		const nonce = this.lastHeatbeatSend;
 		return this.sendPacket({
-			op: VoiceOPCodes.Heartbeat,
+			op: VoiceOpcodes.Heartbeat,
 			d: nonce,
 		});
 	}
