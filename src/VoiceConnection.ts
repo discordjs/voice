@@ -1,4 +1,4 @@
-import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v8';
+import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v9';
 import { CreateVoiceConnectionOptions } from '.';
 import { AudioPlayer } from './audio/AudioPlayer';
 import { PlayerSubscription } from './audio/PlayerSubscription';

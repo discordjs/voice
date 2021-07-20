@@ -4,7 +4,7 @@ import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../.
 import { RTP_PACKET_DESKTOP, RTP_PACKET_CHROME, RTP_PACKET_ANDROID } from './fixtures/rtp';
 import EventEmitter, { once } from 'events';
 import { createVoiceReceiver } from '..';
-import { VoiceOPCodes } from 'discord-api-types/voice/v4';
+import { VoiceOpcodes } from 'discord-api-types/voice/v4';
 import * as fixtures from './fixtures/states';
 
 jest.mock('../../VoiceConnection');
@@ -95,7 +95,7 @@ describe('VoiceReceiver', () => {
 		test('CLIENT_DISCONNECT packet', () => {
 			const spy = jest.spyOn(receiver.ssrcMap, 'delete');
 			receiver['onWsPacket']({
-				op: VoiceOPCodes.ClientDisconnect,
+				op: VoiceOpcodes.ClientDisconnect,
 				d: {
 					user_id: '123abc',
 				},
@@ -106,7 +106,7 @@ describe('VoiceReceiver', () => {
 		test('SPEAKING packet', () => {
 			const spy = jest.spyOn(receiver.ssrcMap, 'update');
 			receiver['onWsPacket']({
-				op: VoiceOPCodes.Speaking,
+				op: VoiceOpcodes.Speaking,
 				d: {
 					ssrc: 123,
 					user_id: '123abc',
@@ -122,7 +122,7 @@ describe('VoiceReceiver', () => {
 		test('CLIENT_CONNECT packet', () => {
 			const spy = jest.spyOn(receiver.ssrcMap, 'update');
 			receiver['onWsPacket']({
-				op: VoiceOPCodes.ClientConnect,
+				op: VoiceOpcodes.ClientConnect,
 				d: {
 					audio_ssrc: 123,
 					video_ssrc: 43,
@@ -135,7 +135,7 @@ describe('VoiceReceiver', () => {
 				userId: '123abc',
 			});
 			receiver['onWsPacket']({
-				op: VoiceOPCodes.ClientConnect,
+				op: VoiceOpcodes.ClientConnect,
 				d: {
 					audio_ssrc: 123,
 					video_ssrc: 0,
