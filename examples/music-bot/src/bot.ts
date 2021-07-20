@@ -68,8 +68,8 @@ const subscriptions = new Map<Snowflake, MusicSubscription>();
 
 // Handles slash command interactions
 client.on('interaction', async (interaction: Interaction) => {
-	if (!interaction.isCommand() || !interaction.guildID) return;
-	let subscription = subscriptions.get(interaction.guildID);
+	if (!interaction.isCommand() || !interaction.guildId) return;
+	let subscription = subscriptions.get(interaction.guildId);
 
 	if (interaction.commandName === 'play') {
 		await interaction.defer();
@@ -89,7 +89,7 @@ client.on('interaction', async (interaction: Interaction) => {
 					}),
 				);
 				subscription.voiceConnection.on('error', console.warn);
-				subscriptions.set(interaction.guildID, subscription);
+				subscriptions.set(interaction.guildId, subscription);
 			}
 		}
 
@@ -173,7 +173,7 @@ client.on('interaction', async (interaction: Interaction) => {
 	} else if (interaction.commandName === 'leave') {
 		if (subscription) {
 			subscription.voiceConnection.destroy();
-			subscriptions.delete(interaction.guildID);
+			subscriptions.delete(interaction.guildId);
 			await interaction.reply({ content: `Left channel!`, ephemeral: true });
 		} else {
 			await interaction.reply('Not playing in this server!');

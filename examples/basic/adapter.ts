@@ -27,8 +27,8 @@ const trackedGuilds = new Map<WebSocketShard, Set<Snowflake>>();
 function cleanupGuilds(shard: WebSocketShard) {
 	const guilds = trackedGuilds.get(shard);
 	if (guilds) {
-		for (const guildID of guilds.values()) {
-			adapters.get(guildID)?.destroy();
+		for (const guildId of guilds.values()) {
+			adapters.get(guildId)?.destroy();
 		}
 	}
 }
