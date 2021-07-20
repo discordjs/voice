@@ -320,10 +320,10 @@ describe('VoiceConnection#configureNetworking', () => {
 		expect(Networking.Networking).toHaveBeenCalledWith(
 			{
 				endpoint: server.endpoint,
-				serverID: server.guild_id,
+				serverId: server.guild_id,
 				token: server.token,
-				sessionID: state.session_id,
-				userID: state.user_id,
+				sessionId: state.session_id,
+				userId: state.user_id,
 			},
 			false,
 		);
