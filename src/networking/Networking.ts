@@ -122,9 +122,9 @@ export type NetworkingState =
  * and VOICE_STATE_UPDATE packets.
  */
 interface ConnectionOptions {
-	serverID: string;
-	userID: string;
-	sessionID: string;
+	serverId: string;
+	userId: string;
+	sessionId: string;
 	token: string;
 	endpoint: string;
 }
@@ -284,9 +284,9 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 			const packet = {
 				op: VoiceOpcodes.Identify,
 				d: {
-					server_id: this.state.connectionOptions.serverID,
-					user_id: this.state.connectionOptions.userID,
-					session_id: this.state.connectionOptions.sessionID,
+					server_id: this.state.connectionOptions.serverId,
+					user_id: this.state.connectionOptions.userId,
+					session_id: this.state.connectionOptions.sessionId,
 					token: this.state.connectionOptions.token,
 				},
 			};
@@ -299,8 +299,8 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 			const packet = {
 				op: VoiceOpcodes.Resume,
 				d: {
-					server_id: this.state.connectionOptions.serverID,
-					session_id: this.state.connectionOptions.sessionID,
+					server_id: this.state.connectionOptions.serverId,
+					session_id: this.state.connectionOptions.sessionId,
 					token: this.state.connectionOptions.token,
 				},
 			};
