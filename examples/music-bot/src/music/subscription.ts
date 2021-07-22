@@ -11,7 +11,7 @@ import {
 import { Track } from './track';
 
 function wait(time: number) {
-	return new Promise((resolve) => setTimeout(resolve, time).unref());
+	return new Promise((resolve) => setTimeout(resolve, time, 'Success').unref());
 }
 
 /**
@@ -141,7 +141,7 @@ export class MusicSubscription {
 			this.queueLock = false;
 		} catch (error) {
 			// If an error occurred, try the next item of the queue instead
-			nextTrack.onError(error);
+			nextTrack.onError(error as Error);
 			this.queueLock = false;
 			return this.processQueue();
 		}
