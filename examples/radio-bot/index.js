@@ -83,7 +83,7 @@ client.on('ready', async () => {
 	attachRecorder();
 });
 
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
 	if (!message.guild) return;
 	if (message.content === '-join') {
 		const channel = message.member?.voice.channel;
