@@ -17,7 +17,7 @@ const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSA
 client.on('ready', () => console.log('Ready!'));
 
 // This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
 	if (!message.guild) return;
 	if (!client.application?.owner) await client.application?.fetch();
 
@@ -67,7 +67,7 @@ client.on('message', async (message) => {
 const subscriptions = new Map<Snowflake, MusicSubscription>();
 
 // Handles slash command interactions
-client.on('interaction', async (interaction: Interaction) => {
+client.on('interactionCreate', async (interaction: Interaction) => {
 	if (!interaction.isCommand() || !interaction.guildId) return;
 	let subscription = subscriptions.get(interaction.guildId);
 
