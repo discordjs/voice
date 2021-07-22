@@ -11,7 +11,7 @@ import {
 import { Track } from './track';
 
 function wait(time: number) {
-	return new Promise((resolve) => setTimeout(resolve, time).unref());
+	return new Promise((resolve) => setTimeout(resolve, time, undefined).unref());
 }
 
 /**
