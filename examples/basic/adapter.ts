@@ -27,7 +27,7 @@ function trackClient(client: Client) {
 				adapters.get(guildId)?.destroy();
 			}
 		}
-		trackedShards.set(shardID, new Set());
+		trackedShards.delete(shardID);
 	});
 }
 
