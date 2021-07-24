@@ -20,27 +20,24 @@ function trackClient(client: Client) {
 			adapters.get(payload.guild_id)?.onVoiceStateUpdate(payload);
 		}
 	});
-}
-
-const trackedGuilds = new Map<WebSocketShard, Set<Snowflake>>();
-
-function cleanupGuilds(shard: WebSocketShard) {
-	const guilds = trackedGuilds.get(shard);
-	if (guilds) {
-		for (const guildId of guilds.values()) {
-			adapters.get(guildId)?.destroy();
+	client.on(Constants.Events.SHARD_DISCONNECT, (_, shardID) => {
+		const guilds = trackedShards.get(shardID);
+		if (guilds) {
+			for (const guildId of guilds.values()) {
+				adapters.get(guildId)?.destroy();
+			}
 		}
-	}
+		trackedShards.set(shardID, new Set());
+	});
 }
+
+const trackedShards = new Map<number, Set<Snowflake>>();
 
 function trackGuild(guild: Guild) {
-	let guilds = trackedGuilds.get(guild.shard);
+	let guilds = trackedShards.get(guild.shardID);
 	if (!guilds) {
-		const cleanup = () => cleanupGuilds(guild.shard);
-		guild.shard.on('close', cleanup);
-		guild.shard.on('destroyed', cleanup);
 		guilds = new Set();
-		trackedGuilds.set(guild.shard, guilds);
+		trackedShards.set(guild.shardID, guilds);
 	}
 	guilds.add(guild.id);
 }
