@@ -9,10 +9,9 @@ import {
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
 import { Track } from './track';
+import { promisify } from 'util';
 
-function wait(time: number) {
-	return new Promise((resolve) => setTimeout(resolve, time, 'Success').unref());
-}
+const wait = promisify(setTimeout);
 
 /**
  * A MusicSubscription exists for each active VoiceConnection. Each subscription has its own audio player and queue,

@@ -15,7 +15,6 @@
 	"license": "MIT",
 	"dependencies": {
 		"@discordjs/opus": "^0.5.0",
-		"@discordjs/voice": "^0.5.4",
 		"discord-api-types": "^0.19.0",
 		"discord.js": "^13.0.0-dev.328501b.1626912223",
 		"libsodium-wrappers": "^0.7.9",
