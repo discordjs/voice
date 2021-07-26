@@ -328,6 +328,7 @@ export function createFFMPEGResource(input: string, options: CreateFFMPEGResourc
 		args: final_args,
 	});
 	return createAudioResource(ffmpeg_instance, {
+		inputType: StreamType.OggOpus,
 		inlineVolume: options.inlineVolume ? options.inlineVolume : false,
 	});
 }
