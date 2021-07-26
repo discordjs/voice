@@ -1,7 +1,7 @@
 import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGraph';
 import { once, pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
-import { VolumeTransformer, opus } from 'prism-media';
+import { VolumeTransformer, opus, FFmpeg } from 'prism-media';
 import { AudioPlayer, SILENCE_FRAME } from './AudioPlayer';
 
 /**
@@ -33,6 +33,30 @@ interface CreateAudioResourceOptions<T> {
 	 * Defaults to 5.
 	 */
 	silencePaddingFrames?: number;
+}
+
+interface CreateFFMPEGResourceOptions {
+	/**
+	 * Arguments to be used before '-i' argument in FFMPEG.
+	 */
+	arguments?: string[];
+	/** *
+	 * Adds reconnect arguments if set to true
+	 */
+	reconnect?: boolean;
+	/**
+	 * Sets reconnection time if reconnect is set to true. Default is 5 sec (5000 ms)
+	 */
+	reconnect_time?: number;
+	/**
+	 * Time to seek in audio resource (in ms)
+	 */
+	seek?: number;
+	/**
+	 * Whether or not inline volume should be enabled. If enabled, you will be able to change the volume
+	 * of the stream on-the-fly. However, this also increases the performance cost of playback. Defaults to `false`.
+	 */
+	inlineVolume?: boolean;
 }
 
 /**
@@ -252,4 +276,58 @@ export function createAudioResource<T>(
 		(options.metadata ?? null) as T,
 		options.silencePaddingFrames ?? 5,
 	);
+}
+
+export function createFFMPEGResource<T>(
+	input: string,
+	options?: CreateFFMPEGResourceOptions,
+): AudioResource<T extends null | undefined ? null : T>;
+
+export function createFFMPEGResource(input: string, options: CreateFFMPEGResourceOptions = {}): AudioResource | void {
+	const final_args = [];
+	const FFMPEG_OPUS_ARGUMENTS = [
+		'-analyzeduration',
+		'0',
+		'-loglevel',
+		'0',
+		'-acodec',
+		'libopus',
+		'-f',
+		'opus',
+		'-ar',
+		'48000',
+		'-ac',
+		'2',
+	];
+	if (typeof input !== 'string') {
+		console.error('Input is not a string');
+		return;
+	}
+	if (options.arguments && options.arguments.length !== 0) {
+		options.arguments.forEach((x) => {
+			final_args.push(x);
+		});
+	}
+	if (options.seek) {
+		final_args.push('-ss', `${options.seek}`, '-accurate_seek');
+	}
+	if (options.reconnect === true) {
+		if (options.reconnect_time)
+			final_args.push(
+				'-reconnect',
+				'1',
+				'-reconnect_streamed',
+				'1',
+				'-reconnect_delay_max',
+				`${options.reconnect_time}`,
+			);
+		else final_args.push('-reconnect', '1', '-reconnect_streamed', '1', '-reconnect_delay_max', '5');
+	}
+	final_args.push('-i', input, ...FFMPEG_OPUS_ARGUMENTS);
+	const ffmpeg_instance = new FFmpeg({
+		args: final_args,
+	});
+	return createAudioResource(ffmpeg_instance, {
+		inlineVolume: options.inlineVolume ? options.inlineVolume : false,
+	});
 }
