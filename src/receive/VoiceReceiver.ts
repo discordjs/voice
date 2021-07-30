@@ -6,7 +6,7 @@ import { VoiceWebSocket } from '../networking/VoiceWebSocket';
 import { methods } from '../util/Secretbox';
 import type { VoiceConnection } from '../VoiceConnection';
 import { AudioReceiveStream } from './AudioReceiveStream';
-import { SSRCMap } from './SSRCMap';
+import { SSRCMap, VoiceUserData } from './SSRCMap';
 
 /**
  * Attaches to a VoiceConnection, allowing you to receive audio packets from other
@@ -40,6 +40,9 @@ export class VoiceReceiver {
 		this.ssrcMap = new SSRCMap();
 		this.subscriptions = new Map();
 		this.connectionData = {};
+
+		this.ssrcMap.on('update', (oldData) => this.onSsrcMapUpdate(oldData));
+		this.ssrcMap.on('delete', (oldData) => this.onSsrcMapDelete(oldData));
 
 		const onWsPacket = (packet: any) => this.onWsPacket(packet);
 		const onUdpMessage = (msg: Buffer) => this.onUdpMessage(msg);
@@ -234,6 +237,18 @@ export class VoiceReceiver {
 		stream.once('close', () => this.subscriptions.delete(ssrc));
 		this.subscriptions.set(ssrc, stream);
 		return stream;
+	}
+
+	private onSsrcMapUpdate(oldData: VoiceUserData | undefined) {
+		if (oldData) {
+			const oldStream = this.subscriptions.get(oldData.audioSSRC);
+			if (oldStream) oldStream.push(null);
+		}
+	}
+
+	private onSsrcMapDelete(oldData: VoiceUserData) {
+		const oldStream = this.subscriptions.get(oldData.audioSSRC);
+		if (oldStream) oldStream.push(null);
 	}
 }
 
