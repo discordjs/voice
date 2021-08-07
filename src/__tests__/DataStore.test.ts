@@ -1,12 +1,21 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+import { GatewayOpcodes } from 'discord-api-types';
 import * as DataStore from '../DataStore';
+import * as _AudioPlayer from '../audio/AudioPlayer';
 import { VoiceConnection } from '../VoiceConnection';
 jest.mock('../VoiceConnection');
+jest.mock('../audio/AudioPlayer');
+
+const AudioPlayer = _AudioPlayer as unknown as jest.Mocked<typeof _AudioPlayer>;
 
 function createVoiceConnection(joinConfig: Pick<DataStore.JoinConfig, 'group' | 'guildId'>): VoiceConnection {
 	return {
 		joinConfig: { channelId: '123', selfMute: false, selfDeaf: true, ...joinConfig },
 	} as any;
+}
+
+function waitForEventLoop() {
+	return new Promise((res) => setImmediate(res));
 }
 
 beforeEach(() => {
@@ -21,6 +30,24 @@ const voiceConnectionDefault = createVoiceConnection({ guildId: '123', group: 'd
 const voiceConnectionAbc = createVoiceConnection({ guildId: '123', group: 'abc' });
 
 describe('DataStore', () => {
+	test('VoiceConnection join payload creation', () => {
+		const joinConfig: DataStore.JoinConfig = {
+			guildId: '123',
+			channelId: '123',
+			selfDeaf: true,
+			selfMute: false,
+			group: 'default',
+		};
+		expect(DataStore.createJoinVoiceChannelPayload(joinConfig)).toStrictEqual({
+			op: GatewayOpcodes.VoiceStateUpdate,
+			d: {
+				guild_id: joinConfig.guildId,
+				channel_id: joinConfig.channelId,
+				self_deaf: joinConfig.selfDeaf,
+				self_mute: joinConfig.selfMute,
+			},
+		});
+	});
 	test('VoiceConnection management respects group', () => {
 		DataStore.trackVoiceConnection(voiceConnectionDefault);
 		DataStore.trackVoiceConnection(voiceConnectionAbc);
@@ -37,5 +64,25 @@ describe('DataStore', () => {
 		DataStore.untrackVoiceConnection(voiceConnectionDefault);
 		expect(DataStore.getVoiceConnection('123')).toBeUndefined();
 		expect(DataStore.getVoiceConnection('123', 'abc')).toBe(voiceConnectionAbc);
+	});
+	test('Managing Audio Players', async () => {
+		const player = DataStore.addAudioPlayer(new AudioPlayer.AudioPlayer());
+		expect(DataStore.hasAudioPlayer(player)).toBe(true);
+		expect(DataStore.addAudioPlayer(player)).toBe(player);
+		DataStore.deleteAudioPlayer(player);
+		expect(DataStore.deleteAudioPlayer(player)).toBe(undefined);
+		expect(DataStore.hasAudioPlayer(player)).toBe(false);
+		// Tests audio cycle with nextTime === -1
+		await waitForEventLoop();
+	});
+	test('Preparing Audio Frames', async () => {
+		// Test functional player
+		const player2 = DataStore.addAudioPlayer(new AudioPlayer.AudioPlayer());
+		player2['checkPlayable'] = jest.fn(() => true);
+		const player3 = DataStore.addAudioPlayer(new AudioPlayer.AudioPlayer());
+		await waitForEventLoop();
+		DataStore.deleteAudioPlayer(player2);
+		await waitForEventLoop();
+		DataStore.deleteAudioPlayer(player3);
 	});
 });
