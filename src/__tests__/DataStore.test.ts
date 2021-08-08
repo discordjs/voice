@@ -67,6 +67,8 @@ describe('DataStore', () => {
 	});
 	test('Managing Audio Players', async () => {
 		const player = DataStore.addAudioPlayer(new AudioPlayer.AudioPlayer());
+		const dispatchSpy = jest.spyOn(player as any, '_stepDispatch');
+		const prepareSpy = jest.spyOn(player as any, '_stepPrepare');
 		expect(DataStore.hasAudioPlayer(player)).toBe(true);
 		expect(DataStore.addAudioPlayer(player)).toBe(player);
 		DataStore.deleteAudioPlayer(player);
@@ -74,15 +76,25 @@ describe('DataStore', () => {
 		expect(DataStore.hasAudioPlayer(player)).toBe(false);
 		// Tests audio cycle with nextTime === -1
 		await waitForEventLoop();
+		expect(dispatchSpy).toHaveBeenCalledTimes(0);
+		expect(prepareSpy).toHaveBeenCalledTimes(0);
 	});
 	test('Preparing Audio Frames', async () => {
 		// Test functional player
 		const player2 = DataStore.addAudioPlayer(new AudioPlayer.AudioPlayer());
 		player2['checkPlayable'] = jest.fn(() => true);
 		const player3 = DataStore.addAudioPlayer(new AudioPlayer.AudioPlayer());
+		const dispatchSpy2 = jest.spyOn(player2 as any, '_stepDispatch');
+		const prepareSpy2 = jest.spyOn(player2 as any, '_stepPrepare');
+		const dispatchSpy3 = jest.spyOn(player3 as any, '_stepDispatch');
+		const prepareSpy3 = jest.spyOn(player3 as any, '_stepPrepare');
 		await waitForEventLoop();
 		DataStore.deleteAudioPlayer(player2);
 		await waitForEventLoop();
 		DataStore.deleteAudioPlayer(player3);
+		expect(dispatchSpy2).toHaveBeenCalledTimes(1);
+		expect(prepareSpy2).toHaveBeenCalledTimes(1);
+		expect(dispatchSpy3).toHaveBeenCalledTimes(0);
+		expect(prepareSpy3).toHaveBeenCalledTimes(0);
 	});
 });
