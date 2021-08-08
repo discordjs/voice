@@ -1,5 +1,5 @@
 import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGraph';
-import { once, pipeline, Readable } from 'stream';
+import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer, opus } from 'prism-media';
 import { AudioPlayer, SILENCE_FRAME } from './AudioPlayer';
@@ -109,9 +109,7 @@ export class AudioResource<T = unknown> {
 			}
 		}
 
-		once(this.playStream, 'readable')
-			.then(() => (this.started = true))
-			.catch(noop);
+		this.playStream.once('readable', () => (this.started = true));
 	}
 
 	/**
