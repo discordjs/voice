@@ -284,7 +284,7 @@ export function createFFMPEGResource<T>(
 ): AudioResource<T extends null | undefined ? null : T>;
 
 export function createFFMPEGResource(input: string, options: CreateFFMPEGResourceOptions = {}): AudioResource | void {
-	const final_args = [];
+	const final_args: string[] = [];
 	const FFMPEG_OPUS_ARGUMENTS = [
 		'-analyzeduration',
 		'0',
@@ -299,6 +299,21 @@ export function createFFMPEGResource(input: string, options: CreateFFMPEGResourc
 		'-ac',
 		'2',
 	];
+	const FFMPEG_PCM_ARGUMENTS = [
+		'-analyzeduration',
+		'0',
+		'-loglevel',
+		'0',
+		'-f',
+		's16le',
+		'-acodec',
+		'pcm_s16le',
+		'-ar',
+		'48000',
+		'-ac',
+		'2',
+	];
+
 	if (typeof input !== 'string') {
 		console.error('Input is not a string');
 		return;
@@ -323,7 +338,8 @@ export function createFFMPEGResource(input: string, options: CreateFFMPEGResourc
 			);
 		else final_args.push('-reconnect', '1', '-reconnect_streamed', '1', '-reconnect_delay_max', '5');
 	}
-	final_args.push('-i', input, ...FFMPEG_OPUS_ARGUMENTS);
+	final_args.push('-i', input);
+	options.inlineVolume ? final_args.push(...FFMPEG_PCM_ARGUMENTS) : final_args.push(...FFMPEG_OPUS_ARGUMENTS);
 	const ffmpeg_instance = new FFmpeg({
 		args: final_args,
 	});
