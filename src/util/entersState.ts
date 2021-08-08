@@ -43,7 +43,7 @@ export async function entersState<T extends VoiceConnection | AudioPlayer>(
 ) {
 	if (target.state.status !== status) {
 		const [ac, signal] =
-			timeoutOrSignal instanceof AbortSignal ? [undefined, timeoutOrSignal] : abortAfter(timeoutOrSignal);
+			typeof timeoutOrSignal === 'number' ? abortAfter(timeoutOrSignal) : [undefined, timeoutOrSignal];
 		try {
 			await once(target as EventEmitter, status, { signal });
 		} finally {
