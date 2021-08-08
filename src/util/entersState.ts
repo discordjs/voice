@@ -43,7 +43,7 @@ export async function entersState<T extends VoiceConnection | AudioPlayer>(
 ) {
 	if (target.state.status !== status) {
 		const [ac, signal] =
-			timeoutOrSignal instanceof AbortSignal ? [undefined, timeoutOrSignal] : createDelayedAbort(timeoutOrSignal);
+			timeoutOrSignal instanceof AbortSignal ? [undefined, timeoutOrSignal] : abortAfter(timeoutOrSignal);
 		try {
 			await once(target as EventEmitter, status, { signal });
 		} finally {
@@ -51,13 +51,4 @@ export async function entersState<T extends VoiceConnection | AudioPlayer>(
 		}
 	}
 	return target;
-}
-
-/**
- * Creates an abort controller that will abort after the specified delay.
- * @param delay - The delay before aborting
- */
-function createDelayedAbort(delay: number): [AbortController, AbortSignal] {
-	const ac = abortAfter(delay);
-	return [ac, ac.signal];
 }
