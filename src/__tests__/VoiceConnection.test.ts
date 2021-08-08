@@ -8,11 +8,13 @@ import {
 	VoiceConnectionSignallingState,
 	VoiceConnectionStatus,
 } from '../VoiceConnection';
+
 import * as _DataStore from '../DataStore';
 import * as _Networking from '../networking/Networking';
 import * as _AudioPlayer from '../audio/AudioPlayer';
 import { PlayerSubscription as _PlayerSubscription } from '../audio/PlayerSubscription';
 import type { DiscordGatewayAdapterLibraryMethods } from '../util/adapter';
+
 jest.mock('../audio/AudioPlayer');
 jest.mock('../audio/PlayerSubscription');
 jest.mock('../DataStore');
@@ -22,6 +24,11 @@ const DataStore = _DataStore as unknown as jest.Mocked<typeof _DataStore>;
 const Networking = _Networking as unknown as jest.Mocked<typeof _Networking>;
 const AudioPlayer = _AudioPlayer as unknown as jest.Mocked<typeof _AudioPlayer>;
 const PlayerSubscription = _PlayerSubscription as unknown as jest.Mock<_PlayerSubscription>;
+
+Networking.Networking.mockImplementation(function mockedConstructor() {
+	this.state = {};
+	return this;
+});
 
 function createFakeAdapter() {
 	const sendPayload = jest.fn();
