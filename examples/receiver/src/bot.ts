@@ -2,6 +2,7 @@ import Discord, { Interaction, GuildMember, Snowflake, User } from 'discord.js';
 import {
 	AudioPlayerStatus,
 	AudioResource,
+	EndBehaviorType,
 	entersState,
 	getVoiceConnection,
 	joinVoiceChannel,
@@ -92,7 +93,14 @@ client.on('interaction', async (interaction: Interaction) => {
 		if (connection) {
 			const userId = interaction.options.get('speaker')!.value! as Snowflake;
 			try {
-				const stream = connection.receiver.subscribe(userId);
+				const stream = connection.receiver.subscribe(userId, {
+					end: {
+						behavior: EndBehaviorType.AfterInactivity,
+						duration: 100,
+					}
+				});
+				stream.on('data', console.log);
+				stream.on('close', () => console.log('closed'));
 				await interaction.followUp(userId);
 			} catch (error) {
 				console.warn(error);

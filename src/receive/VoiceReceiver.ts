@@ -2,7 +2,11 @@ import { VoiceOpcodes } from 'discord-api-types/voice/v4';
 import { ConnectionData } from '../networking/Networking';
 import { methods } from '../util/Secretbox';
 import type { VoiceConnection } from '../VoiceConnection';
-import { AudioReceiveStream } from './AudioReceiveStream';
+import {
+	AudioReceiveStream,
+	AudioReceiveStreamOptions,
+	createDefaultAudioReceiveStreamOptions,
+} from './AudioReceiveStream';
 import { SSRCMap } from './SSRCMap';
 
 /**
@@ -161,11 +165,15 @@ export class VoiceReceiver {
 	 * @param target The ID of the user to subscribe to
 	 * @returns A readable stream of Opus packets received from the target
 	 */
-	public subscribe(userId: string) {
+	public subscribe(userId: string, options?: Partial<AudioReceiveStreamOptions>) {
 		const existing = this.subscriptions.get(userId);
 		if (existing) return existing;
 
-		const stream = new AudioReceiveStream();
+		const stream = new AudioReceiveStream({
+			...createDefaultAudioReceiveStreamOptions(),
+			...options,
+		});
+
 		stream.once('close', () => this.subscriptions.delete(userId));
 		this.subscriptions.set(userId, stream);
 		return stream;
