@@ -6,7 +6,7 @@
 		"alwaysStrict": true,
 		"pretty": true,
 		"target": "es2019",
-		"lib": ["ESNext"],
+		"lib": ["ESNext", "DOM"],
 		"sourceMap": true,
 		"inlineSources": true,
 		"module": "commonjs",
