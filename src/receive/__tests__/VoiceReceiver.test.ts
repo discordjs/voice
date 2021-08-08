@@ -2,10 +2,8 @@
 import { VoiceReceiver } from '../VoiceReceiver';
 import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
 import { RTP_PACKET_DESKTOP, RTP_PACKET_CHROME, RTP_PACKET_ANDROID } from './fixtures/rtp';
-import EventEmitter, { once } from 'events';
-import { createVoiceReceiver } from '..';
+import { once } from 'events';
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
-import * as fixtures from './fixtures/states';
 
 jest.mock('../../VoiceConnection');
 jest.mock('../SSRCMap');
@@ -25,7 +23,7 @@ describe('VoiceReceiver', () => {
 		voiceConnection.state = {
 			status: VoiceConnectionStatus.Signalling,
 		} as any;
-		receiver = createVoiceReceiver(voiceConnection);
+		receiver = new VoiceReceiver(voiceConnection);
 		receiver['connectionData'] = {
 			encryptionMode: 'dummy',
 			nonceBuffer: Buffer.alloc(0),
@@ -46,7 +44,7 @@ describe('VoiceReceiver', () => {
 			userId: '123',
 		}));
 
-		const stream = receiver.subscribe(RTP_PACKET.ssrc);
+		const stream = receiver.subscribe('123');
 
 		receiver['onUdpMessage'](RTP_PACKET.packet);
 		await nextTick();
@@ -66,7 +64,7 @@ describe('VoiceReceiver', () => {
 			userId: '123',
 		}));
 
-		const stream = receiver.subscribe(RTP_PACKET_DESKTOP.ssrc);
+		const stream = receiver.subscribe('123');
 
 		const errorEvent = once(stream, 'error');
 
@@ -83,12 +81,8 @@ describe('VoiceReceiver', () => {
 			userId: '123',
 		}));
 
-		const stream = receiver.subscribe(RTP_PACKET_DESKTOP.ssrc);
-		expect(receiver.subscribe(RTP_PACKET_DESKTOP.ssrc)).toBe(stream);
-	});
-
-	test('subscribe: refuses unknown SSRC or user IDs', () => {
-		expect(() => receiver.subscribe(RTP_PACKET_DESKTOP.ssrc)).toThrow();
+		const stream = receiver.subscribe('123');
+		expect(receiver.subscribe('123')).toBe(stream);
 	});
 
 	describe('onWsPacket', () => {
@@ -149,74 +143,4 @@ describe('VoiceReceiver', () => {
 			});
 		});
 	});
-});
-
-test('Receiver tracks state changes', () => {
-	const voiceConnection: any = new EventEmitter();
-	voiceConnection.playOpusPacket = jest.fn();
-
-	voiceConnection.state = fixtures.state1;
-
-	const receiver = createVoiceReceiver(voiceConnection);
-
-	const onWsPacketSpy = jest.fn();
-	receiver['onWsPacket'] = onWsPacketSpy;
-
-	const onUdpMessageSpy = jest.fn();
-	receiver['onUdpMessage'] = onUdpMessageSpy;
-
-	const networking1 = fixtures.state2.vc.networking;
-	voiceConnection.state = fixtures.state2.vc;
-
-	voiceConnection.emit('stateChange', fixtures.state1.vc, voiceConnection.state);
-	fixtures.state2.networking.ws.emit('packet', Symbol('message'));
-	expect(onWsPacketSpy).toHaveBeenCalled();
-	onWsPacketSpy.mockClear();
-
-	networking1.state = fixtures.state3.networking;
-	networking1.emit('stateChange', fixtures.state2.networking, fixtures.state3.networking);
-
-	fixtures.state3.networking.ws.emit('packet', Symbol('message'));
-	expect(onWsPacketSpy).toHaveBeenCalled();
-
-	fixtures.state3.networking.udp.emit('message', Symbol('message'));
-	expect(onUdpMessageSpy).toHaveBeenCalled();
-
-	onWsPacketSpy.mockClear();
-	onUdpMessageSpy.mockClear();
-
-	voiceConnection.state = fixtures.state4.vc;
-	expect(voiceConnection.playOpusPacket).not.toHaveBeenCalled();
-
-	voiceConnection.emit('stateChange', fixtures.state3.vc, voiceConnection.state);
-
-	expect(voiceConnection.playOpusPacket).toHaveBeenCalled();
-
-	fixtures.state4.networking.ws.emit('packet', Symbol('message'));
-	expect(onWsPacketSpy).toHaveBeenCalled();
-
-	fixtures.state4.networking.udp.emit('message', Symbol('message'));
-	expect(onUdpMessageSpy).toHaveBeenCalled();
-});
-
-test('Receiver binds to immediately ready voice connection', () => {
-	const voiceConnection: any = new EventEmitter();
-	voiceConnection.state = fixtures.state4.vc;
-	voiceConnection.playOpusPacket = jest.fn();
-
-	const receiver = createVoiceReceiver(voiceConnection);
-
-	expect(voiceConnection.playOpusPacket).toHaveBeenCalled();
-
-	const onWsPacketSpy = jest.fn();
-	receiver['onWsPacket'] = onWsPacketSpy;
-
-	const onUdpMessageSpy = jest.fn();
-	receiver['onUdpMessage'] = onUdpMessageSpy;
-
-	fixtures.state4.networking.ws.emit('packet', Symbol('message'));
-	expect(onWsPacketSpy).toHaveBeenCalled();
-
-	fixtures.state4.networking.udp.emit('message', Symbol('message'));
-	expect(onUdpMessageSpy).toHaveBeenCalled();
 });
