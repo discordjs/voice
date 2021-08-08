@@ -90,13 +90,12 @@ client.on('interaction', async (interaction: Interaction) => {
 	} else if (interaction.commandName === 'listen') {
 		await interaction.defer();
 		if (connection) {
-			const userID = interaction.options.get('speaker')!.value! as Snowflake;
+			const userId = interaction.options.get('speaker')!.value! as Snowflake;
 			try {
-				const { audioSSRC } = await connection.receiver.ssrcMap.resolve(userID, 5_000);
-				await interaction.followUp(audioSSRC.toString());
+				const stream = connection.receiver.subscribe(userId);
+				await interaction.followUp(userId);
 			} catch (error) {
 				console.warn(error);
-				await interaction.followUp(`Unable to find <@${userID}> in the voice server - ask them to speak!`);
 			}
 		}
 	} else if (interaction.commandName === 'leave') {

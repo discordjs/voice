@@ -25,7 +25,7 @@ export class VoiceReceiver {
 	/**
 	 * The current audio subscriptions of this receiver.
 	 */
-	public readonly subscriptions: Map<number, AudioReceiveStream>;
+	public readonly subscriptions: Map<string, AudioReceiveStream>;
 
 	/**
 	 * The connection data of the receiver
@@ -132,7 +132,9 @@ export class VoiceReceiver {
 	public onUdpMessage(msg: Buffer) {
 		if (msg.length <= 8) return;
 		const ssrc = msg.readUInt32BE(8);
-		const stream = this.subscriptions.get(ssrc);
+		const userId = this.ssrcMap.get(ssrc)?.userId;
+		if (!userId) return;
+		const stream = this.subscriptions.get(userId);
 		if (!stream) return;
 
 		const userData = this.ssrcMap.get(ssrc);
@@ -154,23 +156,18 @@ export class VoiceReceiver {
 	}
 
 	/**
-	 * Creates a subscription for the given target, specified either by their SSRC or user ID.
+	 * Creates a subscription for the given user ID.
 	 *
-	 * @param target The audio SSRC or user ID to subscribe to
+	 * @param target The ID of the user to subscribe to
 	 * @returns A readable stream of Opus packets received from the target
 	 */
-	public subscribe(target: string | number) {
-		const ssrc = this.ssrcMap.get(target)?.audioSSRC;
-		if (!ssrc) {
-			throw new Error(`No known SSRC for ${target}`);
-		}
-
-		const existing = this.subscriptions.get(ssrc);
+	public subscribe(userId: string) {
+		const existing = this.subscriptions.get(userId);
 		if (existing) return existing;
 
 		const stream = new AudioReceiveStream();
-		stream.once('close', () => this.subscriptions.delete(ssrc));
-		this.subscriptions.set(ssrc, stream);
+		stream.once('close', () => this.subscriptions.delete(userId));
+		this.subscriptions.set(userId, stream);
 		return stream;
 	}
 }
