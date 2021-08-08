@@ -100,28 +100,4 @@ export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 			}
 		}
 	}
-
-	public resolve(target: string, maxTime?: number): Promise<VoiceUserData> {
-		const existing = this.get(target);
-		if (existing) return Promise.resolve(existing);
-
-		return new Promise((resolve, reject) => {
-			let timeout: NodeJS.Timeout | undefined;
-			if (typeof maxTime === 'number') {
-				timeout = setTimeout(() => {
-					this.off('new', onNew);
-					reject(new Error(`Did not find SSRC for user ${target} within ${maxTime}ms`));
-				}, maxTime);
-			}
-
-			const onNew = (userData: VoiceUserData) => {
-				if (userData.userId === target) {
-					this.off('new', onNew);
-					if (timeout) clearTimeout(timeout);
-					resolve(userData);
-				}
-			};
-			this.on('new', onNew);
-		});
-	}
 }
