@@ -7,6 +7,7 @@ import {
 	AudioReceiveStreamOptions,
 	createDefaultAudioReceiveStreamOptions,
 } from './AudioReceiveStream';
+import { SpeakingMap } from './SpeakingMap';
 import { SSRCMap } from './SSRCMap';
 
 /**
@@ -32,14 +33,20 @@ export class VoiceReceiver {
 	public readonly subscriptions: Map<string, AudioReceiveStream>;
 
 	/**
-	 * The connection data of the receiver
+	 * The connection data of the receiver.
 	 * @internal
 	 */
 	public connectionData: Partial<ConnectionData>;
 
+	/**
+	 * The speaking map of the receiver.
+	 */
+	public readonly speaking: SpeakingMap;
+
 	public constructor(voiceConnection: VoiceConnection) {
 		this.voiceConnection = voiceConnection;
 		this.ssrcMap = new SSRCMap();
+		this.speaking = new SpeakingMap();
 		this.subscriptions = new Map();
 		this.connectionData = {};
 
@@ -136,13 +143,14 @@ export class VoiceReceiver {
 	public onUdpMessage(msg: Buffer) {
 		if (msg.length <= 8) return;
 		const ssrc = msg.readUInt32BE(8);
-		const userId = this.ssrcMap.get(ssrc)?.userId;
-		if (!userId) return;
-		const stream = this.subscriptions.get(userId);
-		if (!stream) return;
 
 		const userData = this.ssrcMap.get(ssrc);
 		if (!userData) return;
+
+		this.speaking.onPacket(userData.userId);
+
+		const stream = this.subscriptions.get(userData.userId);
+		if (!stream) return;
 
 		if (this.connectionData.encryptionMode && this.connectionData.nonceBuffer && this.connectionData.secretKey) {
 			const packet = this.parsePacket(

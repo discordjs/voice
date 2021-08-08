@@ -83,6 +83,9 @@ client.on('interaction', async (interaction: Interaction) => {
 		try {
 			await entersState(connection, VoiceConnectionStatus.Ready, 20e3);
 			connection.playOpusPacket(SILENCE_FRAME);
+			connection.setSpeaking(false);
+			connection.receiver.speaking.on('start', userId => console.log(`${userId} started speaking`));
+			connection.receiver.speaking.on('end', userId => console.log(`${userId} stopped speaking`));
 			await interaction.followUp('Ready!');
 		} catch (error) {
 			console.warn(error);
