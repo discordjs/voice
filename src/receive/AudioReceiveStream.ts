@@ -50,7 +50,8 @@ export class AudioReceiveStream extends Readable {
 		if (buffer) {
 			if (
 				this.end.behavior === EndBehaviorType.AfterInactivity ||
-				(this.end.behavior === EndBehaviorType.AfterSilence && buffer.compare(SILENCE_FRAME) === 0)
+				(this.end.behavior === EndBehaviorType.AfterSilence &&
+					(buffer.compare(SILENCE_FRAME) !== 0 || typeof this.endTimeout === 'undefined'))
 			) {
 				this.renewEndTimeout(this.end);
 			}
@@ -63,7 +64,7 @@ export class AudioReceiveStream extends Readable {
 		if (this.endTimeout) {
 			clearTimeout(this.endTimeout);
 		}
-		this.endTimeout = setTimeout(() => super.push(null), end.duration);
+		this.endTimeout = setTimeout(() => this.destroy(), end.duration);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
