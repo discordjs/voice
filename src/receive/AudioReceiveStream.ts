@@ -1,9 +1,21 @@
 import { Readable, ReadableOptions } from 'stream';
 import { SILENCE_FRAME } from '../audio/AudioPlayer';
 
+/**
+ * The different behaviors an audio receive stream can have for deciding when to end.
+ */
 export enum EndBehaviorType {
+	/**
+	 * The stream will only end when manually destroyed.
+	 */
 	Manual,
+	/**
+	 * The stream will end after a given time period of silence/no audio packets.
+	 */
 	AfterSilence,
+	/**
+	 * The stream will end after a given time period of no audio packets.
+	 */
 	AfterInactivity,
 }
 
@@ -33,6 +45,9 @@ export function createDefaultAudioReceiveStreamOptions(): AudioReceiveStreamOpti
  * in a Discord voice connection.
  */
 export class AudioReceiveStream extends Readable {
+	/**
+	 * The end behavior of the receive stream.
+	 */
 	public readonly end: EndBehavior;
 
 	private endTimeout?: NodeJS.Timeout;

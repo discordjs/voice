@@ -331,6 +331,12 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		*/
 	}
 
+	/**
+	 * Called when the networking state changes, and the new ws/udp packet/message handlers need to be rebound
+	 * to the new instances.
+	 * @param newState - The new networking state
+	 * @param oldState - The old networking state, if there is one
+	 */
 	private updateReceiveBindings(newState: NetworkingState, oldState?: NetworkingState) {
 		const oldWs = Reflect.get(oldState ?? {}, 'ws') as VoiceWebSocket | undefined;
 		const newWs = Reflect.get(newState, 'ws') as VoiceWebSocket | undefined;
