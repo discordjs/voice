@@ -31,7 +31,7 @@ export interface JoinVoiceChannelOptions {
 	 */
 	selfDeaf?: boolean;
 	/**
-	 * Whether to join the channel muted (defaults to true)
+	 * Whether to join the channel muted (defaults to false)
 	 */
 	selfMute?: boolean;
 	/**

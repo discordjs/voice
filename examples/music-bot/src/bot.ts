@@ -1,4 +1,4 @@
-import Discord, { Interaction, GuildMember, Snowflake } from 'discord.js';
+import { Client, Interaction, GuildMember, Snowflake } from 'discord.js';
 import {
 	AudioPlayerStatus,
 	AudioResource,
@@ -10,19 +10,17 @@ import { Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const { token } = require('../auth.json');
+const { token, deployment_guild_id } = require('../config.json');
 
-const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
+const client = new Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
 
-client.on('ready', () => console.log('Ready!'));
+client.on('ready', async () => {
+	console.log('Ready!');
 
-// This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
-client.on('messageCreate', async (message) => {
-	if (!message.guild) return;
-	if (!client.application?.owner) await client.application?.fetch();
-
-	if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
-		await message.guild.commands.set([
+	const app = await client.application?.fetch();
+	const devGuild = await client.guilds.fetch(deployment_guild_id).catch(() => null);
+	if (app && devGuild) {
+		await devGuild.commands.set([
 			{
 				name: 'play',
 				description: 'Plays a song',
@@ -56,8 +54,7 @@ client.on('messageCreate', async (message) => {
 				description: 'Leave the voice channel',
 			},
 		]);
-
-		await message.reply('Deployed!');
+		console.log('Deployed slash commands!');
 	}
 });
 
@@ -72,7 +69,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	let subscription = subscriptions.get(interaction.guildId);
 
 	if (interaction.commandName === 'play') {
-		await interaction.defer();
+		await interaction.deferReply();
 		// Extract the video URL from the command
 		const url = interaction.options.get('song')!.value! as string;
 
