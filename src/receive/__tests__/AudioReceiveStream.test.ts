@@ -1,66 +1,71 @@
 import { SILENCE_FRAME } from '../../audio/AudioPlayer';
 import { AudioReceiveStream, EndBehaviorType } from '../AudioReceiveStream';
 
-jest.useFakeTimers();
 const DUMMY_BUFFER = Buffer.allocUnsafe(16);
 
-function stepSilence(stream: AudioReceiveStream, increment: number) {
+function wait(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function stepSilence(stream: AudioReceiveStream, increment: number) {
 	stream.push(SILENCE_FRAME);
-	jest.advanceTimersByTime(increment);
+	await wait(increment);
 	expect(stream.readable).toBe(true);
-	expect(stream.destroyed).toBe(false);
 }
 
 describe('AudioReceiveStream', () => {
-	test('Manual end behavior', () => {
+	test('Manual end behavior', async () => {
 		const stream = new AudioReceiveStream({ end: { behavior: EndBehaviorType.Manual } });
 		stream.push(DUMMY_BUFFER);
 		expect(stream.readable).toBe(true);
-		jest.advanceTimersByTime(60_000);
+		await wait(200);
 		stream.push(DUMMY_BUFFER);
 		expect(stream.readable).toBe(true);
 	});
 
-	test('AfterSilence end behavior', () => {
+	test('AfterSilence end behavior', async () => {
 		const duration = 100;
 		const increment = 20;
 
 		const stream = new AudioReceiveStream({ end: { behavior: EndBehaviorType.AfterSilence, duration: 100 } });
+		stream.resume();
 
 		for (let i = increment; i < duration / 2; i += increment) {
-			stepSilence(stream, increment);
+			await stepSilence(stream, increment);
 		}
 
 		stream.push(DUMMY_BUFFER);
 
 		for (let i = increment; i < duration; i += increment) {
-			stepSilence(stream, increment);
+			await stepSilence(stream, increment);
 		}
 
-		jest.advanceTimersByTime(increment);
-		expect(stream.destroyed).toBe(true);
+		await wait(increment);
+		expect(stream.readableEnded).toBe(true);
 	});
 
-	test('AfterInactivity end behavior', () => {
+	test('AfterInactivity end behavior', async () => {
 		const duration = 100;
 		const increment = 20;
 
 		const stream = new AudioReceiveStream({ end: { behavior: EndBehaviorType.AfterInactivity, duration: 100 } });
+		stream.resume();
 
 		for (let i = increment; i < duration / 2; i += increment) {
-			stepSilence(stream, increment);
+			await stepSilence(stream, increment);
 		}
 
 		stream.push(DUMMY_BUFFER);
 
 		for (let i = increment; i < duration; i += increment) {
-			stepSilence(stream, increment);
+			await stepSilence(stream, increment);
 		}
 
-		jest.advanceTimersByTime(increment);
-		expect(stream.destroyed).toBe(false);
+		await wait(increment);
+		expect(stream.readableEnded).toBe(false);
 
-		jest.advanceTimersByTime(duration - increment);
-		expect(stream.destroyed).toBe(true);
+		await wait(duration - increment);
+
+		expect(stream.readableEnded).toBe(true);
 	});
 });
