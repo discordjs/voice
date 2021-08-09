@@ -1,5 +1,5 @@
 import { DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods } from '../../';
-import { VoiceChannel, Snowflake, Client, Constants, WebSocketShard, Guild } from 'discord.js';
+import { VoiceChannel, Snowflake, Client, Constants, Guild } from 'discord.js';
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v9';
 
 const adapters = new Map<Snowflake, DiscordGatewayAdapterLibraryMethods>();
