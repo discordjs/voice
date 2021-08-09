@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VoiceConnectionReadyState | @discordjs/voice</title>
+	<title>EndBehaviorType | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,87 +55,60 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="voiceconnectionreadystate.html">VoiceConnectionReadyState</a>
+					<a href="endbehaviortype.html">EndBehaviorType</a>
 				</li>
 			</ul>
-			<h1>Interface VoiceConnectionReadyState</h1>
+			<h1>Enumeration EndBehaviorType</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>The state that a VoiceConnection will be in when it has an active connection to a Discord
-						voice server.</p>
-					</div>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">VoiceConnectionReadyState</span>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionreadystate.html#adapter" class="tsd-kind-icon">adapter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionreadystate.html#networking" class="tsd-kind-icon">networking</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionreadystate.html#status" class="tsd-kind-icon">status</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionreadystate.html#subscription" class="tsd-kind-icon">subscription</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="endbehaviortype.html#afterinactivity" class="tsd-kind-icon">After<wbr>Inactivity</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="endbehaviortype.html#aftersilence" class="tsd-kind-icon">After<wbr>Silence</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="endbehaviortype.html#manual" class="tsd-kind-icon">Manual</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="adapter" class="tsd-anchor"></a>
-					<h3>adapter</h3>
-					<div class="tsd-signature tsd-kind-icon">adapter<span class="tsd-signature-symbol">:</span> <a href="discordgatewayadapterimplementermethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterImplementerMethods</a></div>
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="afterinactivity" class="tsd-anchor"></a>
+					<h3>After<wbr>Inactivity</h3>
+					<div class="tsd-signature tsd-kind-icon">After<wbr>Inactivity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/4f4181c/src/VoiceConnection.ts#L134">src/VoiceConnection.ts:134</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/4f4181c/src/receive/AudioReceiveStream.ts#L7">src/receive/AudioReceiveStream.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="networking" class="tsd-anchor"></a>
-					<h3>networking</h3>
-					<div class="tsd-signature tsd-kind-icon">networking<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Networking</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="aftersilence" class="tsd-anchor"></a>
+					<h3>After<wbr>Silence</h3>
+					<div class="tsd-signature tsd-kind-icon">After<wbr>Silence<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/4f4181c/src/VoiceConnection.ts#L132">src/VoiceConnection.ts:132</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/4f4181c/src/receive/AudioReceiveStream.ts#L6">src/receive/AudioReceiveStream.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="status" class="tsd-anchor"></a>
-					<h3>status</h3>
-					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <a href="../enums/voiceconnectionstatus.html#ready" class="tsd-signature-type" data-tsd-kind="Enumeration member">Ready</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="manual" class="tsd-anchor"></a>
+					<h3>Manual</h3>
+					<div class="tsd-signature tsd-kind-icon">Manual<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/4f4181c/src/VoiceConnection.ts#L131">src/VoiceConnection.ts:131</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="subscription" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> subscription</h3>
-					<div class="tsd-signature tsd-kind-icon">subscription<span class="tsd-signature-symbol">:</span> <a href="../classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/4f4181c/src/VoiceConnection.ts#L133">src/VoiceConnection.ts:133</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/4f4181c/src/receive/AudioReceiveStream.ts#L5">src/receive/AudioReceiveStream.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -153,20 +126,17 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="voiceconnectionreadystate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Ready<wbr>State</a>
+					<li class="current tsd-kind-enum">
+						<a href="endbehaviortype.html" class="tsd-kind-icon">End<wbr>Behavior<wbr>Type</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionreadystate.html#adapter" class="tsd-kind-icon">adapter</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="endbehaviortype.html#afterinactivity" class="tsd-kind-icon">After<wbr>Inactivity</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionreadystate.html#networking" class="tsd-kind-icon">networking</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="endbehaviortype.html#aftersilence" class="tsd-kind-icon">After<wbr>Silence</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionreadystate.html#status" class="tsd-kind-icon">status</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionreadystate.html#subscription" class="tsd-kind-icon">subscription</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="endbehaviortype.html#manual" class="tsd-kind-icon">Manual</a>
 							</li>
 						</ul>
 					</li>
