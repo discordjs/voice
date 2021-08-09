@@ -1,14 +1,8 @@
-import Discord, { Interaction, GuildMember, Snowflake, User } from 'discord.js';
-import {
-	AudioPlayerStatus,
-	AudioResource,
-	EndBehaviorType,
-	entersState,
-	getVoiceConnection,
-	joinVoiceChannel,
-	VoiceConnectionStatus,
-} from '@discordjs/voice';
+import Discord, { Interaction, GuildMember, Snowflake } from 'discord.js';
+import { entersState, getVoiceConnection, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs/voice';
 import { SILENCE_FRAME } from '../../../dist/audio/AudioPlayer';
+import { deploy } from './deploy';
+import { createListeningStream } from './createListeningStream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const { token } = require('../auth.json');
@@ -18,46 +12,26 @@ const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSA
 client.on('ready', () => console.log('Ready!'));
 
 // This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
 	if (!message.guild) return;
 	if (!client.application?.owner) await client.application?.fetch();
 
 	if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
-		await message.guild.commands.set([
-			{
-				name: 'join',
-				description: 'Joins the voice channel that you are in',
-			},
-			{
-				name: 'listen',
-				description: 'Start listening to a user',
-				options: [
-					{
-						name: 'speaker',
-						type: 'USER' as const,
-						description: 'The user to listen to',
-						required: true,
-					},
-				],
-			},
-			{
-				name: 'leave',
-				description: 'Leave the voice channel',
-			},
-		]);
-
+		await deploy(message.guild);
 		await message.reply('Deployed!');
 	}
 });
 
-// Handles slash command interactions
-client.on('interaction', async (interaction: Interaction) => {
-	if (!interaction.isCommand() || !interaction.guildID) return;
+const listening = new Set<string>();
 
-	let connection = getVoiceConnection(interaction.guildID);
+// Handles slash command interactions
+client.on('interactionCreate', async (interaction: Interaction) => {
+	if (!interaction.isCommand() || !interaction.guildId) return;
+
+	let connection = getVoiceConnection(interaction.guildId);
 
 	if (interaction.commandName === 'join') {
-		await interaction.defer();
+		await interaction.deferReply();
 
 		// If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
 		// and create a subscription.
@@ -82,29 +56,28 @@ client.on('interaction', async (interaction: Interaction) => {
 		// Make sure the connection is ready before processing the user's request
 		try {
 			await entersState(connection, VoiceConnectionStatus.Ready, 20e3);
+			const receiver = connection.receiver;
 			connection.playOpusPacket(SILENCE_FRAME);
-			connection.setSpeaking(false);
-			connection.receiver.speaking.on('start', userId => console.log(`${userId} started speaking`));
-			connection.receiver.speaking.on('end', userId => console.log(`${userId} stopped speaking`));
+
+			connection.receiver.speaking.on('start', (userId) => {
+				if (listening.has(userId)) {
+					createListeningStream(receiver, userId, client.users.cache.get(userId));
+				}
+			});
 			await interaction.followUp('Ready!');
 		} catch (error) {
 			console.warn(error);
 			await interaction.followUp('Failed to join voice channel within 20 seconds, please try again later!');
 		}
 	} else if (interaction.commandName === 'listen') {
-		await interaction.defer();
 		if (connection) {
 			const userId = interaction.options.get('speaker')!.value! as Snowflake;
 			try {
-				const stream = connection.receiver.subscribe(userId, {
-					end: {
-						behavior: EndBehaviorType.AfterInactivity,
-						duration: 100,
-					}
+				listening.add(userId);
+				await interaction.reply({
+					ephemeral: true,
+					content: 'Listening!',
 				});
-				stream.on('data', console.log);
-				stream.on('close', () => console.log('closed'));
-				await interaction.followUp(userId);
 			} catch (error) {
 				console.warn(error);
 			}
