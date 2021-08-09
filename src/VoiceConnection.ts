@@ -270,9 +270,9 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 		if (newState.status === VoiceConnectionStatus.Ready) {
 			this.rejoinAttempts = 0;
-		} else {
+		} else if (newState.status === VoiceConnectionStatus.Destroyed) {
 			for (const stream of this.receiver.subscriptions.values()) {
-				if (!stream.destroyed) stream.destroy(); // TODO - close with error?
+				if (!stream.destroyed) stream.destroy();
 			}
 		}
 
