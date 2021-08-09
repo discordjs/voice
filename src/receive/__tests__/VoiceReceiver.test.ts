@@ -4,14 +4,29 @@ import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../.
 import { RTP_PACKET_DESKTOP, RTP_PACKET_CHROME, RTP_PACKET_ANDROID } from './fixtures/rtp';
 import { once } from 'events';
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
+import { methods } from '../../util/Secretbox';
 
 jest.mock('../../VoiceConnection');
 jest.mock('../SSRCMap');
+
+const openSpy = jest.spyOn(methods, 'open');
+
+openSpy.mockImplementation((buffer) => buffer);
 
 const VoiceConnection = _VoiceConnection as unknown as jest.Mocked<typeof _VoiceConnection>;
 
 function nextTick() {
 	return new Promise((resolve) => process.nextTick(resolve));
+}
+
+function* rangeIter(start: number, end: number) {
+	for (let i = start; i <= end; i++) {
+		yield i;
+	}
+}
+
+function range(start: number, end: number) {
+	return Buffer.from([...rangeIter(start, end)]);
 }
 
 describe('VoiceReceiver', () => {
@@ -141,6 +156,53 @@ describe('VoiceReceiver', () => {
 				videoSSRC: undefined,
 				userId: '123abc',
 			});
+		});
+	});
+
+	describe('decrypt', () => {
+		const secretKey = new Uint8Array([1, 2, 3, 4]);
+
+		beforeEach(() => {
+			openSpy.mockClear();
+		});
+
+		test('decrypt: xsalsa20_poly1305_lite', () => {
+			// Arrange
+			const buffer = range(1, 32);
+			const nonce = Buffer.alloc(4);
+
+			// Act
+			const decrypted = receiver['decrypt'](buffer, 'xsalsa20_poly1305_lite', nonce, secretKey);
+
+			// Assert
+			expect(nonce.equals(range(29, 32))).toBe(true);
+			expect(decrypted.equals(range(13, 28))).toBe(true);
+		});
+
+		test('decrypt: xsalsa20_poly1305_suffix', () => {
+			// Arrange
+			const buffer = range(1, 64);
+			const nonce = Buffer.alloc(24);
+
+			// Act
+			const decrypted = receiver['decrypt'](buffer, 'xsalsa20_poly1305_suffix', nonce, secretKey);
+
+			// Assert
+			expect(nonce.equals(range(41, 64))).toBe(true);
+			expect(decrypted.equals(range(13, 40))).toBe(true);
+		});
+
+		test('decrypt: xsalsa20_poly1305', () => {
+			// Arrange
+			const buffer = range(1, 64);
+			const nonce = Buffer.alloc(12);
+
+			// Act
+			const decrypted = receiver['decrypt'](buffer, 'xsalsa20_poly1305', nonce, secretKey);
+
+			// Assert
+			expect(nonce.equals(range(1, 12))).toBe(true);
+			expect(decrypted.equals(range(13, 64))).toBe(true);
 		});
 	});
 });
