@@ -319,9 +319,7 @@ export function createFFMPEGResource(input: string, options: CreateFFMPEGResourc
 		return;
 	}
 	if (options.arguments && options.arguments.length !== 0) {
-		options.arguments.forEach((x) => {
-			final_args.push(x);
-		});
+		final_args.push(...options.arguments);
 	}
 	if (options.seek) {
 		final_args.push('-ss', `${options.seek}`, '-accurate_seek');
