@@ -259,12 +259,14 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 		const newSubscription: PlayerSubscription | undefined = Reflect.get(newState, 'subscription');
 
 		if (oldNetworking !== newNetworking) {
-			oldNetworking?.off('debug', this.onNetworkingDebug);
-			oldNetworking?.on('error', noop);
-			oldNetworking?.off('error', this.onNetworkingError);
-			oldNetworking?.off('close', this.onNetworkingClose);
-			oldNetworking?.off('stateChange', this.onNetworkingStateChange);
-			oldNetworking?.destroy();
+			if (oldNetworking) {
+				oldNetworking.on('error', noop);
+				oldNetworking.off('debug', this.onNetworkingDebug);
+				oldNetworking.off('error', this.onNetworkingError);
+				oldNetworking.off('close', this.onNetworkingClose);
+				oldNetworking.off('stateChange', this.onNetworkingStateChange);
+				oldNetworking.destroy();
+			}
 			if (newNetworking) this.updateReceiveBindings(newNetworking.state, oldNetworking?.state);
 		}
 

@@ -5,7 +5,7 @@ and save the audio to local Ogg files.
 
 ## Usage
 
-```bash
+```sh-session
 # Clone the main repository, and then run:
 $ npm install
 $ npm run build
@@ -15,6 +15,7 @@ $ cd examples/recorder
 $ npm install
 
 # Set a bot token (see auth.example.json)
+$ cp auth.example.json auth.json
 $ nano auth.json
 
 # Start the bot!
