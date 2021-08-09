@@ -7,7 +7,7 @@ export const deploy = async (guild: Guild) => {
 			description: 'Joins the voice channel that you are in',
 		},
 		{
-			name: 'listen',
+			name: 'record',
 			description: 'Enables recording for a user',
 			options: [
 				{
