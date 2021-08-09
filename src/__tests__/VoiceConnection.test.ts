@@ -14,6 +14,7 @@ import * as _Networking from '../networking/Networking';
 import * as _AudioPlayer from '../audio/AudioPlayer';
 import { PlayerSubscription as _PlayerSubscription } from '../audio/PlayerSubscription';
 import type { DiscordGatewayAdapterLibraryMethods } from '../util/adapter';
+import EventEmitter from 'events';
 
 jest.mock('../audio/AudioPlayer');
 jest.mock('../audio/PlayerSubscription');
@@ -653,6 +654,91 @@ describe('VoiceConnection#onSubscriptionRemoved', () => {
 			subscription: undefined,
 		});
 		expect(subscription.unsubscribe).toHaveBeenCalledTimes(1);
+	});
+
+	describe('updateReceiveBindings', () => {
+		test('Applies and removes udp listeners', () => {
+			// Arrange
+			const ws = new EventEmitter() as any;
+
+			const oldNetworking = new Networking.Networking({} as any, false);
+			oldNetworking.state = {
+				code: _Networking.NetworkingStatusCode.Ready,
+				connectionData: {} as any,
+				connectionOptions: {} as any,
+				udp: new EventEmitter() as any,
+				ws,
+			};
+
+			const newNetworking = new Networking.Networking({} as any, false);
+			newNetworking.state = {
+				...oldNetworking.state,
+				udp: new EventEmitter() as any,
+			};
+
+			const { voiceConnection } = createFakeVoiceConnection();
+
+			// Act
+			voiceConnection['updateReceiveBindings'](newNetworking.state, oldNetworking.state);
+
+			// Assert
+			expect(oldNetworking.state.udp.listenerCount('message')).toBe(0);
+			expect(newNetworking.state.udp.listenerCount('message')).toBe(1);
+			expect(voiceConnection.receiver.connectionData).toBe(newNetworking.state.connectionData);
+		});
+
+		test('Applies and removes ws listeners', () => {
+			// Arrange
+			const udp = new EventEmitter() as any;
+
+			const oldNetworking = new Networking.Networking({} as any, false);
+			oldNetworking.state = {
+				code: _Networking.NetworkingStatusCode.Ready,
+				connectionData: {} as any,
+				connectionOptions: {} as any,
+				udp,
+				ws: new EventEmitter() as any,
+			};
+
+			const newNetworking = new Networking.Networking({} as any, false);
+			newNetworking.state = {
+				...oldNetworking.state,
+				ws: new EventEmitter() as any,
+			};
+
+			const { voiceConnection } = createFakeVoiceConnection();
+
+			// Act
+			voiceConnection['updateReceiveBindings'](newNetworking.state, oldNetworking.state);
+
+			// Assert
+			expect(oldNetworking.state.ws.listenerCount('packet')).toBe(0);
+			expect(newNetworking.state.ws.listenerCount('packet')).toBe(1);
+			expect(voiceConnection.receiver.connectionData).toBe(newNetworking.state.connectionData);
+		});
+
+		test('Applies initial listeners', () => {
+			// Arrange
+
+			const newNetworking = new Networking.Networking({} as any, false);
+			newNetworking.state = {
+				code: _Networking.NetworkingStatusCode.Ready,
+				connectionData: {} as any,
+				connectionOptions: {} as any,
+				udp: new EventEmitter() as any,
+				ws: new EventEmitter() as any,
+			};
+
+			const { voiceConnection } = createFakeVoiceConnection();
+
+			// Act
+			voiceConnection['updateReceiveBindings'](newNetworking.state, undefined);
+
+			// Assert
+			expect(newNetworking.state.ws.listenerCount('packet')).toBe(1);
+			expect(newNetworking.state.udp.listenerCount('message')).toBe(1);
+			expect(voiceConnection.receiver.connectionData).toBe(newNetworking.state.connectionData);
+		});
 	});
 });
 
