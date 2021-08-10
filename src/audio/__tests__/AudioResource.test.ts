@@ -1,8 +1,13 @@
 import { opus, VolumeTransformer } from 'prism-media';
 import { PassThrough, Readable } from 'stream';
 import { SILENCE_FRAME } from '../AudioPlayer';
-// eslint-disable-next-line prettier/prettier
-import { AudioResource, createFFMPEGResource, createAudioResource, NO_CONSTRAINT, VOLUME_CONSTRAINT } from '../AudioResource';
+import {
+	AudioResource,
+	createFFMPEGResource,
+	createAudioResource,
+	NO_CONSTRAINT,
+	VOLUME_CONSTRAINT,
+} from '../AudioResource';
 import { Edge, findPipeline as _findPipeline, StreamType, TransformerType } from '../TransformerGraph';
 
 jest.mock('prism-media');
