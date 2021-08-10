@@ -1,6 +1,5 @@
-import { getInfo } from 'ytdl-core';
+import ytdl, { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
-import { raw as ytdl } from 'youtube-dl-exec';
 
 /**
  * This is the data required to create a Track object
@@ -45,32 +44,13 @@ export class Track implements TrackData {
 	 */
 	public createAudioResource(): Promise<AudioResource<Track>> {
 		return new Promise((resolve, reject) => {
-			const process = ytdl(
-				this.url,
-				{
-					o: '-',
-					q: '',
-					f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-					r: '100K',
-				},
-				{ stdio: ['ignore', 'pipe', 'ignore'] },
-			);
-			if (!process.stdout) {
-				reject(new Error('No stdout'));
-				return;
-			}
-			const stream = process.stdout;
+			const stream = ytdl(this.url, { filter: 'audioonly' });
 			const onError = (error: Error) => {
-				if (!process.killed) process.kill();
 				stream.resume();
 				reject(error);
 			};
-			process
-				.once('spawn', () => {
-					demuxProbe(stream)
-						.then((probe) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
-						.catch(onError);
-				})
+			demuxProbe(stream)
+				.then((probe) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
 				.catch(onError);
 		});
 	}
