@@ -1,7 +1,8 @@
 import { opus, VolumeTransformer } from 'prism-media';
 import { PassThrough, Readable } from 'stream';
 import { SILENCE_FRAME } from '../AudioPlayer';
-import { AudioResource, createAudioResource, NO_CONSTRAINT, VOLUME_CONSTRAINT } from '../AudioResource';
+// eslint-disable-next-line prettier/prettier
+import { AudioResource, createFFMPEGResource, createAudioResource, NO_CONSTRAINT, VOLUME_CONSTRAINT } from '../AudioResource';
 import { Edge, findPipeline as _findPipeline, StreamType, TransformerType } from '../TransformerGraph';
 
 jest.mock('prism-media');
@@ -100,6 +101,18 @@ describe('createAudioResource', () => {
 		const resource = createAudioResource(new PassThrough());
 		expect(findPipeline).toHaveBeenCalledWith(StreamType.Arbitrary, NO_CONSTRAINT);
 		expect(resource.volume).toBeUndefined();
+	});
+
+	test('Creates a FFMPEG Resource from given url/path.', () => {
+		const resource = createFFMPEGResource('mypath.mp3');
+		expect(findPipeline).toHaveBeenCalledWith(StreamType.OggOpus, NO_CONSTRAINT);
+		expect(resource.volume).toBeUndefined();
+	});
+
+	test('Creates a FFMPEG Resource from given url/path. (volume)', () => {
+		const resource = createFFMPEGResource('mypath.mp3', { inlineVolume: true });
+		expect(findPipeline).toHaveBeenCalledWith(StreamType.Raw, VOLUME_CONSTRAINT);
+		expect(resource.volume).toBeInstanceOf(VolumeTransformer);
 	});
 
 	test('Appends silence frames when ended', async () => {
