@@ -1,6 +1,6 @@
 {
 	"name": "@discordjs/voice",
-	"version": "0.5.6",
+	"version": "0.6.0",
 	"description": "Implementation of the Discord Voice API for Node.js",
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
