@@ -24,6 +24,7 @@ export interface VoiceUserData {
  * The events that an SSRCMap may emit.
  */
 export interface SSRCMapEvents {
+	create: (newData: VoiceUserData) => Awaited<void>;
 	update: (oldData: VoiceUserData | undefined, newData: VoiceUserData) => Awaited<void>;
 	delete: (deletedData: VoiceUserData) => Awaited<void>;
 }
@@ -56,6 +57,7 @@ export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 		};
 
 		this.map.set(data.audioSSRC, newValue);
+		if (!existing) this.emit('create', newValue);
 		this.emit('update', existing, newValue);
 	}
 
