@@ -1,11 +1,13 @@
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
-import { SILENCE_FRAME } from '../audio/AudioPlayer';
-import { ConnectionData, Networking, NetworkingState } from '../networking/Networking';
-import { VoiceUDPSocket } from '../networking/VoiceUDPSocket';
-import { VoiceWebSocket } from '../networking/VoiceWebSocket';
+import { ConnectionData } from '../networking/Networking';
 import { methods } from '../util/Secretbox';
 import type { VoiceConnection } from '../VoiceConnection';
-import { AudioReceiveStream } from './AudioReceiveStream';
+import {
+	AudioReceiveStream,
+	AudioReceiveStreamOptions,
+	createDefaultAudioReceiveStreamOptions,
+} from './AudioReceiveStream';
+import { SpeakingMap } from './SpeakingMap';
 import { SSRCMap } from './SSRCMap';
 
 /**
@@ -28,91 +30,37 @@ export class VoiceReceiver {
 	/**
 	 * The current audio subscriptions of this receiver.
 	 */
-	public readonly subscriptions: Map<number, AudioReceiveStream>;
+	public readonly subscriptions: Map<string, AudioReceiveStream>;
 
 	/**
-	 * The connection information for this receiver. Used to decrypt incoming packets.
+	 * The connection data of the receiver.
+	 * @internal
 	 */
-	private connectionData: Partial<ConnectionData>;
+	public connectionData: Partial<ConnectionData>;
+
+	/**
+	 * The speaking map of the receiver.
+	 */
+	public readonly speaking: SpeakingMap;
 
 	public constructor(voiceConnection: VoiceConnection) {
 		this.voiceConnection = voiceConnection;
 		this.ssrcMap = new SSRCMap();
+		this.speaking = new SpeakingMap();
 		this.subscriptions = new Map();
 		this.connectionData = {};
 
-		const onWsPacket = (packet: any) => this.onWsPacket(packet);
-		const onUdpMessage = (msg: Buffer) => this.onUdpMessage(msg);
-
-		const applyConnectionData = (connectionData: Partial<ConnectionData>) => {
-			this.connectionData = {
-				...this.connectionData,
-				...connectionData,
-			};
-			if (connectionData.packetsPlayed === 0) {
-				this.voiceConnection.playOpusPacket(SILENCE_FRAME);
-			}
-		};
-
-		// Bind listeners for updates
-		const onNetworkingChange = (oldState: NetworkingState, newState: NetworkingState) => {
-			const oldWs = Reflect.get(oldState, 'ws') as VoiceWebSocket | undefined;
-			const oldUdp = Reflect.get(oldState, 'udp') as VoiceUDPSocket | undefined;
-			const newWs = Reflect.get(newState, 'ws') as VoiceWebSocket | undefined;
-			const newUdp = Reflect.get(newState, 'udp') as VoiceUDPSocket | undefined;
-
-			const connectionData = Reflect.get(newState, 'connectionData') as Partial<ConnectionData> | undefined;
-			if (connectionData) applyConnectionData(connectionData);
-
-			if (newWs !== oldWs) {
-				oldWs?.off('packet', onWsPacket);
-				newWs?.on('packet', onWsPacket);
-			}
-
-			if (newUdp !== oldUdp) {
-				oldUdp?.off('message', onUdpMessage);
-				newUdp?.on('message', onUdpMessage);
-			}
-		};
-
-		this.voiceConnection.on('stateChange', (oldState, newState) => {
-			const oldNetworking: Networking | undefined = Reflect.get(oldState, 'networking');
-			const newNetworking: Networking | undefined = Reflect.get(newState, 'networking');
-
-			if (newNetworking !== oldNetworking) {
-				oldNetworking?.off('stateChange', onNetworkingChange);
-				newNetworking?.on('stateChange', onNetworkingChange);
-				if (newNetworking) {
-					const ws = Reflect.get(newNetworking.state, 'ws') as VoiceWebSocket | undefined;
-					const udp = Reflect.get(newNetworking.state, 'udp') as VoiceUDPSocket | undefined;
-					const connectionData = Reflect.get(newNetworking.state, 'connectionData') as
-						| Partial<ConnectionData>
-						| undefined;
-					ws?.on('packet', onWsPacket);
-					udp?.on('message', onUdpMessage);
-					if (connectionData) applyConnectionData(connectionData);
-				}
-			}
-		});
-
-		// Bind listeners for the existing state
-		const networking: Networking | undefined = Reflect.get(voiceConnection.state, 'networking');
-		if (networking) {
-			const ws = Reflect.get(networking.state, 'ws') as VoiceWebSocket | undefined;
-			const udp = Reflect.get(networking.state, 'udp') as VoiceUDPSocket | undefined;
-			const connectionData = Reflect.get(networking.state, 'connectionData') as Partial<ConnectionData> | undefined;
-			ws?.on('packet', onWsPacket);
-			udp?.on('message', onUdpMessage);
-			if (connectionData) applyConnectionData(connectionData);
-		}
+		this.onWsPacket = this.onWsPacket.bind(this);
+		this.onUdpMessage = this.onUdpMessage.bind(this);
 	}
 
 	/**
 	 * Called when a packet is received on the attached connection's WebSocket.
 	 *
 	 * @param packet The received packet
+	 * @internal
 	 */
-	private onWsPacket(packet: any) {
+	public onWsPacket(packet: any) {
 		if (packet.op === VoiceOpcodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
 			this.ssrcMap.delete(packet.d.user_id);
 		} else if (
@@ -190,15 +138,19 @@ export class VoiceReceiver {
 	 * Called when the UDP socket of the attached connection receives a message.
 	 *
 	 * @param msg The received message
+	 * @internal
 	 */
-	private onUdpMessage(msg: Buffer) {
+	public onUdpMessage(msg: Buffer) {
 		if (msg.length <= 8) return;
 		const ssrc = msg.readUInt32BE(8);
-		const stream = this.subscriptions.get(ssrc);
-		if (!stream) return;
 
 		const userData = this.ssrcMap.get(ssrc);
 		if (!userData) return;
+
+		this.speaking.onPacket(userData.userId);
+
+		const stream = this.subscriptions.get(userData.userId);
+		if (!stream) return;
 
 		if (this.connectionData.encryptionMode && this.connectionData.nonceBuffer && this.connectionData.secretKey) {
 			const packet = this.parsePacket(
@@ -216,36 +168,22 @@ export class VoiceReceiver {
 	}
 
 	/**
-	 * Creates a subscription for the given target, specified either by their SSRC or user ID.
+	 * Creates a subscription for the given user ID.
 	 *
-	 * @param target The audio SSRC or user ID to subscribe to
+	 * @param target The ID of the user to subscribe to
 	 * @returns A readable stream of Opus packets received from the target
 	 */
-	public subscribe(target: string | number) {
-		const ssrc = this.ssrcMap.get(target)?.audioSSRC;
-		if (!ssrc) {
-			throw new Error(`No known SSRC for ${target}`);
-		}
-
-		const existing = this.subscriptions.get(ssrc);
+	public subscribe(userId: string, options?: Partial<AudioReceiveStreamOptions>) {
+		const existing = this.subscriptions.get(userId);
 		if (existing) return existing;
 
-		const stream = new AudioReceiveStream();
-		stream.once('close', () => this.subscriptions.delete(ssrc));
-		this.subscriptions.set(ssrc, stream);
+		const stream = new AudioReceiveStream({
+			...createDefaultAudioReceiveStreamOptions(),
+			...options,
+		});
+
+		stream.once('close', () => this.subscriptions.delete(userId));
+		this.subscriptions.set(userId, stream);
 		return stream;
 	}
-}
-
-/**
- * Creates a new voice receiver for the given voice connection.
- *
- * @param voiceConnection The voice connection to attach to
- * @beta
- * @remarks
- * Voice receive is an undocumented part of the Discord API - voice receive is not guaranteed
- * to be stable and may break without notice.
- */
-export function createVoiceReceiver(voiceConnection: VoiceConnection) {
-	return new VoiceReceiver(voiceConnection);
 }
