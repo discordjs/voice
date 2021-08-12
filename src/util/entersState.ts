@@ -1,17 +1,19 @@
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayer, AudioPlayerStatus } from '../audio/AudioPlayer';
+import { abortAfter } from './abortAfter';
+import EventEmitter, { once } from 'events';
 
 /**
  * Allows a voice connection a specified amount of time to enter a given state, otherwise rejects with an error.
  *
  * @param target - The voice connection that we want to observe the state change for
  * @param status - The status that the voice connection should be in
- * @param maxTime - The maximum time we are allowing for this to occur
+ * @param timeoutOrSignal - The maximum time we are allowing for this to occur, or a signal that will abort the operation
  */
 export function entersState(
 	target: VoiceConnection,
 	status: VoiceConnectionStatus,
-	maxTime: number,
+	timeoutOrSignal: number | AbortSignal,
 ): Promise<VoiceConnection>;
 
 /**
@@ -19,41 +21,34 @@ export function entersState(
  *
  * @param target - The audio player that we want to observe the state change for
  * @param status - The status that the audio player should be in
- * @param maxTime - The maximum time we are allowing for this to occur
+ * @param timeoutOrSignal - The maximum time we are allowing for this to occur, or a signal that will abort the operation
  */
-export function entersState(target: AudioPlayer, status: AudioPlayerStatus, maxTime: number): Promise<AudioPlayer>;
+export function entersState(
+	target: AudioPlayer,
+	status: AudioPlayerStatus,
+	timeoutOrSignal: number | AbortSignal,
+): Promise<AudioPlayer>;
 
 /**
  * Allows a target a specified amount of time to enter a given state, otherwise rejects with an error.
  *
  * @param target - The object that we want to observe the state change for
  * @param status - The status that the target should be in
- * @param maxTime - The maximum time we are allowing for this to occur
+ * @param timeoutOrSignal - The maximum time we are allowing for this to occur, or a signal that will abort the operation
  */
-export function entersState<T extends VoiceConnection | AudioPlayer>(
+export async function entersState<T extends VoiceConnection | AudioPlayer>(
 	target: T,
 	status: VoiceConnectionStatus | AudioPlayerStatus,
-	maxTime: number,
+	timeoutOrSignal: number | AbortSignal,
 ) {
-	if (target.state.status === status) {
-		return Promise.resolve(target);
+	if (target.state.status !== status) {
+		const [ac, signal] =
+			typeof timeoutOrSignal === 'number' ? abortAfter(timeoutOrSignal) : [undefined, timeoutOrSignal];
+		try {
+			await once(target as EventEmitter, status, { signal });
+		} finally {
+			ac?.abort();
+		}
 	}
-	let cleanup: () => void;
-	return new Promise((resolve, reject) => {
-		const timeout = setTimeout(
-			() => reject(new Error(`Did not enter state ${status as string} within ${maxTime}ms`)),
-			maxTime,
-		);
-
-		(target as any).once(status as any, resolve);
-		(target as any).once('error', reject);
-
-		cleanup = () => {
-			clearTimeout(timeout);
-			(target as any).off(status as any, resolve);
-			(target as any).off('error', reject);
-		};
-	})
-		.then(() => target)
-		.finally(cleanup!);
+	return target;
 }

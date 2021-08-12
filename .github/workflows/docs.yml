@@ -4,7 +4,7 @@ jobs:
   docs:
     strategy:
       matrix:
-        node: ['14', '16']
+        node: ['16']
     name: Documentation (Node v${{ matrix.node }})
     runs-on: ubuntu-latest
     steps:

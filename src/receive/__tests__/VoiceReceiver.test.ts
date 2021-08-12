@@ -2,18 +2,31 @@
 import { VoiceReceiver } from '../VoiceReceiver';
 import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
 import { RTP_PACKET_DESKTOP, RTP_PACKET_CHROME, RTP_PACKET_ANDROID } from './fixtures/rtp';
-import EventEmitter, { once } from 'events';
-import { createVoiceReceiver } from '..';
+import { once } from 'events';
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
-import * as fixtures from './fixtures/states';
+import { methods } from '../../util/Secretbox';
 
 jest.mock('../../VoiceConnection');
 jest.mock('../SSRCMap');
+
+const openSpy = jest.spyOn(methods, 'open');
+
+openSpy.mockImplementation((buffer) => buffer);
 
 const VoiceConnection = _VoiceConnection as unknown as jest.Mocked<typeof _VoiceConnection>;
 
 function nextTick() {
 	return new Promise((resolve) => process.nextTick(resolve));
+}
+
+function* rangeIter(start: number, end: number) {
+	for (let i = start; i <= end; i++) {
+		yield i;
+	}
+}
+
+function range(start: number, end: number) {
+	return Buffer.from([...rangeIter(start, end)]);
 }
 
 describe('VoiceReceiver', () => {
@@ -25,7 +38,7 @@ describe('VoiceReceiver', () => {
 		voiceConnection.state = {
 			status: VoiceConnectionStatus.Signalling,
 		} as any;
-		receiver = createVoiceReceiver(voiceConnection);
+		receiver = new VoiceReceiver(voiceConnection);
 		receiver['connectionData'] = {
 			encryptionMode: 'dummy',
 			nonceBuffer: Buffer.alloc(0),
@@ -46,7 +59,7 @@ describe('VoiceReceiver', () => {
 			userId: '123',
 		}));
 
-		const stream = receiver.subscribe(RTP_PACKET.ssrc);
+		const stream = receiver.subscribe('123');
 
 		receiver['onUdpMessage'](RTP_PACKET.packet);
 		await nextTick();
@@ -66,7 +79,7 @@ describe('VoiceReceiver', () => {
 			userId: '123',
 		}));
 
-		const stream = receiver.subscribe(RTP_PACKET_DESKTOP.ssrc);
+		const stream = receiver.subscribe('123');
 
 		const errorEvent = once(stream, 'error');
 
@@ -83,12 +96,8 @@ describe('VoiceReceiver', () => {
 			userId: '123',
 		}));
 
-		const stream = receiver.subscribe(RTP_PACKET_DESKTOP.ssrc);
-		expect(receiver.subscribe(RTP_PACKET_DESKTOP.ssrc)).toBe(stream);
-	});
-
-	test('subscribe: refuses unknown SSRC or user IDs', () => {
-		expect(() => receiver.subscribe(RTP_PACKET_DESKTOP.ssrc)).toThrow();
+		const stream = receiver.subscribe('123');
+		expect(receiver.subscribe('123')).toBe(stream);
 	});
 
 	describe('onWsPacket', () => {
@@ -149,74 +158,51 @@ describe('VoiceReceiver', () => {
 			});
 		});
 	});
-});
 
-test('Receiver tracks state changes', () => {
-	const voiceConnection: any = new EventEmitter();
-	voiceConnection.playOpusPacket = jest.fn();
+	describe('decrypt', () => {
+		const secretKey = new Uint8Array([1, 2, 3, 4]);
 
-	voiceConnection.state = fixtures.state1;
+		beforeEach(() => {
+			openSpy.mockClear();
+		});
 
-	const receiver = createVoiceReceiver(voiceConnection);
+		test('decrypt: xsalsa20_poly1305_lite', () => {
+			// Arrange
+			const buffer = range(1, 32);
+			const nonce = Buffer.alloc(4);
 
-	const onWsPacketSpy = jest.fn();
-	receiver['onWsPacket'] = onWsPacketSpy;
+			// Act
+			const decrypted = receiver['decrypt'](buffer, 'xsalsa20_poly1305_lite', nonce, secretKey);
 
-	const onUdpMessageSpy = jest.fn();
-	receiver['onUdpMessage'] = onUdpMessageSpy;
+			// Assert
+			expect(nonce.equals(range(29, 32))).toBe(true);
+			expect(decrypted.equals(range(13, 28))).toBe(true);
+		});
 
-	const networking1 = fixtures.state2.vc.networking;
-	voiceConnection.state = fixtures.state2.vc;
+		test('decrypt: xsalsa20_poly1305_suffix', () => {
+			// Arrange
+			const buffer = range(1, 64);
+			const nonce = Buffer.alloc(24);
 
-	voiceConnection.emit('stateChange', fixtures.state1.vc, voiceConnection.state);
-	fixtures.state2.networking.ws.emit('packet', Symbol('message'));
-	expect(onWsPacketSpy).toHaveBeenCalled();
-	onWsPacketSpy.mockClear();
+			// Act
+			const decrypted = receiver['decrypt'](buffer, 'xsalsa20_poly1305_suffix', nonce, secretKey);
 
-	networking1.state = fixtures.state3.networking;
-	networking1.emit('stateChange', fixtures.state2.networking, fixtures.state3.networking);
+			// Assert
+			expect(nonce.equals(range(41, 64))).toBe(true);
+			expect(decrypted.equals(range(13, 40))).toBe(true);
+		});
 
-	fixtures.state3.networking.ws.emit('packet', Symbol('message'));
-	expect(onWsPacketSpy).toHaveBeenCalled();
+		test('decrypt: xsalsa20_poly1305', () => {
+			// Arrange
+			const buffer = range(1, 64);
+			const nonce = Buffer.alloc(12);
 
-	fixtures.state3.networking.udp.emit('message', Symbol('message'));
-	expect(onUdpMessageSpy).toHaveBeenCalled();
+			// Act
+			const decrypted = receiver['decrypt'](buffer, 'xsalsa20_poly1305', nonce, secretKey);
 
-	onWsPacketSpy.mockClear();
-	onUdpMessageSpy.mockClear();
-
-	voiceConnection.state = fixtures.state4.vc;
-	expect(voiceConnection.playOpusPacket).not.toHaveBeenCalled();
-
-	voiceConnection.emit('stateChange', fixtures.state3.vc, voiceConnection.state);
-
-	expect(voiceConnection.playOpusPacket).toHaveBeenCalled();
-
-	fixtures.state4.networking.ws.emit('packet', Symbol('message'));
-	expect(onWsPacketSpy).toHaveBeenCalled();
-
-	fixtures.state4.networking.udp.emit('message', Symbol('message'));
-	expect(onUdpMessageSpy).toHaveBeenCalled();
-});
-
-test('Receiver binds to immediately ready voice connection', () => {
-	const voiceConnection: any = new EventEmitter();
-	voiceConnection.state = fixtures.state4.vc;
-	voiceConnection.playOpusPacket = jest.fn();
-
-	const receiver = createVoiceReceiver(voiceConnection);
-
-	expect(voiceConnection.playOpusPacket).toHaveBeenCalled();
-
-	const onWsPacketSpy = jest.fn();
-	receiver['onWsPacket'] = onWsPacketSpy;
-
-	const onUdpMessageSpy = jest.fn();
-	receiver['onUdpMessage'] = onUdpMessageSpy;
-
-	fixtures.state4.networking.ws.emit('packet', Symbol('message'));
-	expect(onWsPacketSpy).toHaveBeenCalled();
-
-	fixtures.state4.networking.udp.emit('message', Symbol('message'));
-	expect(onUdpMessageSpy).toHaveBeenCalled();
+			// Assert
+			expect(nonce.equals(range(1, 12))).toBe(true);
+			expect(decrypted.equals(range(13, 64))).toBe(true);
+		});
+	});
 });
