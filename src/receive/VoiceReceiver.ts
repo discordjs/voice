@@ -149,8 +149,9 @@ export class VoiceReceiver {
 
 		this.speaking.onPacket(userData.userId);
 
-		const stream = this.subscriptions.get(userData.userId);
-		if (!stream) return;
+		const allStream = this.subscriptions.get('all');
+		const userStream = this.subscriptions.get(userData.userId);
+		if (!allStream && !userStream) return;
 
 		if (this.connectionData.encryptionMode && this.connectionData.nonceBuffer && this.connectionData.secretKey) {
 			const packet = this.parsePacket(
@@ -160,9 +161,23 @@ export class VoiceReceiver {
 				this.connectionData.secretKey,
 			);
 			if (packet) {
-				stream.push(packet);
+				if (allStream) {
+					allStream.push(packet);
+				}
+				
+				if (userStream) {
+					userStream.push(packet);
+				}
 			} else {
-				stream.destroy(new Error('Failed to parse packet'));
+				const error = new Error('Failed to parse packet')
+
+				if (allStream) {
+					allStream.destroy(error);
+				}
+
+				if (userStream) {
+					userStream.destroy(error);
+				}
 			}
 		}
 	}
@@ -170,7 +185,7 @@ export class VoiceReceiver {
 	/**
 	 * Creates a subscription for the given user ID.
 	 *
-	 * @param target The ID of the user to subscribe to
+	 * @param target The ID of the user to subscribe to, can be 'all' to subsribe all users
 	 * @returns A readable stream of Opus packets received from the target
 	 */
 	public subscribe(userId: string, options?: Partial<AudioReceiveStreamOptions>) {
