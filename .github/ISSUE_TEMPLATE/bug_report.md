@@ -6,7 +6,7 @@ title: ''
 labels: 'bug'
 assignees: ''
 ---
-<!-- Use Discord for questions: https://discord.gg/bRCvFy9 -->
+<!-- Use Discord for questions: https://discord.gg/djs -->
 
 **Please describe the problem you are having in as much detail as possible:**
 
