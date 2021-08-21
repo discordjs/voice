@@ -1,6 +1,6 @@
 # Contributing
 
-**The issue tracker is only for bug reports and enhancement suggestions. If you have a question, please ask it in [GitHub Discussions (preferred)](https://github.com/discordjs/discord.js/discussions) or the [Discord server](https://discord.gg/djs) instead of opening an issue – you will get redirected there anyway.**
+**The issue tracker is only for bug reports and enhancement suggestions. If you have a question, please ask it in [GitHub Discussions (preferred)](https://github.com/discordjs/voice/discussions) or the [Discord server](https://discord.gg/djs) instead of opening an issue – you will get redirected there anyway.**
 
 If you wish to contribute to the @discordjs/voice codebase or documentation, feel free to fork the repository and submit a
 pull request. We use ESLint and Prettier to enforce a consistent coding style, so having those set up in your editor of
