@@ -14,7 +14,7 @@ export {
 
 export { AudioPlayerError } from './AudioPlayerError';
 
-export { AudioResource, createAudioResource } from './AudioResource';
+export { AudioResource, createAudioResource, createFFMPEGResource } from './AudioResource';
 
 export { PlayerSubscription } from './PlayerSubscription';
 
