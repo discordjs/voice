@@ -72,7 +72,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	let subscription = subscriptions.get(interaction.guildId);
 
 	if (interaction.commandName === 'play') {
-		await interaction.defer();
+		await interaction.deferReply();
 		// Extract the video URL from the command
 		const url = interaction.options.get('song')!.value! as string;
 
@@ -127,7 +127,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			await interaction.followUp(`Enqueued **${track.title}**`);
 		} catch (error) {
 			console.warn(error);
-			await interaction.reply('Failed to play track, please try again later!');
+			await interaction.editReply('Failed to play track, please try again later!');
 		}
 	} else if (interaction.commandName === 'skip') {
 		if (subscription) {
