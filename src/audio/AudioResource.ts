@@ -35,23 +35,11 @@ interface CreateAudioResourceOptions<T> {
 	silencePaddingFrames?: number;
 }
 
-interface CreateFFMPEGResourceOptions {
+interface createFFmpegResourceOptions {
 	/**
 	 * Arguments to be used before '-i' argument in FFMPEG.
 	 */
 	arguments?: string[];
-	/** *
-	 * Adds reconnect arguments if set to true
-	 */
-	reconnect?: boolean;
-	/**
-	 * Sets reconnection time if reconnect is set to true. Default is 5 sec (5000 ms)
-	 */
-	reconnect_time?: number;
-	/**
-	 * Time to seek in audio resource (in ms)
-	 */
-	seek?: number;
 	/**
 	 * Whether or not inline volume should be enabled. If enabled, you will be able to change the volume
 	 * of the stream on-the-fly. However, this also increases the performance cost of playback. Defaults to `false`.
@@ -276,12 +264,12 @@ export function createAudioResource<T>(
 	);
 }
 
-export function createFFMPEGResource<T>(
+export function createFFmpegResource<T>(
 	input: string,
-	options?: CreateFFMPEGResourceOptions,
+	options?: createFFmpegResourceOptions,
 ): AudioResource<T extends null | undefined ? null : T>;
 
-export function createFFMPEGResource(input: string, options: CreateFFMPEGResourceOptions = {}): AudioResource | void {
+export function createFFmpegResource(input: string, options: createFFmpegResourceOptions = {}): AudioResource | void {
 	const final_args: string[] = [];
 	const FFMPEG_OPUS_ARGUMENTS = [
 		'-analyzeduration',
@@ -318,21 +306,6 @@ export function createFFMPEGResource(input: string, options: CreateFFMPEGResourc
 	}
 	if (options.arguments && options.arguments.length !== 0) {
 		final_args.push(...options.arguments);
-	}
-	if (options.seek) {
-		final_args.push('-ss', `${options.seek}`, '-accurate_seek');
-	}
-	if (options.reconnect === true) {
-		if (options.reconnect_time)
-			final_args.push(
-				'-reconnect',
-				'1',
-				'-reconnect_streamed',
-				'1',
-				'-reconnect_delay_max',
-				`${options.reconnect_time}`,
-			);
-		else final_args.push('-reconnect', '1', '-reconnect_streamed', '1', '-reconnect_delay_max', '5');
 	}
 	final_args.push('-i', input);
 	options.inlineVolume ? final_args.push(...FFMPEG_PCM_ARGUMENTS) : final_args.push(...FFMPEG_OPUS_ARGUMENTS);
