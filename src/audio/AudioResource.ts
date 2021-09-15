@@ -1,4 +1,11 @@
-import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGraph';
+import {
+	Edge,
+	findPipeline,
+	StreamType,
+	TransformerType,
+	FFMPEG_OPUS_ARGUMENTS,
+	FFMPEG_PCM_ARGUMENTS,
+} from './TransformerGraph';
 import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
 import { VolumeTransformer, opus, FFmpeg } from 'prism-media';
@@ -35,9 +42,9 @@ interface CreateAudioResourceOptions<T> {
 	silencePaddingFrames?: number;
 }
 
-interface createFFmpegResourceOptions {
+interface CreateFFmpegResourceOptions {
 	/**
-	 * Arguments to be used before '-i' argument in FFMPEG.
+	 * Arguments to be used before the '-i' argument in FFMPEG.
 	 */
 	arguments?: string[];
 	/**
@@ -266,53 +273,24 @@ export function createAudioResource<T>(
 
 export function createFFmpegResource<T>(
 	input: string,
-	options?: createFFmpegResourceOptions,
+	options?: CreateFFmpegResourceOptions,
 ): AudioResource<T extends null | undefined ? null : T>;
 
-export function createFFmpegResource(input: string, options: createFFmpegResourceOptions = {}): AudioResource | void {
-	const final_args: string[] = [];
-	const FFMPEG_OPUS_ARGUMENTS = [
-		'-analyzeduration',
-		'0',
-		'-loglevel',
-		'0',
-		'-acodec',
-		'libopus',
-		'-f',
-		'opus',
-		'-ar',
-		'48000',
-		'-ac',
-		'2',
-	];
-	const FFMPEG_PCM_ARGUMENTS = [
-		'-analyzeduration',
-		'0',
-		'-loglevel',
-		'0',
-		'-f',
-		's16le',
-		'-acodec',
-		'pcm_s16le',
-		'-ar',
-		'48000',
-		'-ac',
-		'2',
-	];
-
+export function createFFmpegResource(input: string, options: CreateFFmpegResourceOptions = {}): AudioResource | void {
+	const finalArgs: string[] = [];
 	if (typeof input !== 'string') {
-		console.error('Input is not a string');
+		console.error('Input is neither a string nor a Readable stream');
 		return;
 	}
 	if (options.arguments && options.arguments.length !== 0) {
-		final_args.push(...options.arguments);
+		finalArgs.push(...options.arguments);
 	}
-	final_args.push('-i', input);
-	options.inlineVolume ? final_args.push(...FFMPEG_PCM_ARGUMENTS) : final_args.push(...FFMPEG_OPUS_ARGUMENTS);
-	const ffmpeg_instance = new FFmpeg({
-		args: final_args,
+	finalArgs.push('-i', input);
+	options.inlineVolume ? finalArgs.push(...FFMPEG_PCM_ARGUMENTS) : finalArgs.push(...FFMPEG_OPUS_ARGUMENTS);
+	const ffmpegInstance = new FFmpeg({
+		args: finalArgs,
 	});
-	return createAudioResource(ffmpeg_instance, {
+	return createAudioResource(ffmpegInstance, {
 		inputType: options.inlineVolume ? StreamType.Raw : StreamType.OggOpus,
 		inlineVolume: options.inlineVolume ? options.inlineVolume : false,
 	});

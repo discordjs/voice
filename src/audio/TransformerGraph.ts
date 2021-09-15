@@ -21,7 +21,7 @@ const FFMPEG_OPUS_ARGUMENTS = [
 	'-ac',
 	'2',
 ];
-
+export { FFMPEG_OPUS_ARGUMENTS, FFMPEG_PCM_ARGUMENTS };
 /**
  * The different types of stream that can exist within the pipeline
  *
