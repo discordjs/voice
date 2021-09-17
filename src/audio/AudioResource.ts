@@ -272,24 +272,25 @@ export function createAudioResource<T>(
 }
 
 export function createFFmpegResource<T>(
-	input: string,
+	input: string | Readable,
 	options?: CreateFFmpegResourceOptions,
 ): AudioResource<T extends null | undefined ? null : T>;
 
-export function createFFmpegResource(input: string, options: CreateFFmpegResourceOptions = {}): AudioResource | void {
+export function createFFmpegResource(
+	input: string | Readable,
+	options: CreateFFmpegResourceOptions = {},
+): AudioResource | void {
 	const finalArgs: string[] = [];
-	if (typeof input !== 'string') {
-		console.error('Input is neither a string nor a Readable stream');
-		return;
-	}
+
 	if (options.arguments && options.arguments.length !== 0) {
 		finalArgs.push(...options.arguments);
 	}
-	finalArgs.push('-i', input);
+	if (typeof input === 'string') finalArgs.push('-i', input);
 	options.inlineVolume ? finalArgs.push(...FFMPEG_PCM_ARGUMENTS) : finalArgs.push(...FFMPEG_OPUS_ARGUMENTS);
 	const ffmpegInstance = new FFmpeg({
 		args: finalArgs,
 	});
+	if (input instanceof Readable) input.pipe(ffmpegInstance);
 	return createAudioResource(ffmpegInstance, {
 		inputType: options.inlineVolume ? StreamType.Raw : StreamType.OggOpus,
 		inlineVolume: options.inlineVolume ? options.inlineVolume : false,
