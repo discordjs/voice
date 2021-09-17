@@ -1,7 +1,14 @@
-import { Edge, findPipeline, StreamType, TransformerType } from './TransformerGraph';
+import {
+	Edge,
+	findPipeline,
+	StreamType,
+	TransformerType,
+	FFMPEG_OPUS_ARGUMENTS,
+	FFMPEG_PCM_ARGUMENTS,
+} from './TransformerGraph';
 import { pipeline, Readable } from 'stream';
 import { noop } from '../util/util';
-import { VolumeTransformer, opus } from 'prism-media';
+import { VolumeTransformer, opus, FFmpeg } from 'prism-media';
 import { AudioPlayer, SILENCE_FRAME } from './AudioPlayer';
 
 /**
@@ -33,6 +40,18 @@ interface CreateAudioResourceOptions<T> {
 	 * Defaults to 5.
 	 */
 	silencePaddingFrames?: number;
+}
+
+interface CreateFFmpegResourceOptions {
+	/**
+	 * Arguments to be used before the '-i' argument in FFMPEG.
+	 */
+	arguments?: string[];
+	/**
+	 * Whether or not inline volume should be enabled. If enabled, you will be able to change the volume
+	 * of the stream on-the-fly. However, this also increases the performance cost of playback. Defaults to `false`.
+	 */
+	inlineVolume?: boolean;
 }
 
 /**
@@ -250,4 +269,30 @@ export function createAudioResource<T>(
 		(options.metadata ?? null) as T,
 		options.silencePaddingFrames ?? 5,
 	);
+}
+
+export function createFFmpegResource<T>(
+	input: string | Readable,
+	options?: CreateFFmpegResourceOptions,
+): AudioResource<T extends null | undefined ? null : T>;
+
+export function createFFmpegResource(
+	input: string | Readable,
+	options: CreateFFmpegResourceOptions = {},
+): AudioResource | void {
+	const finalArgs: string[] = [];
+
+	if (options.arguments && options.arguments.length !== 0) {
+		finalArgs.push(...options.arguments);
+	}
+	if (typeof input === 'string') finalArgs.push('-i', input);
+	options.inlineVolume ? finalArgs.push(...FFMPEG_PCM_ARGUMENTS) : finalArgs.push(...FFMPEG_OPUS_ARGUMENTS);
+	const ffmpegInstance = new FFmpeg({
+		args: finalArgs,
+	});
+	if (input instanceof Readable) input.pipe(ffmpegInstance);
+	return createAudioResource(ffmpegInstance, {
+		inputType: options.inlineVolume ? StreamType.Raw : StreamType.OggOpus,
+		inlineVolume: options.inlineVolume ? options.inlineVolume : false,
+	});
 }
