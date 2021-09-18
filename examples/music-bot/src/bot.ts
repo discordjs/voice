@@ -12,7 +12,7 @@ import { MusicSubscription } from './music/subscription';
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const { token, deployment_guild_id } = require('../config.json');
 
-const client = new Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
+const client = new Client({ intents: ['GUILD_VOICE_STATES', 'GUILDS'] });
 
 client.on('ready', async () => {
 	console.log('Ready!');
