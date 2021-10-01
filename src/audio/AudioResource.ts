@@ -190,7 +190,7 @@ export function inferStreamType(stream: Readable): {
 }
 
 /**
- * Creates an audio resource that can be played be audio players.
+ * Creates an audio resource that can be played by audio players.
  *
  * @remarks
  * If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.
@@ -214,7 +214,7 @@ export function createAudioResource<T>(
 ): AudioResource<T extends null | undefined ? null : T>;
 
 /**
- * Creates an audio resource that can be played be audio players.
+ * Creates an audio resource that can be played by audio players.
  *
  * @remarks
  * If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.
@@ -234,7 +234,7 @@ export function createAudioResource<T extends null | undefined>(
 ): AudioResource<null>;
 
 /**
- * Creates an audio resource that can be played be audio players.
+ * Creates an audio resource that can be played by audio players.
  *
  * @remarks
  * If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.
