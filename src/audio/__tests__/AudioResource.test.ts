@@ -1,5 +1,5 @@
 import { opus, VolumeTransformer } from 'prism-media';
-import { PassThrough, Readable } from 'stream';
+import { PassThrough, Readable } from 'node:stream';
 import { SILENCE_FRAME } from '../AudioPlayer';
 import { AudioResource, createAudioResource, NO_CONSTRAINT, VOLUME_CONSTRAINT } from '../AudioResource';
 import { Edge, findPipeline as _findPipeline, StreamType, TransformerType } from '../TransformerGraph';

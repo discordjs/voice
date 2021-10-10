@@ -1,4 +1,4 @@
-import { Readable, ReadableOptions } from 'stream';
+import { Readable, ReadableOptions } from 'node:stream';
 import { SILENCE_FRAME } from '../audio/AudioPlayer';
 
 /**

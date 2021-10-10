@@ -2,7 +2,7 @@
 import { VoiceReceiver } from '../VoiceReceiver';
 import { VoiceConnection as _VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
 import { RTP_PACKET_DESKTOP, RTP_PACKET_CHROME, RTP_PACKET_ANDROID } from './fixtures/rtp';
-import { once } from 'events';
+import { once } from 'node:events';
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
 import { methods } from '../../util/Secretbox';
 

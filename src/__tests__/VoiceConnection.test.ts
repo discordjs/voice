@@ -14,7 +14,7 @@ import * as _Networking from '../networking/Networking';
 import * as _AudioPlayer from '../audio/AudioPlayer';
 import { PlayerSubscription as _PlayerSubscription } from '../audio/PlayerSubscription';
 import type { DiscordGatewayAdapterLibraryMethods } from '../util/adapter';
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 
 jest.mock('../audio/AudioPlayer');
 jest.mock('../audio/PlayerSubscription');

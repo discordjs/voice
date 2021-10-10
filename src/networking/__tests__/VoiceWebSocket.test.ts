@@ -1,5 +1,5 @@
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
-import EventEmitter, { once } from 'events';
+import EventEmitter, { once } from 'node:events';
 import WS from 'jest-websocket-mock';
 import { VoiceWebSocket } from '../VoiceWebSocket';
 

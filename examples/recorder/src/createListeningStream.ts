@@ -1,8 +1,8 @@
 import { EndBehaviorType, VoiceReceiver } from '@discordjs/voice';
 import { User } from 'discord.js';
-import { createWriteStream } from 'fs';
+import { createWriteStream } from 'node:fs';
 import { opus } from 'prism-media';
-import { pipeline } from 'stream';
+import { pipeline } from 'node:stream';
 
 function getDisplayName(userId: string, user?: User) {
 	return user ? `${user.username}_${user.discriminator}` : userId;

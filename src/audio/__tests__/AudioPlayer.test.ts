@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { AudioResource } from '../../audio/AudioResource';
 import { createAudioPlayer, AudioPlayerStatus, AudioPlayer, SILENCE_FRAME } from '../AudioPlayer';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { addAudioPlayer, deleteAudioPlayer } from '../../DataStore';
 import { NoSubscriberBehavior } from '../..';
 import { VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
-import { once } from 'events';
+import { once } from 'node:events';
 import { AudioPlayerError } from '../AudioPlayerError';
 
 jest.mock('../../DataStore');

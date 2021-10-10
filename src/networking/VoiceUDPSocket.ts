@@ -1,5 +1,5 @@
-import { createSocket, Socket } from 'dgram';
-import { isIPv4 } from 'net';
+import { createSocket, Socket } from 'node:dgram';
+import { isIPv4 } from 'node:net';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Awaited } from '../util/util';
 

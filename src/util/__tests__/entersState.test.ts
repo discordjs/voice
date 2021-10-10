@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 import { VoiceConnection, VoiceConnectionStatus } from '../../VoiceConnection';
 import { entersState } from '../entersState';
 
