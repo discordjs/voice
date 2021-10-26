@@ -1,5 +1,6 @@
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
-import WebSocket, { MessageEvent } from 'ws';
+import * as WebSocket from 'ws';
+import { MessageEvent } from 'ws';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Awaited } from '../util/util';
 

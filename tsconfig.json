@@ -14,7 +14,6 @@
 		"declarationMap": true,
 		"outDir": "dist",
 		"incremental": true,
-		"esModuleInterop": true,
 		"skipLibCheck": true
 	},
 	"include": ["src/**/*.ts"],

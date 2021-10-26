@@ -1,7 +1,8 @@
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayer, AudioPlayerStatus } from '../audio/AudioPlayer';
 import { abortAfter } from './abortAfter';
-import EventEmitter, { once } from 'events';
+import * as EventEmitter from 'events';
+import { once } from 'events';
 
 /**
  * Allows a voice connection a specified amount of time to enter a given state, otherwise rejects with an error.
