@@ -127,7 +127,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			await interaction.followUp(`Enqueued **${track.title}**`);
 		} catch (error) {
 			console.warn(error);
-			await interaction.reply('Failed to play track, please try again later!');
+			await interaction.followUp('Failed to play track, please try again later!');
 		}
 	} else if (interaction.commandName === 'skip') {
 		if (subscription) {
