@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createSocket as _createSocket } from 'dgram';
-import EventEmitter, { once } from 'events';
+import { createSocket as _createSocket } from 'node:dgram';
+import EventEmitter, { once } from 'node:events';
 import { VoiceUDPSocket } from '../VoiceUDPSocket';
 
-jest.mock('dgram');
+jest.mock('node:dgram');
 jest.useFakeTimers();
 
 const createSocket = _createSocket as unknown as jest.Mock<typeof _createSocket>;

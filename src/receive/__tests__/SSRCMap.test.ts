@@ -1,4 +1,4 @@
-import EventEmitter, { once } from 'events';
+import EventEmitter, { once } from 'node:events';
 import { SSRCMap, VoiceUserData } from '../SSRCMap';
 
 function onceOrThrow<T extends EventEmitter>(target: T, event: string, after: number) {

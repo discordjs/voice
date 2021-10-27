@@ -1,8 +1,8 @@
 import { demuxProbe } from '../demuxProbe';
 import { opus as _opus } from 'prism-media';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { StreamType } from '../../audio';
-import EventEmitter, { once } from 'events';
+import EventEmitter, { once } from 'node:events';
 
 jest.mock('prism-media');
 

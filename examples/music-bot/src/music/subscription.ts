@@ -9,7 +9,7 @@ import {
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
 import { Track } from './track';
-import { promisify } from 'util';
+import { promisify } from 'node:util';
 
 const wait = promisify(setTimeout);
 

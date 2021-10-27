@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { resolve, dirname } from 'path';
+import { resolve, dirname } from 'node:path';
 import { FFmpeg } from 'prism-media';
 
 /**

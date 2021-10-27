@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { opus } from 'prism-media';
 import { noop } from './util';
 import { StreamType } from '..';
