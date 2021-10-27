@@ -9,7 +9,7 @@ import { AudioPlayer, SILENCE_FRAME } from './AudioPlayer';
  *
  * @template T - the type for the metadata (if any) of the audio resource.
  */
-interface CreateAudioResourceOptions<T> {
+export interface CreateAudioResourceOptions<T> {
 	/**
 	 * The type of the input stream. Defaults to `StreamType.Arbitrary`.
 	 */
@@ -189,6 +189,21 @@ export function inferStreamType(stream: Readable): {
 	return { streamType: StreamType.Arbitrary, hasVolume: false };
 }
 
+/**
+ * Creates an audio resource that can be played by audio players.
+ *
+ * @remarks
+ * If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.
+ *
+ * If the input is not in the correct format, then a pipeline of transcoders and transformers will be created
+ * to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
+ * Opus transcoders, and Ogg/WebM demuxers.
+ *
+ * @param input - The resource to play.
+ * @param options - Configurable options for creating the resource.
+ *
+ * @template T - the type for the metadata (if any) of the audio resource.
+ */
 export function createAudioResource<T>(
 	input: string | Readable,
 	options: CreateAudioResourceOptions<T> &
@@ -198,13 +213,28 @@ export function createAudioResource<T>(
 		>,
 ): AudioResource<T extends null | undefined ? null : T>;
 
+/**
+ * Creates an audio resource that can be played by audio players.
+ *
+ * @remarks
+ * If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.
+ *
+ * If the input is not in the correct format, then a pipeline of transcoders and transformers will be created
+ * to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
+ * Opus transcoders, and Ogg/WebM demuxers.
+ *
+ * @param input - The resource to play.
+ * @param options - Configurable options for creating the resource.
+ *
+ * @template T - the type for the metadata (if any) of the audio resource.
+ */
 export function createAudioResource<T extends null | undefined>(
 	input: string | Readable,
 	options?: Omit<CreateAudioResourceOptions<T>, 'metadata'>,
 ): AudioResource<null>;
 
 /**
- * Creates an audio resource that can be played be audio players.
+ * Creates an audio resource that can be played by audio players.
  *
  * @remarks
  * If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.
