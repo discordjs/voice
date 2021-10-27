@@ -81,6 +81,7 @@
 								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/audioresource.html" class="tsd-kind-icon">Audio<wbr>Resource</a></li>
 								<li class="tsd-kind-class"><a href="classes/playersubscription.html" class="tsd-kind-icon">Player<wbr>Subscription</a></li>
 								<li class="tsd-kind-class"><a href="classes/ssrcmap.html" class="tsd-kind-icon">SSRCMap</a></li>
+								<li class="tsd-kind-class"><a href="classes/speakingmap.html" class="tsd-kind-icon">Speaking<wbr>Map</a></li>
 								<li class="tsd-kind-class"><a href="classes/voiceconnection.html" class="tsd-kind-icon">Voice<wbr>Connection</a></li>
 								<li class="tsd-kind-class"><a href="classes/voicereceiver.html" class="tsd-kind-icon">Voice<wbr>Receiver</a></li>
 							</ul>
@@ -94,12 +95,15 @@
 								<li class="tsd-kind-interface"><a href="interfaces/audioplayerplayingstate.html" class="tsd-kind-icon">Audio<wbr>Player<wbr>Playing<wbr>State</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/audioreceivestreamoptions.html" class="tsd-kind-icon">Audio<wbr>Receive<wbr>Stream<wbr>Options</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/createaudioplayeroptions.html" class="tsd-kind-icon">Create<wbr>Audio<wbr>Player<wbr>Options</a></li>
+								<li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/createaudioresourceoptions.html" class="tsd-kind-icon">Create<wbr>Audio<wbr>Resource<wbr>Options</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/createvoiceconnectionoptions.html" class="tsd-kind-icon">Create<wbr>Voice<wbr>Connection<wbr>Options</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/discordgatewayadapterimplementermethods.html" class="tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Implementer<wbr>Methods</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/discordgatewayadapterlibrarymethods.html" class="tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Library<wbr>Methods</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/joinconfig.html" class="tsd-kind-icon">Join<wbr>Config</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/joinvoicechanneloptions.html" class="tsd-kind-icon">Join<wbr>Voice<wbr>Channel<wbr>Options</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/probeinfo.html" class="tsd-kind-icon">Probe<wbr>Info</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/speakingmapevents.html" class="tsd-kind-icon">Speaking<wbr>Map<wbr>Events</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectiondestroyedstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Destroyed<wbr>State</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/voiceconnectiondisconnectedbasestate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>Base<wbr>State</a></li>
@@ -149,7 +153,7 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Player<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="classes/audioplayererror.html" class="tsd-signature-type" data-tsd-kind="Class">AudioPlayerError</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>stateChange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>subscribe<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>subscription<span class="tsd-signature-symbol">: </span><a href="classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>unsubscribe<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>subscription<span class="tsd-signature-symbol">: </span><a href="classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span><span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">status</span><span class="tsd-signature-symbol"> in </span><a href="enums/audioplayerstatus.html" class="tsd-signature-type" data-tsd-kind="Enumeration">AudioPlayerStatus</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#audioplayerstate" class="tsd-signature-type" data-tsd-kind="Type alias">AudioPlayerState</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">status</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/audio/AudioPlayer.ts#L141">src/audio/AudioPlayer.ts:141</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/audio/AudioPlayer.ts#L141">src/audio/AudioPlayer.ts:141</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -159,7 +163,7 @@
 					<div class="tsd-signature tsd-kind-icon">Audio<wbr>Player<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/audioplayeridlestate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerIdleState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerbufferingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerBufferingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerplayingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerPlayingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/audioplayerpausedstate.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioPlayerPausedState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/audio/AudioPlayer.ts#L135">src/audio/AudioPlayer.ts:135</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/audio/AudioPlayer.ts#L135">src/audio/AudioPlayer.ts:135</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -174,7 +178,7 @@
 					<div class="tsd-signature tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Creator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>methods<span class="tsd-signature-symbol">: </span><a href="interfaces/discordgatewayadapterlibrarymethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterLibraryMethods</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="interfaces/discordgatewayadapterimplementermethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterImplementerMethods</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/util/adapter.ts#L50">src/util/adapter.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/util/adapter.ts#L50">src/util/adapter.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -213,7 +217,7 @@
 					<div class="tsd-signature tsd-kind-icon">End<wbr>Behavior<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>behavior<span class="tsd-signature-symbol">: </span><a href="enums/endbehaviortype.html#manual" class="tsd-signature-type" data-tsd-kind="Enumeration member">Manual</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>behavior<span class="tsd-signature-symbol">: </span><a href="enums/endbehaviortype.html#aftersilence" class="tsd-signature-type" data-tsd-kind="Enumeration member">AfterSilence</a><span class="tsd-signature-symbol"> | </span><a href="enums/endbehaviortype.html#afterinactivity" class="tsd-signature-type" data-tsd-kind="Enumeration member">AfterInactivity</a><span class="tsd-signature-symbol">; </span>duration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/receive/AudioReceiveStream.ts#L22">src/receive/AudioReceiveStream.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/receive/AudioReceiveStream.ts#L22">src/receive/AudioReceiveStream.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -223,7 +227,7 @@
 					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>Disconnected<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/voiceconnectiondisconnectedotherstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedOtherState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectiondisconnectedwebsocketstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDisconnectedWebSocketState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/VoiceConnection.ts#L111">src/VoiceConnection.ts:111</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/VoiceConnection.ts#L111">src/VoiceConnection.ts:111</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -239,7 +243,7 @@
 					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>Events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>stateChange<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span><span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">status</span><span class="tsd-signature-symbol"> in </span><a href="enums/voiceconnectionstatus.html" class="tsd-signature-type" data-tsd-kind="Enumeration">VoiceConnectionStatus</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>oldState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a>, newState<span class="tsd-signature-symbol">: </span><a href="modules.html#voiceconnectionstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionState</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">status</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/VoiceConnection.ts#L156">src/VoiceConnection.ts:156</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/VoiceConnection.ts#L156">src/VoiceConnection.ts:156</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -249,7 +253,7 @@
 					<div class="tsd-signature tsd-kind-icon">Voice<wbr>Connection<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/voiceconnectionsignallingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionSignallingState</a><span class="tsd-signature-symbol"> | </span><a href="modules.html#voiceconnectiondisconnectedstate" class="tsd-signature-type" data-tsd-kind="Type alias">VoiceConnectionDisconnectedState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectionconnectingstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionConnectingState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectionreadystate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionReadyState</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/voiceconnectiondestroyedstate.html" class="tsd-signature-type" data-tsd-kind="Interface">VoiceConnectionDestroyedState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/VoiceConnection.ts#L149">src/VoiceConnection.ts:149</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/VoiceConnection.ts#L149">src/VoiceConnection.ts:149</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -271,7 +275,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/audio/AudioPlayer.ts#L601">src/audio/AudioPlayer.ts:601</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/audio/AudioPlayer.ts#L601">src/audio/AudioPlayer.ts:601</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -293,29 +297,51 @@
 					<a name="createaudioresource" class="tsd-anchor"></a>
 					<h3>create<wbr>Audio<wbr>Resource</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Audio<wbr>Resource&lt;T&gt;<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Readable</span>, options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CreateAudioResourceOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">CreateAudioResourceOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CreateAudioResourceOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;metadata&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="classes/audioresource.html" class="tsd-signature-type" data-tsd-kind="Class">AudioResource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Audio<wbr>Resource&lt;T&gt;<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Readable</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CreateAudioResourceOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;metadata&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="classes/audioresource.html" class="tsd-signature-type" data-tsd-kind="Class">AudioResource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Audio<wbr>Resource&lt;T&gt;<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Readable</span>, options<span class="tsd-signature-symbol">: </span><a href="interfaces/createaudioresourceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateAudioResourceOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><a href="interfaces/createaudioresourceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateAudioResourceOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/createaudioresourceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateAudioResourceOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;metadata&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="classes/audioresource.html" class="tsd-signature-type" data-tsd-kind="Class">AudioResource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Audio<wbr>Resource&lt;T&gt;<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Readable</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/createaudioresourceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateAudioResourceOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;metadata&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="classes/audioresource.html" class="tsd-signature-type" data-tsd-kind="Class">AudioResource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/audio/AudioResource.ts#L192">src/audio/AudioResource.ts:192</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/audio/AudioResource.ts#L207">src/audio/AudioResource.ts:207</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates an audio resource that can be played by audio players.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>remarks</dt>
+									<dd><p>If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.</p>
+										<p>If the input is not in the correct format, then a pipeline of transcoders and transformers will be created
+											to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
+										Opus transcoders, and Ogg/WebM demuxers.</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
 									<h4>T</h4>
+									<div class="tsd-comment tsd-typography">
+										<p>the type for the metadata (if any) of the audio resource.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>input: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Readable</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The resource to play.</p>
+									</div>
 								</li>
 								<li>
-									<h5>options: <span class="tsd-signature-type">CreateAudioResourceOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">CreateAudioResourceOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CreateAudioResourceOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;metadata&quot;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>options: <a href="interfaces/createaudioresourceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateAudioResourceOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><a href="interfaces/createaudioresourceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateAudioResourceOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/createaudioresourceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateAudioResourceOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;metadata&quot;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Configurable options for creating the resource.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="classes/audioresource.html" class="tsd-signature-type" data-tsd-kind="Class">AudioResource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -323,22 +349,44 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/audio/AudioResource.ts#L201">src/audio/AudioResource.ts:201</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/audio/AudioResource.ts#L231">src/audio/AudioResource.ts:231</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates an audio resource that can be played by audio players.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>remarks</dt>
+									<dd><p>If the input is given as a string, then the inputType option will be overridden and FFmpeg will be used.</p>
+										<p>If the input is not in the correct format, then a pipeline of transcoders and transformers will be created
+											to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
+										Opus transcoders, and Ogg/WebM demuxers.</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
 									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+									<div class="tsd-comment tsd-typography">
+										<p>the type for the metadata (if any) of the audio resource.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>input: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Readable</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The resource to play.</p>
+									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CreateAudioResourceOptions</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;metadata&quot;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/createaudioresourceoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateAudioResourceOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;metadata&quot;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Configurable options for creating the resource.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="classes/audioresource.html" class="tsd-signature-type" data-tsd-kind="Class">AudioResource</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -355,7 +403,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/receive/AudioReceiveStream.ts#L35">src/receive/AudioReceiveStream.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/receive/AudioReceiveStream.ts#L35">src/receive/AudioReceiveStream.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="interfaces/audioreceivestreamoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioReceiveStreamOptions</a></h4>
@@ -372,7 +420,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/util/demuxProbe.ts#L39">src/util/demuxProbe.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/util/demuxProbe.ts#L39">src/util/demuxProbe.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -447,7 +495,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/util/entersState.ts#L13">src/util/entersState.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/util/entersState.ts#L13">src/util/entersState.ts:13</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -481,7 +529,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/util/entersState.ts#L26">src/util/entersState.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/util/entersState.ts#L26">src/util/entersState.ts:26</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -524,7 +572,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/util/generateDependencyReport.ts#L10">src/util/generateDependencyReport.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/util/generateDependencyReport.ts#L10">src/util/generateDependencyReport.ts:10</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -547,7 +595,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/DataStore.ts#L48">src/DataStore.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/DataStore.ts#L48">src/DataStore.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -571,7 +619,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/DataStore.ts#L69">src/DataStore.ts:69</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/DataStore.ts#L81">src/DataStore.ts:81</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -610,30 +658,48 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/DataStore.ts#L52">src/DataStore.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/DataStore.ts#L57">src/DataStore.ts:57</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieves all the voice connections under the &#39;default&#39; group.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> group: <span class="tsd-signature-type">&quot;default&quot;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The group to look up</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="classes/voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The map of voice connections</p>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/DataStore.ts#L53">src/DataStore.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/DataStore.ts#L64">src/DataStore.ts:64</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieves all the voice connections under the given group name.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>group: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The group to look up</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="classes/voiceconnection.html" class="tsd-signature-type" data-tsd-kind="Class">VoiceConnection</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<p>The map of voice connections</p>
 						</li>
 					</ul>
 				</section>
@@ -647,7 +713,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/joinVoiceChannel.ts#L49">src/joinVoiceChannel.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/joinVoiceChannel.ts#L49">src/joinVoiceChannel.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -678,7 +744,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/discordjs/voice/blob/b9d1038/src/util/demuxProbe.ts#L11">src/util/demuxProbe.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/util/demuxProbe.ts#L11">src/util/demuxProbe.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -749,6 +815,9 @@
 						<a href="classes/ssrcmap.html" class="tsd-kind-icon">SSRCMap</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="classes/speakingmap.html" class="tsd-kind-icon">Speaking<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="classes/voiceconnection.html" class="tsd-kind-icon">Voice<wbr>Connection</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -772,6 +841,9 @@
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/createaudioplayeroptions.html" class="tsd-kind-icon">Create<wbr>Audio<wbr>Player<wbr>Options</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/createaudioresourceoptions.html" class="tsd-kind-icon">Create<wbr>Audio<wbr>Resource<wbr>Options</a>
+					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/createvoiceconnectionoptions.html" class="tsd-kind-icon">Create<wbr>Voice<wbr>Connection<wbr>Options</a>
 					</li>
@@ -782,6 +854,9 @@
 						<a href="interfaces/discordgatewayadapterlibrarymethods.html" class="tsd-kind-icon">Discord<wbr>Gateway<wbr>Adapter<wbr>Library<wbr>Methods</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/joinconfig.html" class="tsd-kind-icon">Join<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/joinvoicechanneloptions.html" class="tsd-kind-icon">Join<wbr>Voice<wbr>Channel<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -789,6 +864,9 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/ssrcmapevents.html" class="tsd-kind-icon">SSRCMap<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/speakingmapevents.html" class="tsd-kind-icon">Speaking<wbr>Map<wbr>Events</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a>
@@ -890,6 +968,9 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
 			</ul>
 		</div>
 	</div>

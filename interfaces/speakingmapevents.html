@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VoiceConnectionConnectingState | @discordjs/voice</title>
+	<title>SpeakingMapEvents | @discordjs/voice</title>
 	<meta name="description" content="Documentation for @discordjs/voice">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@discordjs/voice</a>
 				</li>
 				<li>
-					<a href="voiceconnectionconnectingstate.html">VoiceConnectionConnectingState</a>
+					<a href="speakingmapevents.html">SpeakingMapEvents</a>
 				</li>
 			</ul>
-			<h1>Interface VoiceConnectionConnectingState</h1>
+			<h1>Interface SpeakingMapEvents</h1>
 		</div>
 	</div>
 </header>
@@ -68,8 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The state that a VoiceConnection will be in when it is establishing a connection to a Discord
-						voice server.</p>
+						<p>The events that a SpeakingMap can emit</p>
 					</div>
 				</div>
 			</section>
@@ -77,7 +76,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">VoiceConnectionConnectingState</span>
+						<span class="target">SpeakingMapEvents</span>
 					</li>
 				</ul>
 			</section>
@@ -88,10 +87,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionconnectingstate.html#adapter" class="tsd-kind-icon">adapter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionconnectingstate.html#networking" class="tsd-kind-icon">networking</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionconnectingstate.html#status" class="tsd-kind-icon">status</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="voiceconnectionconnectingstate.html#subscription" class="tsd-kind-icon">subscription</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="speakingmapevents.html#end" class="tsd-kind-icon">end</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="speakingmapevents.html#start" class="tsd-kind-icon">start</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,44 +97,76 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="adapter" class="tsd-anchor"></a>
-					<h3>adapter</h3>
-					<div class="tsd-signature tsd-kind-icon">adapter<span class="tsd-signature-symbol">:</span> <a href="discordgatewayadapterimplementermethods.html" class="tsd-signature-type" data-tsd-kind="Interface">DiscordGatewayAdapterImplementerMethods</a></div>
+					<a name="end" class="tsd-anchor"></a>
+					<h3>end</h3>
+					<div class="tsd-signature tsd-kind-icon">end<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/VoiceConnection.ts#L123">src/VoiceConnection.ts:123</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/receive/SpeakingMap.ts#L15">src/receive/SpeakingMap.ts:15</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Emitted when a user stops speaking.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>userId: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="networking" class="tsd-anchor"></a>
-					<h3>networking</h3>
-					<div class="tsd-signature tsd-kind-icon">networking<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Networking</span></div>
+					<a name="start" class="tsd-anchor"></a>
+					<h3>start</h3>
+					<div class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/VoiceConnection.ts#L121">src/VoiceConnection.ts:121</a></li>
+							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/receive/SpeakingMap.ts#L11">src/receive/SpeakingMap.ts:11</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="status" class="tsd-anchor"></a>
-					<h3>status</h3>
-					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <a href="../enums/voiceconnectionstatus.html#connecting" class="tsd-signature-type" data-tsd-kind="Enumeration member">Connecting</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/VoiceConnection.ts#L120">src/VoiceConnection.ts:120</a></li>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Emitted when a user starts speaking.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>userId: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
 						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="subscription" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> subscription</h3>
-					<div class="tsd-signature tsd-kind-icon">subscription<span class="tsd-signature-symbol">:</span> <a href="../classes/playersubscription.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSubscription</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/discordjs/voice/blob/a6dad47/src/VoiceConnection.ts#L122">src/VoiceConnection.ts:122</a></li>
-						</ul>
-					</aside>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -154,19 +183,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="voiceconnectionconnectingstate.html" class="tsd-kind-icon">Voice<wbr>Connection<wbr>Connecting<wbr>State</a>
+						<a href="speakingmapevents.html" class="tsd-kind-icon">Speaking<wbr>Map<wbr>Events</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionconnectingstate.html#adapter" class="tsd-kind-icon">adapter</a>
+								<a href="speakingmapevents.html#end" class="tsd-kind-icon">end</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionconnectingstate.html#networking" class="tsd-kind-icon">networking</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionconnectingstate.html#status" class="tsd-kind-icon">status</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="voiceconnectionconnectingstate.html#subscription" class="tsd-kind-icon">subscription</a>
+								<a href="speakingmapevents.html#start" class="tsd-kind-icon">start</a>
 							</li>
 						</ul>
 					</li>
