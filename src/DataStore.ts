@@ -55,11 +55,13 @@ export function getGroups() {
  * @returns The map of voice connections
  */
 export function getVoiceConnections(group?: 'default'): Map<string, VoiceConnection>;
+
 /**
  * Retrieves all the voice connections under the given group name.
  * @param group - The group to look up
  * @returns The map of voice connections
  */
+
 export function getVoiceConnections(group: string): Map<string, VoiceConnection> | undefined;
 /**
  * Retrieves all the voice connections under the given group name. Defaults to the 'default' group.
