@@ -1,7 +1,7 @@
 import { EndBehaviorType, VoiceReceiver } from '@discordjs/voice';
 import { User } from 'discord.js';
 import { createWriteStream } from 'node:fs';
-import * as prism from 'prism-media';
+import prism from 'prism-media';
 import { pipeline } from 'node:stream';
 
 function getDisplayName(userId: string, user?: User) {

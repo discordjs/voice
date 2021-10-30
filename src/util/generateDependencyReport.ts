@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { resolve, dirname } from 'node:path';
-import * as prism from 'prism-media';
+import prism from 'prism-media';
 
 /**
  * Generates a report of the dependencies used by the \@discordjs/voice module.

@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import * as prism from 'prism-media';
+import prism from 'prism-media';
 import { noop } from './util';
 import { StreamType } from '..';
 

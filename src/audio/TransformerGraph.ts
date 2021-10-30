@@ -1,5 +1,5 @@
 import type { Readable } from 'node:stream';
-import * as prism from 'prism-media';
+import prism from 'prism-media';
 
 /**
  * This module creates a Transformer Graph to figure out what the most efficient way
