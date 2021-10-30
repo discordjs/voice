@@ -2,16 +2,11 @@
 	"root": true,
 	"extends": "marine/prettier/node",
 	"parserOptions": {
-		"project": "./tsconfig.eslint.json"
+		"project": "./tsconfig.eslint.json",
+		"extraFileExtensions": [".mjs"]
 	},
 	"rules": {
-		"@typescript-eslint/naming-convention": [
-			"error",
-			{
-				"selector": "enumMember",
-				"format": ["PascalCase"]
-			}
-		],
-		"no-redeclare": "off"
+		"no-redeclare": 0,
+		"@typescript-eslint/naming-convention": 0
 	}
 }

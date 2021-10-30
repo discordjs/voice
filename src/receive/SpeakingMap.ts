@@ -1,14 +1,15 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Awaited } from '../util/util';
+import type { Awaited } from '../util/util';
 
 /**
- * The events that a SpeakingMap can emit
+ * The events that a SpeakingMap can emit.
  */
 export interface SpeakingMapEvents {
 	/**
 	 * Emitted when a user starts speaking.
 	 */
 	start: (userId: string) => Awaited<void>;
+
 	/**
 	 * Emitted when a user stops speaking.
 	 */
@@ -23,6 +24,7 @@ export class SpeakingMap extends TypedEmitter<SpeakingMapEvents> {
 	 * The delay after a packet is received from a user until they're marked as not speaking anymore.
 	 */
 	public static readonly DELAY = 100;
+
 	/**
 	 * The currently speaking users, mapped to the milliseconds since UNIX epoch at which they started speaking.
 	 */

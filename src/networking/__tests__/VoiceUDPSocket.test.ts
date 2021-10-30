@@ -107,6 +107,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		let closed = false;
+		// @ts-expect-error
 		socket.on('close', () => (closed = true));
 
 		for (let i = 0; i < 30; i++) {
@@ -124,6 +125,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		let closed = false;
+		// @ts-expect-error
 		socket.on('close', () => (closed = true));
 
 		for (let i = 0; i < 15; i++) {
@@ -142,6 +144,7 @@ describe('VoiceUDPSocket#performIPDiscovery', () => {
 		socket = new VoiceUDPSocket({ ip: '1.2.3.4', port: 25565 });
 
 		let closed = false;
+		// @ts-expect-error
 		socket.on('close', () => (closed = true));
 
 		for (let i = 0; i < 10; i++) {

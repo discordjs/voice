@@ -3,7 +3,7 @@ import { VoiceUDPSocket } from './VoiceUDPSocket';
 import { VoiceWebSocket } from './VoiceWebSocket';
 import * as secretbox from '../util/Secretbox';
 import { Awaited, noop } from '../util/util';
-import { CloseEvent } from 'ws';
+import type { CloseEvent } from 'ws';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
 // The number of audio channels required by Discord
@@ -330,7 +330,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 	}
 
 	/**
-	 * Called when the UDP socket has closed itself if it has stopped receiving replies from Discord
+	 * Called when the UDP socket has closed itself if it has stopped receiving replies from Discord.
 	 */
 	private onUdpClose() {
 		if (this.state.code === NetworkingStatusCode.Ready) {
@@ -343,11 +343,13 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 	}
 
 	/**
-	 * Called when a packet is received on the connection's WebSocket
+	 * Called when a packet is received on the connection's WebSocket.
+	 *
 	 * @param packet - The received packet
 	 */
 	private onWsPacket(packet: any) {
 		if (packet.op === VoiceOpcodes.Hello && this.state.code !== NetworkingStatusCode.Closed) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			this.state.ws.setHeartbeatInterval(packet.d.heartbeat_interval);
 		} else if (packet.op === VoiceOpcodes.Ready && this.state.code === NetworkingStatusCode.Identifying) {
 			const { ip, port, ssrc, modes } = packet.d;
@@ -357,6 +359,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 			udp.on('debug', this.onUdpDebug);
 			udp.once('close', this.onUdpClose);
 			udp
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				.performIPDiscovery(ssrc)
 				.then((localConfig) => {
 					if (this.state.code !== NetworkingStatusCode.UdpHandshaking) return;
@@ -367,6 +370,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 							data: {
 								address: localConfig.ip,
 								port: localConfig.port,
+								// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 								mode: chooseEncryptionMode(modes),
 							},
 						},
@@ -376,7 +380,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 						code: NetworkingStatusCode.SelectingProtocol,
 					};
 				})
-				.catch((error) => this.emit('error', error));
+				.catch((error: Error) => this.emit('error', error));
 
 			this.state = {
 				...this.state,
@@ -397,6 +401,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 				connectionData: {
 					...this.state.connectionData,
 					encryptionMode,
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 					secretKey: new Uint8Array(secretKey),
 					sequence: randomNBit(16),
 					timestamp: randomNBit(32),
@@ -435,7 +440,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 
 	/**
 	 * Prepares an Opus packet for playback. This includes attaching metadata to it and encrypting it.
-	 * It will be stored within the instance, and can be played by dispatchAudio().
+	 * It will be stored within the instance, and can be played by dispatchAudio()
 	 *
 	 * @remarks
 	 * Calling this method while there is already a prepared audio packet that has not yet been dispatched
@@ -443,7 +448,7 @@ export class Networking extends TypedEmitter<NetworkingEvents> {
 	 *
 	 * @param opusPacket - The Opus packet to encrypt
 	 *
-	 * @returns The audio packet that was prepared.
+	 * @returns The audio packet that was prepared
 	 */
 	public prepareAudioPacket(opusPacket: Buffer) {
 		const state = this.state;
@@ -563,7 +568,7 @@ function randomNBit(n: number) {
 }
 
 /**
- * Stringifies a NetworkingState
+ * Stringifies a NetworkingState.
  *
  * @param state - The state to stringify
  */

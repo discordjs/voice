@@ -1,21 +1,23 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Awaited } from '../util/util';
+import type { Awaited } from '../util/util';
 
 /**
- * The known data for a user in a Discord voice connection
+ * The known data for a user in a Discord voice connection.
  */
 export interface VoiceUserData {
 	/**
-	 * The SSRC of the user's audio stream
+	 * The SSRC of the user's audio stream.
 	 */
 	audioSSRC: number;
+
 	/**
-	 * The SSRC of the user's video stream (if one exists).
+	 * The SSRC of the user's video stream (if one exists)
 	 * Cannot be 0. If undefined, the user has no video stream.
 	 */
 	videoSSRC?: number;
+
 	/**
-	 * The Discord user ID of the user
+	 * The Discord user id of the user.
 	 */
 	userId: string;
 }
@@ -34,7 +36,7 @@ export interface SSRCMapEvents {
  */
 export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 	/**
-	 * The underlying map
+	 * The underlying map.
 	 */
 	private readonly map: Map<number, VoiceUserData>;
 
@@ -64,23 +66,27 @@ export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 	/**
 	 * Gets the stored voice data of a user.
 	 *
-	 * @param target The target, either their user ID or audio SSRC
+	 * @param target The target, either their user id or audio SSRC
 	 */
 	public get(target: number | string) {
 		if (typeof target === 'number') {
 			return this.map.get(target);
 		}
+
 		for (const data of this.map.values()) {
 			if (data.userId === target) {
 				return data;
 			}
 		}
+
+		return undefined;
 	}
 
 	/**
 	 * Deletes the stored voice data about a user.
 	 *
-	 * @param target The target of the delete operation, either their audio SSRC or user ID
+	 * @param target The target of the delete operation, either their audio SSRC or user id
+	 *
 	 * @returns The data that was deleted, if any
 	 */
 	public delete(target: number | string) {
@@ -92,6 +98,7 @@ export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 			}
 			return existing;
 		}
+
 		for (const [audioSSRC, data] of this.map.entries()) {
 			if (data.userId === target) {
 				this.map.delete(audioSSRC);
@@ -99,5 +106,7 @@ export class SSRCMap extends TypedEmitter<SSRCMapEvents> {
 				return data;
 			}
 		}
+
+		return undefined;
 	}
 }

@@ -1,7 +1,7 @@
-import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v9';
-import { CreateVoiceConnectionOptions } from '.';
-import { AudioPlayer } from './audio/AudioPlayer';
-import { PlayerSubscription } from './audio/PlayerSubscription';
+import type { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v9';
+import type { CreateVoiceConnectionOptions } from '.';
+import type { AudioPlayer } from './audio/AudioPlayer';
+import type { PlayerSubscription } from './audio/PlayerSubscription';
 import {
 	getVoiceConnection,
 	createJoinVoiceChannelPayload,
@@ -9,7 +9,7 @@ import {
 	JoinConfig,
 	untrackVoiceConnection,
 } from './DataStore';
-import { DiscordGatewayAdapterImplementerMethods } from './util/adapter';
+import type { DiscordGatewayAdapterImplementerMethods } from './util/adapter';
 import { Networking, NetworkingState, NetworkingStatusCode } from './networking/Networking';
 import { Awaited, noop } from './util/util';
 import { TypedEmitter } from 'tiny-typed-emitter';
@@ -24,18 +24,22 @@ export enum VoiceConnectionStatus {
 	 * Sending a packet to the main Discord gateway to indicate we want to change our voice state.
 	 */
 	Signalling = 'signalling',
+
 	/**
 	 * The `VOICE_SERVER_UPDATE` and `VOICE_STATE_UPDATE` packets have been received, now attempting to establish a voice connection.
 	 */
 	Connecting = 'connecting',
+
 	/**
-	 * A voice connection has been established, and is ready to be used
+	 * A voice connection has been established, and is ready to be used.
 	 */
 	Ready = 'ready',
+
 	/**
 	 * The voice connection has either been severed or not established.
 	 */
 	Disconnected = 'disconnected',
+
 	/**
 	 * The voice connection has been destroyed and untracked, it cannot be reused.
 	 */
@@ -60,14 +64,17 @@ export enum VoiceConnectionDisconnectReason {
 	 * When the WebSocket connection has been closed.
 	 */
 	WebSocketClose,
+
 	/**
 	 * When the adapter was unable to send a message requested by the VoiceConnection.
 	 */
 	AdapterUnavailable,
+
 	/**
 	 * When a VOICE_SERVER_UPDATE packet is received with a null endpoint, causing the connection to be severed.
 	 */
 	EndpointRemoved,
+
 	/**
 	 * When a manual disconnect was requested.
 	 */
@@ -98,6 +105,7 @@ export interface VoiceConnectionDisconnectedOtherState extends VoiceConnectionDi
  */
 export interface VoiceConnectionDisconnectedWebSocketState extends VoiceConnectionDisconnectedBaseState {
 	reason: VoiceConnectionDisconnectReason.WebSocketClose;
+
 	/**
 	 * The close code of the WebSocket connection to the Discord voice server.
 	 */
@@ -175,12 +183,13 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	public rejoinAttempts: number;
 
 	/**
-	 * The state of the voice connection
+	 * The state of the voice connection.
 	 */
 	private _state: VoiceConnectionState;
 
 	/**
 	 * A configuration storing all the data needed to reconnect to a Guild's voice server.
+	 *
 	 * @internal
 	 */
 	public readonly joinConfig: JoinConfig;
@@ -241,7 +250,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	}
 
 	/**
-	 * The current state of the voice connection
+	 * The current state of the voice connection.
 	 */
 	public get state() {
 		return this._state;
@@ -291,6 +300,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 		this.emit('stateChange', oldState, newState);
 		if (oldState.status !== newState.status) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			this.emit(newState.status, oldState, newState as any);
 		}
 	}
@@ -315,7 +325,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	}
 
 	/**
-	 * Registers a `VOICE_STATE_UPDATE` packet to the voice connection. Most importantly, it stores the ID of the
+	 * Registers a `VOICE_STATE_UPDATE` packet to the voice connection. Most importantly, it stores the id of the
 	 * channel that the client is connected to.
 	 *
 	 * @param packet - The received `VOICE_STATE_UPDATE` packet
@@ -479,7 +489,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	}
 
 	/**
-	 * Prepares an audio packet for dispatch
+	 * Prepares an audio packet for dispatch.
 	 *
 	 * @param buffer - The Opus packet to prepare
 	 */
@@ -499,7 +509,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	}
 
 	/**
-	 * Prepares an audio packet and dispatches it immediately
+	 * Prepares an audio packet and dispatches it immediately.
 	 *
 	 * @param buffer - The Opus packet to play
 	 */
@@ -514,6 +524,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 * Destroys the VoiceConnection, preventing it from connecting to voice again.
 	 * This method should be called when you no longer require the VoiceConnection to
 	 * prevent memory leaks.
+	 *
 	 * @param adapterAvailable - Whether the adapter can be used
 	 */
 	public destroy(adapterAvailable = true) {
@@ -533,7 +544,8 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 
 	/**
 	 * Disconnects the VoiceConnection, allowing the possibility of rejoining later on.
-	 * @returns - true if the connection was successfully disconnected.
+	 *
+	 * @returns `true` if the connection was successfully disconnected
 	 */
 	public disconnect() {
 		if (
@@ -606,13 +618,14 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 */
 	public setSpeaking(enabled: boolean) {
 		if (this.state.status !== VoiceConnectionStatus.Ready) return false;
-		this.state.networking.setSpeaking(enabled);
+		return this.state.networking.setSpeaking(enabled);
 	}
 
 	/**
 	 * Subscribes to an audio player, allowing the player to play audio on this voice connection.
 	 *
 	 * @param player - The audio player to subscribe to
+	 *
 	 * @returns The created subscription
 	 */
 	public subscribe(player: AudioPlayer) {
@@ -658,6 +671,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 	 *
 	 * @param subscription - The removed subscription
 	 */
+	// @ts-ignore
 	private onSubscriptionRemoved(subscription: PlayerSubscription) {
 		if (this.state.status !== VoiceConnectionStatus.Destroyed && this.state.subscription === subscription) {
 			this.state = {
@@ -669,7 +683,7 @@ export class VoiceConnection extends TypedEmitter<VoiceConnectionEvents> {
 }
 
 /**
- * Creates a new voice connection
+ * Creates a new voice connection.
  *
  * @param joinConfig - The data required to establish the voice connection
  * @param options - The options to use when joining the voice channel

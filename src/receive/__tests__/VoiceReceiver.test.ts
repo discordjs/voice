@@ -34,6 +34,7 @@ describe('VoiceReceiver', () => {
 	let receiver: VoiceReceiver;
 
 	beforeEach(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		voiceConnection = new VoiceConnection({} as any, {} as any);
 		voiceConnection.state = {
 			status: VoiceConnectionStatus.Signalling,

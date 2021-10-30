@@ -1,5 +1,5 @@
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
-import { ConnectionData } from '../networking/Networking';
+import type { ConnectionData } from '../networking/Networking';
 import { methods } from '../util/Secretbox';
 import type { VoiceConnection } from '../VoiceConnection';
 import {
@@ -23,7 +23,7 @@ export class VoiceReceiver {
 	public readonly voiceConnection;
 
 	/**
-	 * Maps SSRCs to Discord user IDs.
+	 * Maps SSRCs to Discord user ids.
 	 */
 	public readonly ssrcMap: SSRCMap;
 
@@ -34,6 +34,7 @@ export class VoiceReceiver {
 
 	/**
 	 * The connection data of the receiver.
+	 *
 	 * @internal
 	 */
 	public connectionData: Partial<ConnectionData>;
@@ -58,10 +59,12 @@ export class VoiceReceiver {
 	 * Called when a packet is received on the attached connection's WebSocket.
 	 *
 	 * @param packet The received packet
+	 *
 	 * @internal
 	 */
 	public onWsPacket(packet: any) {
 		if (packet.op === VoiceOpcodes.ClientDisconnect && typeof packet.d?.user_id === 'string') {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			this.ssrcMap.delete(packet.d.user_id);
 		} else if (
 			packet.op === VoiceOpcodes.Speaking &&
@@ -108,6 +111,7 @@ export class VoiceReceiver {
 	 * @param mode The encryption mode
 	 * @param nonce The nonce buffer used by the connection for encryption
 	 * @param secretKey The secret key used by the connection for encryption
+	 *
 	 * @returns The parsed Opus packet
 	 */
 	private parsePacket(buffer: Buffer, mode: string, nonce: Buffer, secretKey: Uint8Array) {
@@ -138,6 +142,7 @@ export class VoiceReceiver {
 	 * Called when the UDP socket of the attached connection receives a message.
 	 *
 	 * @param msg The received message
+	 *
 	 * @internal
 	 */
 	public onUdpMessage(msg: Buffer) {
@@ -168,9 +173,10 @@ export class VoiceReceiver {
 	}
 
 	/**
-	 * Creates a subscription for the given user ID.
+	 * Creates a subscription for the given user id.
 	 *
-	 * @param target The ID of the user to subscribe to
+	 * @param target The id of the user to subscribe to
+	 *
 	 * @returns A readable stream of Opus packets received from the target
 	 */
 	public subscribe(userId: string, options?: Partial<AudioReceiveStreamOptions>) {

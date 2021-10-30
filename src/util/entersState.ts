@@ -1,5 +1,5 @@
-import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
-import { AudioPlayer, AudioPlayerStatus } from '../audio/AudioPlayer';
+import type { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
+import type { AudioPlayer, AudioPlayerStatus } from '../audio/AudioPlayer';
 import { abortAfter } from './abortAfter';
 import EventEmitter, { once } from 'node:events';
 

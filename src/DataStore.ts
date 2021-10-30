@@ -1,6 +1,6 @@
 import { GatewayOpcodes } from 'discord-api-types/v9';
-import { AudioPlayer } from './audio';
-import { VoiceConnection } from './VoiceConnection';
+import type { AudioPlayer } from './audio';
+import type { VoiceConnection } from './VoiceConnection';
 
 export interface JoinConfig {
 	guildId: string;
@@ -29,13 +29,13 @@ export function createJoinVoiceChannelPayload(config: JoinConfig) {
 }
 
 // Voice Connections
-const groups: Map<string, Map<string, VoiceConnection>> = new Map();
+const groups = new Map<string, Map<string, VoiceConnection>>();
 groups.set('default', new Map());
 
 function getOrCreateGroup(group: string) {
 	const existing = groups.get(group);
 	if (existing) return existing;
-	const map = new Map();
+	const map = new Map<string, VoiceConnection>();
 	groups.set(group, map);
 	return map;
 }
@@ -43,6 +43,7 @@ function getOrCreateGroup(group: string) {
 /**
  * Retrieves the map of group names to maps of voice connections. By default, all voice connections
  * are created under the 'default' group.
+ *
  * @returns The group map
  */
 export function getGroups() {
@@ -51,21 +52,27 @@ export function getGroups() {
 
 /**
  * Retrieves all the voice connections under the 'default' group.
+ *
  * @param group - The group to look up
+ *
  * @returns The map of voice connections
  */
 export function getVoiceConnections(group?: 'default'): Map<string, VoiceConnection>;
 
 /**
  * Retrieves all the voice connections under the given group name.
+ *
  * @param group - The group to look up
+ *
  * @returns The map of voice connections
  */
 export function getVoiceConnections(group: string): Map<string, VoiceConnection> | undefined;
 
 /**
  * Retrieves all the voice connections under the given group name. Defaults to the 'default' group.
+ *
  * @param group - The group to look up
+ *
  * @returns The map of voice connections
  */
 export function getVoiceConnections(group = 'default') {
@@ -73,9 +80,11 @@ export function getVoiceConnections(group = 'default') {
 }
 
 /**
- * Finds a voice connection with the given guild ID and group. Defaults to the 'default' group.
- * @param guildId - The guild ID of the voice connection
+ * Finds a voice connection with the given guild id and group. Defaults to the 'default' group.
+ *
+ * @param guildId - The guild id of the voice connection
  * @param group - the group that the voice connection was registered with
+ *
  * @returns The voice connection, if it exists
  */
 export function getVoiceConnection(guildId: string, group = 'default') {
@@ -120,7 +129,7 @@ function audioCycleStep() {
 }
 
 /**
- * Recursively gets the players that have been passed as parameters to prepare audio frames that can be played.
+ * Recursively gets the players that have been passed as parameters to prepare audio frames that can be played
  * at the start of the next cycle.
  */
 function prepareNextAudioFrame(players: AudioPlayer[]) {
@@ -144,7 +153,8 @@ function prepareNextAudioFrame(players: AudioPlayer[]) {
  * Checks whether or not the given audio player is being driven by the data store clock.
  *
  * @param target - The target to test for
- * @returns true if it is being tracked, false otherwise
+ *
+ * @returns `true` if it is being tracked, `false` otherwise
  */
 export function hasAudioPlayer(target: AudioPlayer) {
 	return audioPlayers.includes(target);

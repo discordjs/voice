@@ -1,7 +1,7 @@
 import { VoiceOpcodes } from 'discord-api-types/voice/v4';
 import WebSocket, { MessageEvent } from 'ws';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Awaited } from '../util/util';
+import type { Awaited } from '../util/util';
 
 /**
  * Debug event for VoiceWebSocket.
@@ -12,7 +12,7 @@ import { Awaited } from '../util/util';
 
 export interface VoiceWebSocketEvents {
 	error: (error: Error) => Awaited<void>;
-	open: (event: WebSocket.OpenEvent) => Awaited<void>;
+	open: (event: WebSocket.Event) => Awaited<void>;
 	close: (event: WebSocket.CloseEvent) => Awaited<void>;
 	debug: (message: string) => Awaited<void>;
 	packet: (packet: any) => Awaited<void>;
@@ -24,7 +24,7 @@ export interface VoiceWebSocketEvents {
  */
 export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 	/**
-	 * The current heartbeat interval, if any
+	 * The current heartbeat interval, if any.
 	 */
 	private heartbeatInterval?: NodeJS.Timeout;
 
@@ -56,12 +56,12 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 	private readonly debug: null | ((message: string) => void);
 
 	/**
-	 * The underlying WebSocket of this wrapper
+	 * The underlying WebSocket of this wrapper.
 	 */
 	private readonly ws: WebSocket;
 
 	/**
-	 * Creates a new VoiceWebSocket
+	 * Creates a new VoiceWebSocket.
 	 *
 	 * @param address - The address to connect to
 	 */
@@ -70,6 +70,7 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 		this.ws = new WebSocket(address);
 		this.ws.onmessage = (e) => this.onMessage(e);
 		this.ws.onopen = (e) => this.emit('open', e);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		this.ws.onerror = (e: Error | WebSocket.ErrorEvent) => this.emit('error', e instanceof Error ? e : e.error);
 		this.ws.onclose = (e) => this.emit('close', e);
 
@@ -88,7 +89,8 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 			this.setHeartbeatInterval(-1);
 			this.ws.close(1000);
 		} catch (error) {
-			this.emit('error', error);
+			const e = error as Error;
+			this.emit('error', e);
 		}
 	}
 
@@ -107,7 +109,8 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 		try {
 			packet = JSON.parse(event.data);
 		} catch (error) {
-			this.emit('error', error);
+			const e = error as Error;
+			this.emit('error', e);
 			return;
 		}
 
@@ -127,7 +130,7 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 	}
 
 	/**
-	 * Sends a JSON-stringifiable packet over the WebSocket
+	 * Sends a JSON-stringifiable packet over the WebSocket.
 	 *
 	 * @param packet - The packet to send
 	 */
@@ -137,12 +140,13 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 			this.debug?.(`>> ${stringified}`);
 			return this.ws.send(stringified);
 		} catch (error) {
-			this.emit('error', error);
+			const e = error as Error;
+			this.emit('error', e);
 		}
 	}
 
 	/**
-	 * Sends a heartbeat over the WebSocket
+	 * Sends a heartbeat over the WebSocket.
 	 */
 	private sendHeartbeat() {
 		this.lastHeatbeatSend = Date.now();
@@ -155,9 +159,9 @@ export class VoiceWebSocket extends TypedEmitter<VoiceWebSocketEvents> {
 	}
 
 	/**
-	 * Sets/clears an interval to send heartbeats over the WebSocket
+	 * Sets/clears an interval to send heartbeats over the WebSocket.
 	 *
-	 * @param ms - The interval in milliseconds. If negative, the interval will be unset.
+	 * @param ms - The interval in milliseconds. If negative, the interval will be unset
 	 */
 	public setHeartbeatInterval(ms: number) {
 		if (typeof this.heartbeatInterval !== 'undefined') clearInterval(this.heartbeatInterval);

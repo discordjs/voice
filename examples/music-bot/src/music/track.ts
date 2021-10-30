@@ -3,7 +3,7 @@ import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice
 import { raw as ytdl } from 'youtube-dl-exec';
 
 /**
- * This is the data required to create a Track object
+ * This is the data required to create a Track object.
  */
 export interface TrackData {
 	url: string;
@@ -68,7 +68,7 @@ export class Track implements TrackData {
 			process
 				.once('spawn', () => {
 					demuxProbe(stream)
-						.then((probe) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
+						.then((probe: { stream: any; type: any; }) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
 						.catch(onError);
 				})
 				.catch(onError);
@@ -80,6 +80,7 @@ export class Track implements TrackData {
 	 *
 	 * @param url The URL of the video
 	 * @param methods Lifecycle callbacks
+	 *
 	 * @returns The created Track
 	 */
 	public static async from(url: string, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {

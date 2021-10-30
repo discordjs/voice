@@ -72,6 +72,7 @@ describe('demuxProbe', () => {
 
 	test('Detects WebM', async () => {
 		const stream = Readable.from(gen(10), { objectMode: false });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		webmWrite.mockImplementation(function mock(data: Buffer) {
 			if (data[0] === 5) this.emit('head', validHead);
 		} as any);
@@ -82,6 +83,7 @@ describe('demuxProbe', () => {
 
 	test('Detects Ogg', async () => {
 		const stream = Readable.from(gen(10), { objectMode: false });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		oggWrite.mockImplementation(function mock(data: Buffer) {
 			if (data[0] === 5) this.emit('head', validHead);
 		} as any);
@@ -92,6 +94,7 @@ describe('demuxProbe', () => {
 
 	test('Rejects invalid OpusHead', async () => {
 		const stream = Readable.from(gen(10), { objectMode: false });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		oggWrite.mockImplementation(function mock(data: Buffer) {
 			if (data[0] === 5) this.emit('head', invalidHead);
 		} as any);

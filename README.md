@@ -1,13 +1,18 @@
-# @discordjs/voice
-
-<p>
-	<a href="https://discord.gg/djs"><img src="https://img.shields.io/discord/222078108977594368?color=5865F2&logo=discord&logoColor=white" alt="Discord server" /></a>
-	<a href="https://www.npmjs.com/package/@discordjs/voice"><img src="https://img.shields.io/npm/v/@discordjs/voice.svg?maxAge=3600" alt="NPM version" /></a>
-	<a href="https://www.npmjs.com/package/@discordjs/voice"><img src="https://img.shields.io/npm/dt/@discordjs/voice.svg?maxAge=3600" alt="NPM downloads" /></a>
-	<a href="https://github.com/discordjs/voice/actions"><img src="https://github.com/discordjs/voice/actions/workflows/test.yml/badge.svg" alt="Build status" /></a>
-	<a href="https://codecov.io/gh/discordjs/voice"><img src="https://codecov.io/gh/discordjs/voice/branch/main/graph/badge.svg?token=u7oQ23UoxX" alt="Test coverage"/></a>
-	<a href="https://www.patreon.com/discordjs"><img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" /></a>
-</p>
+<div align="center">
+	<br />
+	<p>
+		<a href="https://discord.js.org"><img src="https://discord.js.org/static/logo.svg" width="546" alt="discord.js" /></a>
+	</p>
+	<br />
+		<p>
+		<a href="https://discord.gg/djs"><img src="https://img.shields.io/discord/222078108977594368?color=5865F2&logo=discord&logoColor=white" alt="Discord server" /></a>
+		<a href="https://www.npmjs.com/package/@discordjs/voice"><img src="https://img.shields.io/npm/v/@discordjs/voice.svg?maxAge=3600" alt="NPM version" /></a>
+		<a href="https://www.npmjs.com/package/@discordjs/voice"><img src="https://img.shields.io/npm/dt/@discordjs/voice.svg?maxAge=3600" alt="NPM downloads" /></a>
+		<a href="https://github.com/discordjs/voice/actions"><img src="https://github.com/discordjs/voice/workflows/Tests/badge.svg" alt="Build status" /></a>
+		<a href="https://codecov.io/gh/discordjs/voice"><img src="https://codecov.io/gh/discordjs/voice/branch/main/graph/badge.svg" alt="Code coverage" /></a>
+		<a href="https://www.patreon.com/discordjs"><img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" /></a>
+	</p>
+</div>
 
 ## About
 
@@ -22,13 +27,15 @@ An implementation of the Discord Voice API for Node.js, written in TypeScript.
 
 \**Audio receive is not documented by Discord so stable support is not guaranteed*
 
-**Useful links:**
+## Installation
 
-- [Documentation](https://discordjs.github.io/voice)
-- [Examples](https://github.com/discordjs/voice/tree/main/examples)
-- [GitHub Discussions](https://github.com/discordjs/voice/discussions)
-- [Discord.js Server](https://discord.gg/djs)
-- [Repository](https://github.com/discordjs/voice)
+**Node.js 16.0.0 or newer is required.**
+
+```sh-session
+npm install @discordjs/voice
+yarn add @discordjs/voice
+pnpm add @discordjs/voice
+```
 
 ## Dependencies
 
@@ -54,6 +61,22 @@ try installing another.
 - [`FFmpeg`](https://ffmpeg.org/) (installed and added to environment)
 - `ffmpeg-static`: ^4.2.7 (npm install)
 
-## Contribution
+## Links
 
-See [Contributing Guide](https://github.com/discordjs/voice/blob/main/.github/CONTRIBUTING.md).
+- [Website](https://discord.js.org/) ([source](https://github.com/discordjs/website))
+- [Documentation](https://discord.js.org/#/docs/voice)
+- [Examples](https://github.com/discordjs/voice/tree/main/examples)
+- [discord.js Discord server](https://discord.gg/djs)
+- [GitHub](https://github.com/discordjs/voice)
+- [NPM](https://www.npmjs.com/package/@discordjs/voice)
+
+## Contributing
+
+Before creating an issue, please ensure that it hasn't already been reported/suggested, and double-check the
+[documentation](https://discord.js.org/#/docs/voice).  
+See [the contribution guide](https://github.com/discordjs/voice/blob/main/.github/CONTRIBUTING.md) if you'd like to submit a PR.
+
+## Help
+
+If you don't understand something in the documentation, you are experiencing problems, or you just need a gentle
+nudge in the right direction, please don't hesitate to join our official [discord.js Server](https://discord.gg/djs).

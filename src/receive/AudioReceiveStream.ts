@@ -9,10 +9,12 @@ export enum EndBehaviorType {
 	 * The stream will only end when manually destroyed.
 	 */
 	Manual,
+
 	/**
 	 * The stream will end after a given time period of silence/no audio packets.
 	 */
 	AfterSilence,
+
 	/**
 	 * The stream will end after a given time period of no audio packets.
 	 */
@@ -61,7 +63,7 @@ export class AudioReceiveStream extends Readable {
 		this.end = end;
 	}
 
-	public push(buffer: Buffer | null) {
+	public override push(buffer: Buffer | null) {
 		if (buffer) {
 			if (
 				this.end.behavior === EndBehaviorType.AfterInactivity ||
@@ -83,5 +85,5 @@ export class AudioReceiveStream extends Readable {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	public _read() {}
+	public override _read() {}
 }

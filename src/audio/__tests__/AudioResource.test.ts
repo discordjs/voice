@@ -32,6 +32,7 @@ beforeAll(() => {
 		if (constraint === VOLUME_CONSTRAINT) {
 			base.push({
 				cost: 1,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				transformer: () => new VolumeTransformer({} as any),
 				type: TransformerType.InlineVolume,
 			});
@@ -90,6 +91,7 @@ describe('createAudioResource', () => {
 	});
 
 	test('Infers from VolumeTransformer', () => {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const stream = new VolumeTransformer({} as any);
 		const resource = createAudioResource(stream, { inlineVolume: true });
 		expect(findPipeline).toHaveBeenCalledWith(StreamType.Raw, NO_CONSTRAINT);

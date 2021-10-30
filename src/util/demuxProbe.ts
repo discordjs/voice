@@ -5,8 +5,10 @@ import { StreamType } from '..';
 
 /**
  * Takes an Opus Head, and verifies whether the associated Opus audio is suitable to play in a Discord voice channel.
+ *
  * @param opusHead The Opus Head to validate
- * @returns true if suitable to play in a Discord voice channel, false otherwise
+ *
+ * @returns `true` if suitable to play in a Discord voice channel, otherwise `false`
  */
 export function validateDiscordOpusHead(opusHead: Buffer): boolean {
 	const channels = opusHead.readUInt8(9);
@@ -23,17 +25,20 @@ export interface ProbeInfo {
 	 * function can sometimes read the input stream to its end and cause the stream to close.
 	 */
 	stream: Readable;
+
 	/**
-	 * The recommended stream type for this audio stream
+	 * The recommended stream type for this audio stream.
 	 */
 	type: StreamType;
 }
 
 /**
  * Attempt to probe a readable stream to figure out whether it can be demuxed using an Ogg or WebM Opus demuxer.
+ *
  * @param stream The readable stream to probe
  * @param probeSize The number of bytes to attempt to read before giving up on the probe
  * @param validator The Opus Head validator function
+ *
  * @experimental
  */
 export function demuxProbe(

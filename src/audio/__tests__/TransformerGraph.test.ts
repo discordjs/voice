@@ -4,6 +4,7 @@ const noConstraint = () => true;
 
 /**
  * Converts a pipeline into an easier-to-parse list of stream types within the pipeline
+ *
  * @param pipeline - The pipeline of edges returned by findPipeline(...)
  */
 function reducePath(pipeline: Edge[]) {

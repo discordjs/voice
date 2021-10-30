@@ -2,7 +2,7 @@ import { addAudioPlayer, deleteAudioPlayer } from '../DataStore';
 import { Awaited, noop } from '../util/util';
 import { VoiceConnection, VoiceConnectionStatus } from '../VoiceConnection';
 import { AudioPlayerError } from './AudioPlayerError';
-import { AudioResource } from './AudioResource';
+import type { AudioResource } from './AudioResource';
 import { PlayerSubscription } from './PlayerSubscription';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
@@ -15,36 +15,42 @@ export const SILENCE_FRAME = Buffer.from([0xf8, 0xff, 0xfe]);
  */
 export enum NoSubscriberBehavior {
 	/**
-	 * Pauses playing the stream until a voice connection becomes available
+	 * Pauses playing the stream until a voice connection becomes available.
 	 */
 	Pause = 'pause',
+
 	/**
-	 * Continues to play through the resource regardless
+	 * Continues to play through the resource regardless.
 	 */
 	Play = 'play',
+
 	/**
-	 * The player stops and enters the Idle state
+	 * The player stops and enters the Idle state.
 	 */
 	Stop = 'stop',
 }
 
 export enum AudioPlayerStatus {
 	/**
-	 * When there is currently no resource for the player to be playing
+	 * When there is currently no resource for the player to be playing.
 	 */
 	Idle = 'idle',
+
 	/**
-	 * When the player is waiting for an audio resource to become readable before transitioning to Playing
+	 * When the player is waiting for an audio resource to become readable before transitioning to Playing.
 	 */
 	Buffering = 'buffering',
+
 	/**
-	 * When the player has been manually paused
+	 * When the player has been manually paused.
 	 */
 	Paused = 'paused',
+
 	/**
-	 * When the player is actively playing an audio resource
+	 * When the player is actively playing an audio resource.
 	 */
 	Playing = 'playing',
+
 	/**
 	 * When the player has paused itself. Only possible with the "pause" no subscriber behavior.
 	 */
@@ -95,15 +101,18 @@ export interface AudioPlayerPlayingState {
 	 * The number of consecutive times that the audio resource has been unable to provide an Opus frame.
 	 */
 	missedFrames: number;
+
 	/**
 	 * The playback duration in milliseconds of the current audio resource. This includes filler silence packets
 	 * that have been played when the resource was buffering.
 	 */
 	playbackDuration: number;
+
 	/**
-	 * The resource that is being played
+	 * The resource that is being played.
 	 */
 	resource: AudioResource;
+
 	onStreamError: (error: Error) => void;
 }
 
@@ -114,18 +123,21 @@ export interface AudioPlayerPlayingState {
 export interface AudioPlayerPausedState {
 	status: AudioPlayerStatus.Paused | AudioPlayerStatus.AutoPaused;
 	/**
-	 * How many silence packets still need to be played to avoid audio interpolation due to the stream suddenly pausing
+	 * How many silence packets still need to be played to avoid audio interpolation due to the stream suddenly pausing.
 	 */
 	silencePacketsRemaining: number;
+
 	/**
 	 * The playback duration in milliseconds of the current audio resource. This includes filler silence packets
 	 * that have been played when the resource was buffering.
 	 */
 	playbackDuration: number;
+
 	/**
-	 * The current resource of the audio player
+	 * The current resource of the audio player.
 	 */
 	resource: AudioResource;
+
 	onStreamError: (error: Error) => void;
 }
 
@@ -163,7 +175,7 @@ export type AudioPlayerEvents = {
  */
 export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	/**
-	 * The state that the AudioPlayer is in
+	 * The state that the AudioPlayer is in.
 	 */
 	private _state: AudioPlayerState;
 
@@ -187,7 +199,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	private readonly debug: null | ((message: string) => void);
 
 	/**
-	 * Creates a new AudioPlayer
+	 * Creates a new AudioPlayer.
 	 */
 	public constructor(options: CreateAudioPlayerOptions = {}) {
 		super();
@@ -201,7 +213,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	}
 
 	/**
-	 * A list of subscribed voice connections that can currently receive audio to play
+	 * A list of subscribed voice connections that can currently receive audio to play.
 	 */
 	public get playable() {
 		return this.subscribers
@@ -217,8 +229,10 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	 * This method should not be directly called. Instead, use VoiceConnection#subscribe.
 	 *
 	 * @param connection - The connection to subscribe
-	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription.
+	 *
+	 * @returns The new subscription if the voice connection is not yet subscribed, otherwise the existing subscription
 	 */
+	// @ts-ignore
 	private subscribe(connection: VoiceConnection) {
 		const existingSubscription = this.subscribers.find((subscription) => subscription.connection === connection);
 		if (!existingSubscription) {
@@ -237,8 +251,10 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	 * This method should not be directly called. Instead, use PlayerSubscription#unsubscribe.
 	 *
 	 * @param subscription - The subscription to remove
-	 * @returns Whether or not the subscription existed on the player and was removed.
+	 *
+	 * @returns Whether or not the subscription existed on the player and was removed
 	 */
+	// @ts-ignore
 	private unsubscribe(subscription: PlayerSubscription) {
 		const index = this.subscribers.indexOf(subscription);
 		const exists = index !== -1;
@@ -304,6 +320,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 
 		this.emit('stateChange', oldState, this._state);
 		if (oldState.status !== newState.status || didChangeResources) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			this.emit(newState.status, oldState, this._state as any);
 		}
 		this.debug?.(`state change:\nfrom ${stringifyState(oldState)}\nto ${stringifyState(newState)}`);
@@ -321,7 +338,8 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	 * Idle state during the swap over.
 	 *
 	 * @param resource - The resource to play
-	 * @throws Will throw if attempting to play an audio resource that has already ended, or is being played by another player.
+	 *
+	 * @throws Will throw if attempting to play an audio resource that has already ended, or is being played by another player
 	 */
 	public play<T>(resource: AudioResource<T>) {
 		if (resource.ended) {
@@ -406,8 +424,9 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	/**
 	 * Pauses playback of the current resource, if any.
 	 *
-	 * @param interpolateSilence - If true, the player will play 5 packets of silence after pausing to prevent audio glitches.
-	 * @returns true if the player was successfully paused, otherwise false.
+	 * @param interpolateSilence - If true, the player will play 5 packets of silence after pausing to prevent audio glitches
+	 *
+	 * @returns `true` if the player was successfully paused, otherwise `false`
 	 */
 	public pause(interpolateSilence = true) {
 		if (this.state.status !== AudioPlayerStatus.Playing) return false;
@@ -422,7 +441,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	/**
 	 * Unpauses playback of the current resource, if any.
 	 *
-	 * @returns true if the player was successfully unpaused, otherwise false.
+	 * @returns `true` if the player was successfully unpaused, otherwise `false`
 	 */
 	public unpause() {
 		if (this.state.status !== AudioPlayerStatus.Paused) return false;
@@ -438,8 +457,9 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	 * Stops playback of the current resource and destroys the resource. The player will either transition to the Idle state,
 	 * or remain in its current state until the silence padding frames of the resource have been played.
 	 *
-	 * @param force - If true, will force the player to enter the Idle state even if the resource has silence padding frames.
-	 * @returns true if the player will come to a stop, otherwise false.
+	 * @param force - If true, will force the player to enter the Idle state even if the resource has silence padding frames
+	 *
+	 * @returns `true` if the player will come to a stop, otherwise `false`
 	 */
 	public stop(force = false) {
 		if (this.state.status === AudioPlayerStatus.Idle) return false;
@@ -454,9 +474,9 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	}
 
 	/**
-	 * Checks whether the underlying resource (if any) is playable (readable).
+	 * Checks whether the underlying resource (if any) is playable (readable)
 	 *
-	 * @returns true if the resource is playable, false otherwise.
+	 * @returns `true` if the resource is playable, otherwise `false`
 	 */
 	public checkPlayable() {
 		const state = this._state;
@@ -476,6 +496,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	 * Called roughly every 20ms by the global audio player timer. Dispatches any audio packets that are buffered
 	 * by the active connections of this audio player.
 	 */
+	// @ts-ignore
 	private _stepDispatch() {
 		const state = this._state;
 
@@ -491,6 +512,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 	 * underlying resource of the stream, and then has all the active connections of the audio player prepare it
 	 * (encrypt it, append header data) so that it is ready to play at the start of the next cycle.
 	 */
+	// @ts-ignore
 	private _stepPrepare() {
 		const state = this._state;
 
@@ -537,9 +559,11 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 			}
 		}
 
-		/* Attempt to read an Opus packet from the resource. If there isn't an available packet,
-			 play a silence packet. If there are 5 consecutive cycles with failed reads, then the
-			 playback will end. */
+		/**
+		 * Attempt to read an Opus packet from the resource. If there isn't an available packet,
+		 * play a silence packet. If there are 5 consecutive cycles with failed reads, then the
+		 * playback will end.
+		 */
 		const packet: Buffer | null = state.resource.read();
 
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -583,7 +607,7 @@ export class AudioPlayer extends TypedEmitter<AudioPlayerEvents> {
 }
 
 /**
- * Stringifies an AudioPlayerState instance
+ * Stringifies an AudioPlayerState instance.
  *
  * @param state - The state to stringify
  */
@@ -596,7 +620,7 @@ function stringifyState(state: AudioPlayerState) {
 }
 
 /**
- * Creates a new AudioPlayer to be used
+ * Creates a new AudioPlayer to be used.
  */
 export function createAudioPlayer(options?: CreateAudioPlayerOptions) {
 	return new AudioPlayer(options);

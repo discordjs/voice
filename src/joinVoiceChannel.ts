@@ -1,6 +1,6 @@
 import { createVoiceConnection } from './VoiceConnection';
-import { JoinConfig } from './DataStore';
-import { DiscordGatewayAdapterCreator } from './util/adapter';
+import type { JoinConfig } from './DataStore';
+import type { DiscordGatewayAdapterCreator } from './util/adapter';
 
 /**
  * The options that can be given when creating a voice connection.
@@ -11,6 +11,7 @@ export interface CreateVoiceConnectionOptions {
 	 * related components. Defaults to false.
 	 */
 	debug?: boolean;
+
 	adapterCreator: DiscordGatewayAdapterCreator;
 }
 
@@ -19,23 +20,27 @@ export interface CreateVoiceConnectionOptions {
  */
 export interface JoinVoiceChannelOptions {
 	/**
-	 * The ID of the Discord voice channel to join
+	 * The id of the Discord voice channel to join.
 	 */
 	channelId: string;
+
 	/**
-	 * The ID of the guild that the voice channel belongs to
+	 * The id of the guild that the voice channel belongs to.
 	 */
 	guildId: string;
+
 	/**
 	 * Whether to join the channel deafened (defaults to true)
 	 */
 	selfDeaf?: boolean;
+
 	/**
 	 * Whether to join the channel muted (defaults to true)
 	 */
 	selfMute?: boolean;
+
 	/**
-	 * An optional group identifier for the voice connection
+	 * An optional group identifier for the voice connection.
 	 */
 	group?: string;
 }

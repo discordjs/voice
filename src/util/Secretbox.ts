@@ -9,6 +9,7 @@ const libs = {
 		open: sodium.api.crypto_secretbox_open_easy,
 		close: sodium.api.crypto_secretbox_easy,
 		random: (n: any, buffer?: Buffer) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			if (!buffer) buffer = Buffer.allocUnsafe(n);
 			sodium.api.randombytes_buf(buffer);
 			return buffer;
@@ -45,10 +46,10 @@ void (async () => {
 		try {
 			// eslint-disable-next-line
 			const lib = require(libName);
-			if (libName === 'libsodium-wrappers' && lib.ready) await lib.ready; // eslint-disable-line no-await-in-loop
+			if (libName === 'libsodium-wrappers' && lib.ready) await lib.ready;
 			Object.assign(methods, libs[libName](lib));
 			break;
-		} catch {} // eslint-disable-line no-empty
+		} catch {}
 	}
 })();
 

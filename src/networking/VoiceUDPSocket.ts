@@ -1,7 +1,7 @@
 import { createSocket, Socket } from 'node:dgram';
 import { isIPv4 } from 'node:net';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Awaited } from '../util/util';
+import type { Awaited } from '../util/util';
 
 /**
  * Stores an IP address and port. Used to store socket details for the local client as well as
@@ -25,17 +25,17 @@ export interface VoiceUDPSocketEvents {
 }
 
 /**
- * The interval in milliseconds at which keep alive datagrams are sent
+ * The interval in milliseconds at which keep alive datagrams are sent.
  */
 const KEEP_ALIVE_INTERVAL = 5e3;
 
 /**
- * The maximum number of keep alive packets which can be missed
+ * The maximum number of keep alive packets which can be missed.
  */
 const KEEP_ALIVE_LIMIT = 12;
 
 /**
- * The maximum value of the keep alive counter
+ * The maximum value of the keep alive counter.
  */
 const MAX_COUNTER_VALUE = 2 ** 32 - 1;
 
@@ -49,7 +49,7 @@ export class VoiceUDPSocket extends TypedEmitter<VoiceUDPSocketEvents> {
 	private readonly socket: Socket;
 
 	/**
-	 * The socket details for Discord (remote).
+	 * The socket details for Discord (remote)
 	 */
 	private readonly remote: SocketConfig;
 
@@ -59,22 +59,22 @@ export class VoiceUDPSocket extends TypedEmitter<VoiceUDPSocketEvents> {
 	private readonly keepAlives: KeepAlive[];
 
 	/**
-	 * The counter used in the keep alive mechanism
+	 * The counter used in the keep alive mechanism.
 	 */
 	private keepAliveCounter = 0;
 
 	/**
-	 * The buffer used to write the keep alive counter into
+	 * The buffer used to write the keep alive counter into.
 	 */
 	private readonly keepAliveBuffer: Buffer;
 
 	/**
-	 * The Node.js interval for the keep-alive mechanism
+	 * The Node.js interval for the keep-alive mechanism.
 	 */
 	private readonly keepAliveInterval: NodeJS.Timeout;
 
 	/**
-	 * The time taken to receive a response to keep alive messages
+	 * The time taken to receive a response to keep alive messages.
 	 */
 	public ping?: number;
 
@@ -104,7 +104,8 @@ export class VoiceUDPSocket extends TypedEmitter<VoiceUDPSocketEvents> {
 	}
 
 	/**
-	 * Called when a message is received on the UDP socket
+	 * Called when a message is received on the UDP socket.
+	 *
 	 * @param buffer The received buffer
 	 */
 	private onMessage(buffer: Buffer): void {
@@ -122,7 +123,7 @@ export class VoiceUDPSocket extends TypedEmitter<VoiceUDPSocketEvents> {
 	}
 
 	/**
-	 * Called at a regular interval to check whether we are still able to send datagrams to Discord
+	 * Called at a regular interval to check whether we are still able to send datagrams to Discord.
 	 */
 	private keepAlive() {
 		if (this.keepAlives.length >= KEEP_ALIVE_LIMIT) {

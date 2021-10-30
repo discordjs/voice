@@ -1,10 +1,10 @@
-import { Readable } from 'node:stream';
+import type { Readable } from 'node:stream';
 import * as prism from 'prism-media';
 
-/*
-	This module creates a Transformer Graph to figure out what the most efficient way
-	of transforming the input stream into something playable would be.
-*/
+/**
+ * This module creates a Transformer Graph to figure out what the most efficient way
+ * of transforming the input stream into something playable would be.
+ */
 
 const FFMPEG_PCM_ARGUMENTS = ['-analyzeduration', '0', '-loglevel', '0', '-f', 's16le', '-ar', '48000', '-ac', '2'];
 const FFMPEG_OPUS_ARGUMENTS = [
@@ -23,17 +23,13 @@ const FFMPEG_OPUS_ARGUMENTS = [
 ];
 
 /**
- * The different types of stream that can exist within the pipeline
+ * The different types of stream that can exist within the pipeline.
  *
  * @remarks
  * - `Arbitrary` - the type of the stream at this point is unknown.
- *
  * - `Raw` - the stream at this point is s16le PCM.
- *
  * - `OggOpus` - the stream at this point is Opus audio encoded in an Ogg wrapper.
- *
  * - `WebmOpus` - the stream at this point is Opus audio encoded in a WebM wrapper.
- *
  * - `Opus` - the stream at this point is Opus audio, and the stream is in object-mode. This is ready to play.
  */
 export enum StreamType {
@@ -45,7 +41,7 @@ export enum StreamType {
 }
 
 /**
- * The different types of transformers that can exist within the pipeline
+ * The different types of transformers that can exist within the pipeline.
  */
 export enum TransformerType {
 	FFmpegPCM = 'ffmpeg pcm',
@@ -58,7 +54,7 @@ export enum TransformerType {
 }
 
 /**
- * Represents a pathway from one stream type to another using a transformer
+ * Represents a pathway from one stream type to another using a transformer.
  */
 export interface Edge {
 	from: Node;
@@ -73,12 +69,12 @@ export interface Edge {
  */
 export class Node {
 	/**
-	 * The outbound edges from this node
+	 * The outbound edges from this node.
 	 */
 	public readonly edges: Edge[] = [];
 
 	/**
-	 * The type of stream for this node
+	 * The type of stream for this node.
 	 */
 	public readonly type: StreamType;
 
@@ -87,7 +83,7 @@ export class Node {
 	}
 
 	/**
-	 * Creates an outbound edge from this node
+	 * Creates an outbound edge from this node.
 	 *
 	 * @param edge - The edge to create
 	 */
@@ -103,7 +99,7 @@ for (const streamType of Object.values(StreamType)) {
 }
 
 /**
- * Gets a node from its stream type
+ * Gets a node from its stream type.
  *
  * @param type - The stream type of the target node
  */
@@ -193,17 +189,17 @@ if (canEnableFFmpegOptimizations()) {
  */
 interface Step {
 	/**
-	 * The next step
+	 * The next step.
 	 */
 	next?: Step;
 
 	/**
-	 * The cost of the steps after this step
+	 * The cost of the steps after this step.
 	 */
 	cost: number;
 
 	/**
-	 * The edge associated with this step
+	 * The edge associated with this step.
 	 */
 	edge?: Edge;
 }
@@ -212,7 +208,7 @@ interface Step {
  * Finds the shortest cost path from node A to node B.
  *
  * @param from - The start node
- * @param constraints - Extra validation for a potential solution. Takes a path, returns true if the path is valid.
+ * @param constraints - Extra validation for a potential solution. Takes a path, returns true if the path is valid
  * @param goal - The target node
  * @param path - The running path
  * @param depth - The number of remaining recursions
@@ -243,7 +239,7 @@ function findPath(
 }
 
 /**
- * Takes the solution from findPath and assembles it into a list of edges
+ * Takes the solution from findPath and assembles it into a list of edges.
  *
  * @param step - The first step of the path
  */
@@ -258,7 +254,7 @@ function constructPipeline(step: Step) {
 }
 
 /**
- * Finds the lowest-cost pipeline to convert the input stream type into an Opus stream
+ * Finds the lowest-cost pipeline to convert the input stream type into an Opus stream.
  *
  * @param from - The stream type to start from
  * @param constraint - Extra constraints that may be imposed on potential solution

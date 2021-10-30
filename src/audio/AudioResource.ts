@@ -7,7 +7,7 @@ import { AudioPlayer, SILENCE_FRAME } from './AudioPlayer';
 /**
  * Options that are set when creating a new audio resource.
  *
- * @template T - the type for the metadata (if any) of the audio resource.
+ * @template T - the type for the metadata (if any) of the audio resource
  */
 export interface CreateAudioResourceOptions<T> {
 	/**
@@ -16,7 +16,7 @@ export interface CreateAudioResourceOptions<T> {
 	inputType?: StreamType;
 
 	/**
-	 * Optional metadata that can be attached to the resource (e.g. track title, random ID).
+	 * Optional metadata that can be attached to the resource (e.g. track title, random id).
 	 * This is useful for identification purposes when the resource is passed around in events.
 	 * See {@link AudioResource.metadata}
 	 */
@@ -38,7 +38,7 @@ export interface CreateAudioResourceOptions<T> {
 /**
  * Represents an audio resource that can be played by an audio player.
  *
- * @template T - the type for the metadata (if any) of the audio resource.
+ * @template T - the type for the metadata (if any) of the audio resource
  */
 export class AudioResource<T = unknown> {
 	/**
@@ -136,11 +136,13 @@ export class AudioResource<T = unknown> {
 	/**
 	 * Attempts to read an Opus packet from the audio resource. If a packet is available, the playbackDuration
 	 * is incremented.
-	 * @internal
+	 *
 	 * @remarks
 	 * It is advisable to check that the playStream is readable before calling this method. While no runtime
 	 * errors will be thrown, you should check that the resource is still available before attempting to
 	 * read from it.
+	 *
+	 * @internal
 	 */
 	public read(): Buffer | null {
 		if (this.silenceRemaining === 0) {
@@ -158,7 +160,7 @@ export class AudioResource<T = unknown> {
 }
 
 /**
- * Ensures that a path contains at least one volume transforming component
+ * Ensures that a path contains at least one volume transforming component.
  *
  * @param path - The path to validate constraints on
  */
@@ -199,10 +201,10 @@ export function inferStreamType(stream: Readable): {
  * to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
  * Opus transcoders, and Ogg/WebM demuxers.
  *
- * @param input - The resource to play.
- * @param options - Configurable options for creating the resource.
+ * @param input - The resource to play
+ * @param options - Configurable options for creating the resource
  *
- * @template T - the type for the metadata (if any) of the audio resource.
+ * @template T - the type for the metadata (if any) of the audio resource
  */
 export function createAudioResource<T>(
 	input: string | Readable,
@@ -223,10 +225,10 @@ export function createAudioResource<T>(
  * to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
  * Opus transcoders, and Ogg/WebM demuxers.
  *
- * @param input - The resource to play.
- * @param options - Configurable options for creating the resource.
+ * @param input - The resource to play
+ * @param options - Configurable options for creating the resource
  *
- * @template T - the type for the metadata (if any) of the audio resource.
+ * @template T - the type for the metadata (if any) of the audio resource
  */
 export function createAudioResource<T extends null | undefined>(
 	input: string | Readable,
@@ -243,10 +245,10 @@ export function createAudioResource<T extends null | undefined>(
  * to ensure that the resultant stream is in the correct format for playback. This could involve using FFmpeg,
  * Opus transcoders, and Ogg/WebM demuxers.
  *
- * @param input - The resource to play.
- * @param options - Configurable options for creating the resource.
+ * @param input - The resource to play
+ * @param options - Configurable options for creating the resource
  *
- * @template T - the type for the metadata (if any) of the audio resource.
+ * @template T - the type for the metadata (if any) of the audio resource
  */
 export function createAudioResource<T>(
 	input: string | Readable,

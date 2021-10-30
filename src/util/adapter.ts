@@ -1,4 +1,4 @@
-import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v9';
+import type { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types/v9';
 
 /**
  * Methods that are provided by the @discordjs/voice library to implementations of
@@ -31,7 +31,8 @@ export interface DiscordGatewayAdapterImplementerMethods {
 	 * Implement this method such that the given payload is sent to the main Discord gateway connection.
 	 *
 	 * @param payload - The payload to send to the main Discord gateway connection
-	 * @returns false if the payload definitely failed to send - in this case, the voice connection disconnects.
+	 *
+	 * @returns `false` if the payload definitely failed to send - in this case, the voice connection disconnects
 	 */
 	sendPayload(payload: any): boolean;
 	/**
