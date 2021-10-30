@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { opus } from 'prism-media';
+import * as prism from 'prism-media';
 import { noop } from './util';
 import { StreamType } from '..';
 
@@ -83,11 +83,11 @@ export function demuxProbe(
 			}
 		};
 
-		const webm = new opus.WebmDemuxer();
+		const webm = new prism.opus.WebmDemuxer();
 		webm.once('error', noop);
 		webm.on('head', foundHead(StreamType.WebmOpus));
 
-		const ogg = new opus.OggDemuxer();
+		const ogg = new prism.opus.OggDemuxer();
 		ogg.once('error', noop);
 		ogg.on('head', foundHead(StreamType.OggOpus));
 

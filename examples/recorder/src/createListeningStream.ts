@@ -1,7 +1,7 @@
 import { EndBehaviorType, VoiceReceiver } from '@discordjs/voice';
 import { User } from 'discord.js';
 import { createWriteStream } from 'node:fs';
-import { opus } from 'prism-media';
+import * as prism from 'prism-media';
 import { pipeline } from 'node:stream';
 
 function getDisplayName(userId: string, user?: User) {
@@ -16,8 +16,8 @@ export function createListeningStream(receiver: VoiceReceiver, userId: string, u
 		},
 	});
 
-	const oggStream = new opus.OggLogicalBitstream({
-		opusHead: new opus.OpusHead({
+	const oggStream = new prism.opus.OggLogicalBitstream({
+		opusHead: new prism.opus.OpusHead({
 			channelCount: 2,
 			sampleRate: 48000,
 		}),

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { resolve, dirname } from 'node:path';
-import { FFmpeg } from 'prism-media';
+import * as prism from 'prism-media';
 
 /**
  * Generates a report of the dependencies used by the \@discordjs/voice module.
@@ -32,7 +32,7 @@ export function generateDependencyReport() {
 	// ffmpeg
 	report.push('FFmpeg');
 	try {
-		const info = FFmpeg.getInfo();
+		const info = prism.FFmpeg.getInfo();
 		report.push(`- version: ${info.version}`);
 		report.push(`- libopus: ${info.output.includes('--enable-libopus') ? 'yes' : 'no'}`);
 	} catch (err) {
