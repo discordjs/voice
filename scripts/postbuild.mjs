@@ -1,8 +1,6 @@
 import shell from 'shelljs';
 
 shell
-	.ShellString(
-		'import path from "path";\nimport { createRequire as topLevelCreateRequire } from "module";\nconst require = topLevelCreateRequire(path.resolve(import.meta.url));\n',
-	)
+	.ShellString('import { createRequire } from "module";const require = createRequire(import.meta.url);')
 	.cat('dist/index.mjs')
 	.to('dist/index.mjs');
