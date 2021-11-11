@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.3](https://github.com/discordjs/voice/compare/v0.7.2...v0.7.3) (2021-11-11)
+
+
+### Bug Fixes
+
+* **esm:** resolve esm imports ([#229](https://github.com/discordjs/voice/issues/229)) ([616f2bc](https://github.com/discordjs/voice/commit/616f2bcfde47e55ac7b09f4faaa07f15d78c11a5))
+
+
+
 ## [0.7.2](https://github.com/discordjs/voice/compare/v0.7.1...v0.7.2) (2021-10-30)
 
 
