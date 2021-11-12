@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.5](https://github.com/discordjs/voice/compare/v0.7.4...v0.7.5) (2021-11-12)
+
+
+### Bug Fixes
+
+* postbuild script ([644af95](https://github.com/discordjs/voice/commit/644af9579f02724c489514f482640b8413d2c305))
+
+
+
 ## [0.7.4](https://github.com/discordjs/voice/compare/v0.7.3...v0.7.4) (2021-11-12)
 
 
