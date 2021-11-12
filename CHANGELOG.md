@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.4](https://github.com/discordjs/voice/compare/v0.7.3...v0.7.4) (2021-11-12)
+
+
+### Bug Fixes
+
+* conditionally apply banner only to esm build ([8c4e8c4](https://github.com/discordjs/voice/commit/8c4e8c4ba5b9013a90de0238a7f2771e9113a62d))
+
+
+
 ## [0.7.3](https://github.com/discordjs/voice/compare/v0.7.2...v0.7.3) (2021-11-11)
 
 
