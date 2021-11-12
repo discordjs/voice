@@ -72,7 +72,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	let subscription = subscriptions.get(interaction.guildId);
 
 	if (interaction.commandName === 'play') {
-		await interaction.defer();
+		await interaction.deferReply();
 		// Extract the video URL from the command
 		const url = interaction.options.get('song')!.value! as string;
 
