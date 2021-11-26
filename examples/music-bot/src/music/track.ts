@@ -1,6 +1,6 @@
 import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
-import { raw as ytdl } from 'youtube-dl-exec';
+import { exec as ytdl } from 'youtube-dl-exec';
 
 /**
  * This is the data required to create a Track object.
