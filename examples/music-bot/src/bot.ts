@@ -1,4 +1,4 @@
-import Discord, { Interaction, GuildMember, Snowflake } from 'discord.js';
+import Discord, { Interaction, GuildMember, Snowflake, Message } from 'discord.js';
 import {
 	AudioPlayerStatus,
 	AudioResource,
@@ -17,7 +17,7 @@ const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSA
 client.on('ready', () => console.log('Ready!'));
 
 // This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
-client.on('messageCreate', async (message) => {
+client.on('messageCreate', async (message: Message) => {
 	if (!message.guild) return;
 	if (!client.application?.owner) await client.application?.fetch();
 
@@ -72,9 +72,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	let subscription = subscriptions.get(interaction.guildId);
 
 	if (interaction.commandName === 'play') {
-		await interaction.defer();
+		await interaction.deferReply();
 		// Extract the video URL from the command
-		const url = interaction.options.get('song')!.value! as string;
+		const url = interaction.options.getString('song') as string;
 
 		// If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
 		// and create a subscription.
