@@ -1,0 +1,4 @@
+{
+	"token": "Your Discord bot token here",
+	"deployment_guild_id": "Private guild ID for deploy command"
+}

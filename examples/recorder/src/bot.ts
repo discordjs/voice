@@ -1,22 +1,21 @@
-import Discord, { Interaction } from 'discord.js';
+import { Client, Interaction } from 'discord.js';
 import { getVoiceConnection } from '@discordjs/voice';
 import { deploy } from './deploy';
 import { interactionHandlers } from './interactions';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const { token } = require('../auth.json');
+const { token, deployment_guild_id } = require('../config.json');
 
-const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
+const client = new Client({ intents: ['GUILD_VOICE_STATES', 'GUILDS'] });
 
-client.on('ready', () => console.log('Ready!'));
+client.on('ready', async () => {
+	console.log('Ready!')
 
-client.on('messageCreate', async (message) => {
-	if (!message.guild) return;
-	if (!client.application?.owner) await client.application?.fetch();
-
-	if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
-		await deploy(message.guild);
-		await message.reply('Deployed!');
+	const app = await client.application?.fetch();
+	const devGuild = await client.guilds.fetch(deployment_guild_id).catch(() => null);
+	if (app && devGuild) {
+		await deploy(devGuild);
+		console.log('Deployed commands!');
 	}
 });
 

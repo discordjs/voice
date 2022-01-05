@@ -94,7 +94,7 @@ async function connectToChannel(channel: VoiceChannel) {
  */
 
 const client = new Client({
-	ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] },
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
 });
 
 void client.login('token here');

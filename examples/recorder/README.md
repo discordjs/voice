@@ -14,8 +14,8 @@ $ npm run build
 $ cd examples/recorder
 $ npm install
 
-# Set a bot token (see auth.example.json)
-$ cp auth.example.json auth.json
+# Set a bot token & deployment guild id (see config.example.json)
+$ cp config.example.json config.json
 $ nano auth.json
 
 # Start the bot!
