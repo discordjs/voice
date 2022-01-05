@@ -1,6 +1,6 @@
 import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
-import { raw as ytdl } from 'youtube-dl-exec';
+import { exec as ytdl } from 'youtube-dl-exec';
 
 /**
  * This is the data required to create a Track object.
@@ -48,10 +48,10 @@ export class Track implements TrackData {
 			const process = ytdl(
 				this.url,
 				{
-					o: '-',
-					q: '',
-					f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-					r: '100K',
+					output: '-',
+					quiet: true,
+					format: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+					limitRate: '100K',
 				},
 				{ stdio: ['ignore', 'pipe', 'ignore'] },
 			);

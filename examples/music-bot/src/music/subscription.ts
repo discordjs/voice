@@ -1,11 +1,13 @@
 import {
 	AudioPlayer,
+	AudioPlayerState,
 	AudioPlayerStatus,
 	AudioResource,
 	createAudioPlayer,
 	entersState,
 	VoiceConnection,
 	VoiceConnectionDisconnectReason,
+	VoiceConnectionState,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
 import type { Track } from './track';
@@ -29,7 +31,7 @@ export class MusicSubscription {
 		this.audioPlayer = createAudioPlayer();
 		this.queue = [];
 
-		this.voiceConnection.on('stateChange', async (_: any, newState: { status: any; reason: any; closeCode: number; }) => {
+		this.voiceConnection.on('stateChange', async (_: any, newState: VoiceConnectionState) => {
 			if (newState.status === VoiceConnectionStatus.Disconnected) {
 				if (newState.reason === VoiceConnectionDisconnectReason.WebSocketClose && newState.closeCode === 4014) {
 					/**
@@ -84,7 +86,7 @@ export class MusicSubscription {
 		});
 
 		// Configure audio player
-		this.audioPlayer.on('stateChange', (oldState: { status: any; resource: any; }, newState: { status: any; resource: any; }) => {
+		this.audioPlayer.on('stateChange', (oldState: AudioPlayerState, newState: AudioPlayerState) => {
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
 				// If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
 				// The queue is then processed to start playing the next track, if one is available.
@@ -96,7 +98,7 @@ export class MusicSubscription {
 			}
 		});
 
-		this.audioPlayer.on('error', (error: { resource: any; }) => (error.resource as AudioResource<Track>).metadata.onError(error));
+		this.audioPlayer.on('error', (error: { message: string; name: string; resource: any; }) => (error.resource as AudioResource<Track>).metadata.onError(error));
 
 		voiceConnection.subscribe(this.audioPlayer);
 	}
